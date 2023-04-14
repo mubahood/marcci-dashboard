@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get("gardens", [ApiResurceController::class, "gardens"]);
+Route::get("crops", [ApiResurceController::class, "crops"]);
 
 
 

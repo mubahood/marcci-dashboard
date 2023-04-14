@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Association;
 use App\Models\CounsellingCentre;
+use App\Models\Crop;
+use App\Models\CropProtocol;
 use App\Models\Event;
 use App\Models\Garden;
 use App\Models\Group;
@@ -26,6 +28,28 @@ class ApiResurceController extends Controller
 
     use ApiResponser;
 
+    public function crops(Request $r)
+    {
+        $items = [];
+
+        foreach (Crop::all() as $key => $crop) {
+
+
+            $protocols = CropProtocol::where([
+                'crop_id' => $crop->id
+            ])->get();
+            $crop->protocols = json_encode($protocols);
+
+            $items[] = $crop;
+        }
+
+        return $this->success(
+            $items,
+            $message = "Sussesfully",
+            200
+        );
+    }
+
     public function gardens(Request $r)
     {
         $u = auth('api')->user();
@@ -46,13 +70,13 @@ class ApiResurceController extends Controller
                 ->get();
         }
 
-
         return $this->success(
             $gardens,
             $message = "Sussesfully",
             200
         );
     }
+
 
 
     public function people(Request $r)
