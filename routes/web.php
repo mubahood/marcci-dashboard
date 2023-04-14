@@ -7,9 +7,9 @@ use App\Http\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Route;
 
 
-
-/* 
 Route::get('generate-class', [MainController::class, 'generate_class']); 
+/* 
+
 Route::get('generate-variables', [MainController::class, 'generate_variables']); 
 Route::get('/', [MainController::class, 'index'])->name('home');
 Route::get('/about-us', [MainController::class, 'about_us']);

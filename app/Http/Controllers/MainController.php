@@ -120,11 +120,11 @@ class MainController extends BaseController
   function generate_class()
   {
 
-    $data = 'id, created_at, updated_at, title, theme, photo, details, prev_event_title, number_of_attendants, number_of_speakers, number_of_experts, venue_name, venue_photo, venue_map_photo, event_date, address, gps_latitude, gps_longitude, video';
+    $data = 'id, created_at, updated_at, name,photo,details,protocols';
 
-    $modelName = 'EventModel';
-    $endPoint = 'events';
-    $tableName = 'events';
+    $modelName = 'Crop';
+    $endPoint = 'crops';
+    $tableName = 'crops';
     //$array = preg_split('/\r\n|\n\r|\r|\n/', $data);
     $array = explode(',', $data);
     $generate_vars = MainController::generate_vars($array);
@@ -134,7 +134,7 @@ class MainController extends BaseController
     $create_table = MainController::create_table($array, $modelName);
     return <<<EOT
 <pre>
-import 'package:nudipu/utils/Utils.dart';
+import 'package:marcci/utils/Utils.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'RespondModel.dart';
