@@ -8,6 +8,7 @@ use App\Models\Crop;
 use App\Models\CropProtocol;
 use App\Models\Event;
 use App\Models\Garden;
+use App\Models\GardenActivity;
 use App\Models\Group;
 use App\Models\Institution;
 use App\Models\Job;
@@ -45,6 +46,33 @@ class ApiResurceController extends Controller
 
         return $this->success(
             $items,
+            $message = "Sussesfully",
+            200
+        );
+    }
+
+    public function garden_activities(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+        $gardens = [];
+        if ($u->isRole('agent')) {
+            $gardens = GardenActivity::where([])
+                ->limit(1000)
+                ->orderBy('id', 'desc')
+                ->get();
+        } else {
+            $gardens = GardenActivity::where(['user_id' => $u->id])
+                ->limit(1000)
+                ->orderBy('id', 'desc') 
+                ->get();
+        }
+
+        return $this->success(
+            $gardens,
             $message = "Sussesfully",
             200
         );

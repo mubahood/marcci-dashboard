@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get("gardens", [ApiResurceController::class, "gardens"]);
+Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
 Route::get("crops", [ApiResurceController::class, "crops"]);
 Route::POST("gardens", [ApiResurceController::class, "garden_create"]); 
 

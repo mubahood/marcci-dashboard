@@ -120,11 +120,11 @@ class MainController extends BaseController
   function generate_class()
   {
 
-    $data = 'id, created_at, updated_at, name,photo,details,protocols';
+    $data = 'id, created_at, updated_at, garden_id, user_id, crop_activity_id, activity_name, activity_description, activity_date_to_be_done, activity_due_date, activity_date_done, farmer_has_submitted, farmer_activity_status, farmer_submission_date, farmer_comment, agent_id, agent_names, agent_has_submitted, agent_activity_status, agent_comment, agent_submission_date';
 
-    $modelName = 'Crop';
-    $endPoint = 'crops';
-    $tableName = 'crops';
+    $modelName = 'GardenActivity';
+    $endPoint = 'garden-activities';
+    $tableName = 'garden_activities';
     //$array = preg_split('/\r\n|\n\r|\r|\n/', $data);
     $array = explode(',', $data);
     $generate_vars = MainController::generate_vars($array);
