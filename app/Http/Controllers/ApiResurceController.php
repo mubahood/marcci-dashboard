@@ -111,6 +111,46 @@ class ApiResurceController extends Controller
         );
     }
 
+    public function garden_create(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        if (
+            $r->name == null ||
+            $r->planting_date == null ||
+            $r->crop_id == null
+        ) {
+            return $this->error('Some Information is still missing. Fill the missing information and try again.');
+        }
+
+
+        $image = "";
+        if (!empty($_FILES)) {
+            try {
+                $image = Utils::upload_images_2($_FILES, true);
+            } catch (Throwable $t) {
+                $image = "no_image.jpg";
+            }
+        }
+
+        $obj = new Garden();
+        $obj->name = $r->name;
+        $obj->user_id = $u->id;
+        $obj->status = $r->status;
+        $obj->production_scale = $r->production_scale;
+        $obj->planting_date = Carbon::parse($r->planting_date);
+        $obj->land_occupied = $r->planting_date;
+        $obj->crop_id = $r->crop_id;
+        $obj->details = $r->details;
+        $obj->photo = $image;
+        $obj->save();
+
+
+        return $this->success(null, $message = "Sussesfully created!", 200);
+    }
+
     public function person_create(Request $r)
     {
         $u = auth('api')->user();
