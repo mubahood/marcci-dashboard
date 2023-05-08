@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiResurceController;
+use App\Http\Middleware\EnsureTokenIsValid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,10 +17,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get("gardens", [ApiResurceController::class, "gardens"]);
-Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
-Route::get("crops", [ApiResurceController::class, "crops"]);
-Route::POST("gardens", [ApiResurceController::class, "garden_create"]); 
+Route::middleware([EnsureTokenIsValid::class])->group(function () {
+    Route::get("gardens", [ApiResurceController::class, "gardens"]); 
+    Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
+    Route::get("crops", [ApiResurceController::class, "crops"]);
+    Route::POST("gardens", [ApiResurceController::class, "garden_create"]);  
+});
+ 
+
+
 
 
 

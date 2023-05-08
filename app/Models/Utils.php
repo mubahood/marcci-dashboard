@@ -52,6 +52,25 @@ administrator_id
 [] => District
 */
 
+    public static function success($data = [], $message = "")
+    {
+        return (response()->json([
+            'code' => 1,
+            'message' => $message,
+            'data' => $data
+        ]));
+    }
+
+    public static function error($message = "")
+    {
+        return response()->json([
+            'code' => 0,
+            'message' => $message,
+            'data' => ""
+        ]);
+    }
+
+
 
     public static function importPwdsProfiles($path)
     {
@@ -70,11 +89,11 @@ administrator_id
 
             $name = $line[0];
             $user = Person::where(['name' => $name])->first();
-            if($user ==null){
+            if ($user == null) {
                 continue;
             }
             $user->district_id = 88;
-            $user->parish .= 1; 
+            $user->parish .= 1;
             $user->save();
             continue;
 

@@ -53,7 +53,7 @@ class ApiResurceController extends Controller
 
     public function garden_activities(Request $r)
     {
-        $u = auth('api')->user();
+        $u = $r->user;
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -67,7 +67,7 @@ class ApiResurceController extends Controller
         } else {
             $gardens = GardenActivity::where(['user_id' => $u->id])
                 ->limit(1000)
-                ->orderBy('id', 'desc') 
+                ->orderBy('id', 'desc')
                 ->get();
         }
 
@@ -80,7 +80,7 @@ class ApiResurceController extends Controller
 
     public function gardens(Request $r)
     {
-        $u = auth('api')->user();
+        $u = $r->user;
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -109,7 +109,7 @@ class ApiResurceController extends Controller
 
     public function people(Request $r)
     {
-        $u = auth('api')->user();
+        $u = $r->user;
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -125,7 +125,7 @@ class ApiResurceController extends Controller
     }
     public function jobs(Request $r)
     {
-        $u = auth('api')->user();
+        $u = $r->user;
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -141,7 +141,7 @@ class ApiResurceController extends Controller
 
     public function garden_create(Request $r)
     {
-        $u = auth('api')->user();
+        $u = $r->user;
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -181,7 +181,7 @@ class ApiResurceController extends Controller
 
     public function person_create(Request $r)
     {
-        $u = auth('api')->user();
+        $u = $r->user;
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -300,7 +300,7 @@ class ApiResurceController extends Controller
         }
         if ($is_private) {
 
-            $u = auth('api')->user();
+            $u = $r->user;
             $administrator_id = $u->id;
 
             if ($u == null) {
