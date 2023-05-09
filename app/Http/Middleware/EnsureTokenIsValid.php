@@ -30,8 +30,8 @@ class EnsureTokenIsValid
         }
 
         if ($user_id < 1) {
-            if ($request->$user_id != null) {
-                $user_id = ((int)($request->$user_id));
+            if ($request->user_id != null) {
+                $user_id = ((int)($request->user_id));
             }
         }
 
