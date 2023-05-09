@@ -31,7 +31,7 @@ class EnsureTokenIsValid
 
 
         if($user_id < 1){
-            return Utils::error('Token not found.');             
+            return Utils::error($user_id.'<= Token not found.');             
         }
         $u = Administrator::find($user_id); 
         if ($u == null) {

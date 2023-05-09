@@ -4,10 +4,16 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\MainController;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\RedirectIfAuthenticated;
+use App\Models\Gen;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('generate-class', [MainController::class, 'generate_class']); 
+Route::get('generate-class', [MainController::class, 'generate_class']);
+Route::get('/gen', function () {
+    die(Gen::find($_GET['id'])->do_get());
+})->name("register");
+ 
+
 /* 
 
 Route::get('generate-variables', [MainController::class, 'generate_variables']); 
