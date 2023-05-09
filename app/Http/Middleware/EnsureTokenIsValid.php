@@ -20,23 +20,32 @@ class EnsureTokenIsValid
     {
         $headers = getallheaders();
 
-/*         return Utils::success($headers);  */
+        /*         return Utils::success($headers);  */
 
         $user_id = 0;
-        if($headers !=null){
-            if(isset($headers['User-Id'])){
-                $user_id = ((int)($headers['User-Id']));
+        if ($headers != null) {
+            if (isset($headers['User-Id'])) {
+                $user_id = (($headers['User-Id']));
+            }
+        }
+
+        if ($user_id < 1) {
+            if ($request->$user_id != null) {
+                $user_id = ((int)($request->$user_id));
             }
         }
 
 
-        if($user_id < 1){
-            return Utils::error($user_id.'<= Token not found.');             
+        if ($user_id < 1) {
+            return Utils::error($user_id . '<= Token not found.');
         }
-        $u = Administrator::find($user_id); 
+
+
+
+        $u = Administrator::find($user_id);
         if ($u == null) {
-            return Utils::error('User not found.'); 
-        } 
+            return Utils::error('User not found.');
+        }
         $request->user = $u;
         return $next($request);
     }
