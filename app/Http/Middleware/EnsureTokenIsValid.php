@@ -28,7 +28,7 @@ class EnsureTokenIsValid
                 $user_id = (($headers['User-Id']));
             }
         }
-
+ 
         if ($user_id < 1) {
             if ($request->user_id != null) {
                 $user_id = ((int)($request->user_id));
