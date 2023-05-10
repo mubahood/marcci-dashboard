@@ -36,7 +36,7 @@ class EnsureTokenIsValid
 
 
         if ($user_id < 1) {
-            return Utils::error($user_id . '<= Token not found.');
+            return Utils::error(json_encode($_POST) . '<= Token not found.');
         }
 
 
