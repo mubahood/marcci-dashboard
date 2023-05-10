@@ -34,8 +34,6 @@ class ApiResurceController extends Controller
         $items = [];
 
         foreach (Crop::all() as $key => $crop) {
-
-
             $protocols = CropProtocol::where([
                 'crop_id' => $crop->id
             ])->get();

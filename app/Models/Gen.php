@@ -9,83 +9,83 @@ use Illuminate\Support\Facades\Schema;
 
 class Gen extends Model
 {
-    use HasFactory;
+  use HasFactory;
 
 
 
-    public static function to_json($recs)
-    {
-      $_data = "";
-      foreach ($recs as $v) {
-        $key = trim($v);
-        if (strlen($key) < 2) {
-          continue;
-        }
-        $_data .= "'$key' : $key,<br>";
+  public static function to_json($recs)
+  {
+    $_data = "";
+    foreach ($recs as $v) {
+      $key = trim($v);
+      if (strlen($key) < 2) {
+        continue;
       }
-  
-      return $_data;
+      $_data .= "'$key' : $key,<br>";
     }
 
-    public static function fromJsons($recs = [])
-    {
-        $_data = "";
-        foreach ($recs as $v) {
-            $key = trim($v);
-            if (strlen($key) < 1) {
-                continue;
-            }
-            if ($key == 'id') {
-                $_data .= "obj.{$key} = Utils.int_parse(m['{$key}']);<br>";
-            } else {
-                $_data .= "obj.{$key} = Utils.to_str(m['{$key}'],'');<br>";
-            }
+    return $_data;
+  }
+
+  public static function fromJsons($recs = [])
+  {
+    $_data = "";
+    foreach ($recs as $v) {
+      $key = trim($v);
+      if (strlen($key) < 1) {
+        continue;
+      }
+      if ($key == 'id') {
+        $_data .= "obj.{$key} = Utils.int_parse(m['{$key}']);<br>";
+      } else {
+        $_data .= "obj.{$key} = Utils.to_str(m['{$key}'],'');<br>";
+      }
+    }
+    return $_data;
+  }
+
+  public  function makeVars($tables)
+  {
+
+
+    $_data = "";
+    $i = 0;
+    $done = [];
+    foreach ($tables as $v) {
+      $key = trim($v);
+      if (strlen($key) < 1) {
+        continue;
+      }
+      if (in_array($key, $done)) {
+        continue;
+      }
+      $done[] = $key;
+      $i++;
+      $_data .= "<br>@HiveField({$i})<br>";
+      if ($key == 'id') {
+        $_data .= "int {$key} = 0;<br>";
+      } else {
+        $_data .= "String {$key} = \"\";<br>";
+        if (str_contains($key, '_id')) {
+          $i++;
+          $_data .= "<br>@HiveField({$i})<br>";
+          $_key = str_replace('_id', '_text', $key);
+          $_data .= "String {$_key} = \"\";<br>";
         }
-        return $_data;
+      }
     }
 
-    public  function makeVars($tables)
-    {
+    return $_data;
+  }
 
 
-        $_data = "";
-        $i = 0;
-        $done = []; 
-        foreach ($tables as $v) {
-            $key = trim($v);
-            if (strlen($key) < 1) {
-                continue;
-            }
-            if (in_array($key,$done)) {
-                continue;
-            }
-            $done[] = $key;
-            $i++;
-            $_data .= "<br>@HiveField({$i})<br>";
-            if ($key == 'id') {
-                $_data .= "int {$key} = 0;<br>";
-            } else {
-                $_data .= "String {$key} = \"\";<br>";
-                if (str_contains($key, '_id')) { 
-                    $i++;
-                    $_data .= "<br>@HiveField({$i})<br>";
-                    $_key = str_replace('_id', '_text', $key);
-                    $_data .= "String {$_key} = \"\";<br>";
-                }
-            }
-        }
-
-        return $_data;
-    }
-
-
-    public function do_get()
-    {
-        $tables = Schema::getColumnListing($this->table_name);
-        $generate_vars = $this->makeVars($tables);
-        $fromJson = Gen::fromJsons($tables);
-        $toJson = Gen::to_json($tables); 
-        $x = <<<EOT
+  public function do_get()
+  {
+    $tables = Schema::getColumnListing($this->table_name);
+    $generate_vars = $this->makeVars($tables);
+    $fromJson = Gen::fromJsons($tables);
+    $toJson = Gen::to_json($tables);
+    $x = <<<EOT
   <pre>   
   import 'RespondModel.dart';
   import '../utils/Utils.dart';
@@ -97,7 +97,7 @@ class Gen extends Model
   class $this->class_name {
     
     static int file_id = $this->file_id;
-    static String endPoint = "'{$this->end_point}'";
+    static String endPoint = "{$this->end_point}";
     $generate_vars
   
     static fromJson(dynamic m) {
@@ -110,9 +110,7 @@ class Gen extends Model
     return obj;
   }
   
-    
-  
-  
+     
     static Future&lt;List&lt;$this->class_name&gt;&gt; getLocalData({String where: "1"}) async {
         await Hive.initFlutter();
         if (!Hive.isAdapterRegistered(file_id)) {
@@ -152,7 +150,12 @@ class Gen extends Model
     }
   
     save() async {
-  
+      await Hive.initFlutter();
+      if (!Hive.isAdapterRegistered($this->file_id)) {
+        Hive.registerAdapter({$this->class_name}Adapter());
+      }
+      var box = await Hive.openBox<{$this->class_name}>('{$this->class_name}');
+      await box.put(id, this);
     }
   
     toJson() {
@@ -167,6 +170,6 @@ class Gen extends Model
   </pre>
   EOT;
 
-        return  $x;
-    }
+    return  $x;
+  }
 }

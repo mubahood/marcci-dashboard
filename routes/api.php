@@ -20,17 +20,16 @@ use Illuminate\Support\Facades\Route;
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
     Route::get("gardens", [ApiResurceController::class, "gardens"]); 
     Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
-    Route::get("crops", [ApiResurceController::class, "crops"]);
-    Route::POST("gardens", [ApiResurceController::class, "garden_create"]);  
+    Route::POST("gardens", [ApiResurceController::class, "garden_create"]);   
 });
- 
+Route::get("crops", [ApiResurceController::class, "crops"]); 
 
 
 
 
 
-Route::get("people", [ApiResurceController::class, "people"]);
 Route::POST("users/login", [ApiAuthController::class, "login"]);
+Route::get("people", [ApiResurceController::class, "people"]);
 Route::POST("people", [ApiResurceController::class, "person_create"]);
 Route::get("jobs", [ApiResurceController::class, "jobs"]);
 Route::get('api/{model}', [ApiResurceController::class, 'index']);
