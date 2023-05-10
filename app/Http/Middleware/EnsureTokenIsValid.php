@@ -18,6 +18,9 @@ class EnsureTokenIsValid
      */
     public function handle(Request $request, Closure $next)
     {
+
+        return Utils::error(json_encode($_POST) . '<= Token not found.');
+        
         $headers = getallheaders();
 
         /*         return Utils::success($headers);  */
