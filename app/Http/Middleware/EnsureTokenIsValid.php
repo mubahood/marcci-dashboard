@@ -18,9 +18,6 @@ class EnsureTokenIsValid
      */
     public function handle(Request $request, Closure $next)
     {
-
-        return Utils::error(json_encode($_POST) . '<= Token not found.');
-        
         $headers = getallheaders();
 
         /*         return Utils::success($headers);  */
@@ -33,13 +30,14 @@ class EnsureTokenIsValid
         }
  
         if ($user_id < 1) {
-            $user_id = ((int)($request->get('user_id')));
-  
+            if ($request->user_id != null) {
+                $user_id = ((int)($request->user_id));
+            }
         }
 
 
         if ($user_id < 1) {
-            return Utils::error(json_encode($_POST) . '<= Token not found.');
+            return Utils::error($user_id . '<= Token not found.');
         }
 
 
