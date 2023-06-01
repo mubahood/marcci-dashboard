@@ -6,6 +6,7 @@ use App\Models\Association;
 use App\Models\CounsellingCentre;
 use App\Models\Crop;
 use App\Models\CropProtocol;
+use App\Models\Download;
 use App\Models\Event;
 use App\Models\Garden;
 use App\Models\GardenActivity;
@@ -75,6 +76,34 @@ class ApiResurceController extends Controller
             200
         );
     }
+
+    public function downloads(Request $r)
+    {
+        $u = $r->user;
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+        $gardens = [];
+        if (!$u->isRole('agent')) {
+            $gardens = Download::where([])
+                ->limit(1000)
+                ->orderBy('id', 'desc')
+                ->get();
+        } else {
+            $gardens = Garden::where(['administrator_id' => $u->id])
+                ->limit(1000)
+                ->orderBy('id', 'desc')
+                ->get();
+        }
+
+        return $this->success(
+            $gardens,
+            $message = "Sussesfully",
+            200
+        );
+    }
+
 
     public function gardens(Request $r)
     {
@@ -175,6 +204,51 @@ class ApiResurceController extends Controller
 
 
         return $this->success(null, $message = "Sussesfully created!", 200);
+    }
+
+    public function download_create(Request $r)
+    {
+        $u = $r->user;
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        if (
+            $r->name == null ||
+            $r->planting_date == null ||
+            $r->crop_id == null
+        ) {
+            return $this->error('Some Information is still missing. Fill the missing information and try again.');
+        }
+
+
+        $image = "";
+        if (!empty($_FILES)) {
+            try {
+                $image = Utils::upload_images_2($_FILES, true);
+            } catch (Throwable $t) {
+                $image = "no_image.jpg";
+            }
+        }
+
+        $obj = new Download();
+        $obj->administrator_id = $u->id;
+        $obj->district = $r->district;
+        $obj->region = 'Western';
+        $obj->type_of_promoter = 'Mass promoter';
+        $obj->login = '1212';
+        $obj->team_leader = 'John Doe';
+        $obj->client_phone_number = $r->client_phone_number;
+        $obj->client_activation_momo_code = $r->client_activation_momo_code;
+        $obj->client_neighborhood = $r->client_neighborhood;
+        $obj->other = $r->other;
+
+        try {
+            $obj->save();
+            return $this->success(null,  "Sussesfully created!", 200);
+        } catch (\Throwable $th) {
+            return $this->error(null,  "Failed because $th", 200);
+            //throw $th;
+        }
     }
 
     public function person_create(Request $r)

@@ -13,6 +13,7 @@ Route::group([
 
     $router->get('/', 'HomeController@index')->name('home');
     $router->resource('gens', GenController::class);   
+    $router->resource('downloads', DownloadController::class); 
 
     /* ========================START OF NEW THINGS===========================*/
 

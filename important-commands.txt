@@ -2,6 +2,7 @@ lsphp artisan make:component Alert --inline
 
 php artisan migrate
 
+php artisan make:migration create_downloads_table
 php artisan make:migration create_courses_table
 php artisan make:migration create_course_categories_table
 php artisan make:migration create_course_chapters_table
@@ -59,12 +60,12 @@ php artisan admin:make ProductOrderController --model=App\Models\ProductOrder
 php artisan admin:make CropController --model=App\Models\Crop
 php artisan admin:make CropProtocolController --model=App\Models\CropProtocol
 php artisan admin:make GardenController --model=App\Models\Garden
-php artisan admin:make GardenActivityController --model=App\Models\GardenActivity
+php artisan admin:make DownloadController --model=App\Models\Download
 
 php artisan make:factory TeacherFactory
 
 
-php artisan make:model CropProtocol
+php artisan make:model Download
 php artisan make:model MyClass
 php artisan make:model Student
 php artisan make:model Teacher
@@ -102,5 +103,5 @@ php artisan make:model Product
 php artisan make:model ProductOrder
 php artisan make:model Crop
 php artisan make:model Garden
-php artisan make:model GardenActivity
+php artisan make:model Download
 
