@@ -213,9 +213,9 @@ class ApiResurceController extends Controller
             return $this->error('User not found.');
         }
         if (
-            $r->name == null ||
-            $r->planting_date == null ||
-            $r->crop_id == null
+            $r->district == null ||
+            $r->client_phone_number == null ||
+            $r->client_neighborhood == null
         ) {
             return $this->error('Some Information is still missing. Fill the missing information and try again.');
         }
