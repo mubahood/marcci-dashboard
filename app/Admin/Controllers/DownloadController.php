@@ -3,6 +3,8 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Download;
+use App\Models\Utils;
+use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -15,7 +17,7 @@ class DownloadController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Download';
+    protected $title = 'Downloads';
 
     /**
      * Make a grid builder.
@@ -27,9 +29,21 @@ class DownloadController extends AdminController
         $grid = new Grid(new Download());
 
         $grid->column('id', __('Id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
-        $grid->column('administrator_id', __('Administrator id'));
+        $grid->column('created_at', __('Regisetered'))->display(
+            function ($x) {
+                return Utils::my_date($x);
+            }
+        )->sortable();
+        $grid->column('administrator_id', __('Agent'))
+            ->display(
+                function ($x) {
+                    $u = Administrator::find($x);
+                    if ($u == null) {
+                        return Utils::my_date($x);
+                    }
+                    return $u->name;
+                }
+            )->sortable();
         $grid->column('district', __('District'));
         $grid->column('region', __('Region'));
         $grid->column('type_of_promoter', __('Type of promoter'));
