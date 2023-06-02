@@ -34,22 +34,17 @@ Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
         'u' => $u
     ]));
 
-    $navbar->left(Shortcut::make([
+/*     $navbar->left(Shortcut::make([
         'News post' => 'news-posts/create',
         'Products or Services' => 'products/create',
         'Jobs and Opportunities' => 'jobs/create',
         'Event' => 'events/create',
-    ], 'fa-plus')->title('ADD NEW'));
+    ], 'fa-plus')->title('ADD NEW')); */
     $navbar->left(Shortcut::make([
-        'Person with disability' => 'people/create',
-        'Association' => 'associations/create',
-        'Group' => 'groups/create',
-        'Service provider' => 'service-providers/create',
-        'Institution' => 'institutions/create',
-        'Counselling Centre' => 'counselling-centres/create',
+        'New Agent' => 'agents/create',
     ], 'fa-wpforms')->title('Register new'));
 
-    $navbar->left(new Dropdown());
+/*     $navbar->left(new Dropdown());
 
     $navbar->right(Shortcut::make([
         'How to update your profile' => '',
@@ -61,7 +56,7 @@ Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
         'How to register to contact us' => '',
         'How to register to give a testimonial' => '',
         'How to register to contact counselors' => '',
-    ], 'fa-question')->title('HELP'));
+    ], 'fa-question')->title('HELP')); */
 });
 
 

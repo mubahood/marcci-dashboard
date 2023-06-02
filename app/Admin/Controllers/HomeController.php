@@ -26,7 +26,7 @@ class HomeController extends Controller
     {
         $u = Auth::user();
         $content
-            ->title('MaRCCI - Dashboard')
+            ->title('Ac Global Media - Dashboard')
             ->description('Hello ' . $u->name . "!");
 
         return $content;
