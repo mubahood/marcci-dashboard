@@ -27,7 +27,7 @@ class DownloadController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Download());
-
+        $grid->disableCreateButton();
         $grid->column('id', __('Id'));
         $grid->column('created_at', __('Regisetered'))->display(
             function ($x) {
@@ -52,7 +52,10 @@ class DownloadController extends AdminController
         $grid->column('client_phone_number', __('Client phone number'));
         $grid->column('client_activation_momo_code', __('Client activation momo code'));
         $grid->column('client_neighborhood', __('Client neighborhood'));
-        $grid->column('other', __('Other'));
+        $grid->column('other', __('Verified'))
+            ->dot([
+                'Verified' => 'success'
+            ], 'danger');
 
         return $grid;
     }
@@ -93,16 +96,17 @@ class DownloadController extends AdminController
     {
         $form = new Form(new Download());
 
-        $form->number('administrator_id', __('Administrator id'));
-        $form->textarea('district', __('District'));
-        $form->textarea('region', __('Region'));
-        $form->textarea('type_of_promoter', __('Type of promoter'));
-        $form->textarea('login', __('Login'));
-        $form->textarea('team_leader', __('Team leader'));
-        $form->textarea('client_phone_number', __('Client phone number'));
-        $form->textarea('client_activation_momo_code', __('Client activation momo code'));
-        $form->textarea('client_neighborhood', __('Client neighborhood'));
-        $form->textarea('other', __('Other'));
+
+        $form->display('district', __('District'));
+        $form->display('region', __('Region'));
+        $form->display('client_phone_number', __('Client phone number'));
+        $form->display('client_activation_momo_code', __('Client activation momo code'));
+        $form->display('client_neighborhood', __('Client neighborhood'));
+        $form->radio('other', __('Verified'))
+            ->options([
+                'Verified' => 'Yes',
+                'Pending for verification' => 'No',
+            ]);
 
         return $form;
     }
