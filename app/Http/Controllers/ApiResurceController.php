@@ -137,6 +137,53 @@ class ApiResurceController extends Controller
         );
     }
 
+
+    public function activity_submit(Request $r)
+    {
+        $u = $r->user;
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        if (
+            $r->activity_id == null ||
+            $r->farmer_activity_status == null ||
+            $r->farmer_comment == null
+        ) {
+            return $this->error('Some Information is still missing. Fill the missing information and try again.');
+        }
+
+        $activity = GardenActivity::find($r->activity_id);
+
+        if ($activity == null) {
+            return $this->error('Activity not found.');
+        }
+
+        $image = "";
+        if (!empty($_FILES)) {
+            try {
+                $image = Utils::upload_images_2($_FILES, true);
+            } catch (Throwable $t) {
+                $image = "no_image.jpg";
+            }
+        }
+
+        $activity->photo = $image;
+        $activity->farmer_activity_status = $r->farmer_activity_status;
+        $activity->farmer_comment = $r->farmer_comment;
+        if ($r->activity_date_done != null && strlen($r->activity_date_done) > 2) {
+            $activity->activity_date_done = Carbon::parse($r->activity_date_done);
+            $activity->farmer_has_submitted = 'Yes'; 
+        }
+
+
+        try {
+            $activity->save();
+            return $this->success(null, $message = "Sussesfully created!", 200);
+        } catch (\Throwable $th) {
+            return $this->error('Failed to save activity, becase ' . $th->getMessage() . '');
+        }
+    }
+
     public function garden_create(Request $r)
     {
         $u = $r->user;
