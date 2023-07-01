@@ -162,6 +162,7 @@ class ApiResurceController extends Controller
         if (!empty($_FILES)) {
             try {
                 $image = Utils::upload_images_2($_FILES, true);
+                $image = 'images/' . $image;
             } catch (Throwable $t) {
                 $image = "no_image.jpg";
             }
@@ -205,6 +206,7 @@ class ApiResurceController extends Controller
         if (!empty($_FILES)) {
             try {
                 $image = Utils::upload_images_2($_FILES, true);
+                $image = 'images/' . $image;
             } catch (Throwable $t) {
                 $image = "no_image.jpg";
             }
@@ -244,6 +246,7 @@ class ApiResurceController extends Controller
         if (!empty($_FILES)) {
             try {
                 $image = Utils::upload_images_2($_FILES, true);
+                $image = 'images/' . $image;
             } catch (Throwable $t) {
                 $image = "no_image.jpg";
             }
@@ -291,6 +294,7 @@ class ApiResurceController extends Controller
         if (!empty($_FILES)) {
             try {
                 $image = Utils::upload_images_2($_FILES, true);
+                $image = 'images/' . $image;
             } catch (Throwable $t) {
                 $image = "no_image.jpg";
             }
