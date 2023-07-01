@@ -172,8 +172,10 @@ class ApiResurceController extends Controller
         $activity->farmer_comment = $r->farmer_comment;
         if ($r->activity_date_done != null && strlen($r->activity_date_done) > 2) {
             $activity->activity_date_done = Carbon::parse($r->activity_date_done);
-            $activity->farmer_has_submitted = 'Yes'; 
+            $activity->farmer_submission_date = Carbon::now();
+            $activity->farmer_has_submitted = 'Yes';
         }
+
 
 
         try {
@@ -222,6 +224,53 @@ class ApiResurceController extends Controller
 
 
         return $this->success(null, $message = "Sussesfully created!", 200);
+    }
+
+    public function product_create(Request $r)
+    {
+        $u = $r->user;
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        if (
+            $r->name == null ||
+            $r->category == null ||
+            $r->price == null
+        ) {
+            return $this->error('Some Information is still missing. Fill the missing information and try again.');
+        }
+
+        $image = "";
+        if (!empty($_FILES)) {
+            try {
+                $image = Utils::upload_images_2($_FILES, true);
+            } catch (Throwable $t) {
+                $image = "no_image.jpg";
+            }
+        }
+
+
+
+
+        $obj = new Product();
+        $obj->name = $r->name;
+        $obj->administrator_id = $u->id;
+        $obj->type = $r->category;
+        $obj->details = $r->details;
+        $obj->price = $r->price;
+        $obj->offer_type = $r->offer_type;
+        $obj->state = $r->state;
+        $obj->district_id = $r->district_id;
+        $obj->subcounty_id = 1;
+        $obj->photo = $image;
+
+        try {
+            $obj->save();
+            return $this->success(null, $message = "Product Uploaded Sussesfully!", 200);
+        } catch (\Throwable $th) {
+            return $this->error('Failed to save product, becase ' . $th->getMessage() . '');
+            //throw $th;
+        }
     }
 
     public function person_create(Request $r)
