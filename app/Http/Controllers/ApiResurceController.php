@@ -85,7 +85,9 @@ class ApiResurceController extends Controller
 
         $gardens = [];
         if ($u->isRole('agent')) {
-            $gardens = Garden::where([])
+            $gardens = Garden::where([
+                'user_id' => $u->id
+            ])
                 ->limit(1000)
                 ->orderBy('id', 'desc')
                 ->get();
