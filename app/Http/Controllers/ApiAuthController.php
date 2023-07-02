@@ -108,6 +108,7 @@ class ApiAuthController extends Controller
         return $this->success($u, 'Logged in successfully.');
     }
 
+
     public function register(Request $r)
     {
         if ($r->phone_number == null) {
@@ -121,30 +122,58 @@ class ApiAuthController extends Controller
             return $this->error('Invalid phone number. ' . $phone_number);
         }
 
-        if ($r->first_name == null) {
-            return $this->error('First name is required.');
-        }
-
-        if ($r->last_name == null) {
-            return $this->error('Last name is required.');
-        }
-
         if ($r->password == null) {
             return $this->error('Password is required.');
         }
+
+        if ($r->name == null) {
+            return $this->error('Name is required.');
+        }
+
+
+
+
 
         $u = Administrator::where('phone_number', $phone_number)
             ->orWhere('username', $phone_number)->first();
         if ($u != null) {
             return $this->error('User with same phone number already exists.');
         }
+
         $user = new Administrator();
+
+        $name = $r->name;
+
+        $x = explode(' ', $name);
+
+        if (
+            isset($x[0]) &&
+            isset($x[1])
+        ) {
+            $user->first_name = $x[0];
+            $user->last_name = $x[0];
+        } else {
+            $user->first_name = $name;
+        }
+
         $user->phone_number = $phone_number;
         $user->username = $phone_number;
-        $user->username = $phone_number;
-        $user->name = $r->first_name . " " . $user->last_name;
-        $user->first_name = $r->first_name;
-        $user->last_name = $r->last_name;
+        $user->reg_number = $phone_number;
+        $user->country = $phone_number;
+        $user->occupation = $phone_number;
+        $user->profile_photo_large = '';
+        $user->location_lat = '';
+        $user->location_long = '';
+        $user->facebook = '';
+        $user->twitter = '';
+        $user->linkedin = '';
+        $user->website = '';
+        $user->other_link = '';
+        $user->cv = '';
+        $user->language = '';
+        $user->about = '';
+        $user->address = '';
+        $user->name = $name;
         $user->password = password_hash(trim($r->password), PASSWORD_DEFAULT);
         if (!$user->save()) {
             return $this->error('Failed to create account. Please try again.');
@@ -162,7 +191,7 @@ class ApiAuthController extends Controller
         ]);
 
         $new_user->token = $token;
-        $u->remember_token = $token;
+        $new_user->remember_token = $token;
         return $this->success($new_user, 'Account created successfully.');
     }
 }
