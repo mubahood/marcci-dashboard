@@ -8,6 +8,9 @@ use App\Models\Gen;
 use Illuminate\Support\Facades\Route;
 
 
+Route::get('policy', function(){
+    return view('policy'); 
+});
 Route::get('generate-class', [MainController::class, 'generate_class']);
 Route::get('/gen', function () {
     die(Gen::find($_GET['id'])->do_get());
