@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Models\Location;
 use App\Models\Product;
+use App\Models\Utils;
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -18,7 +19,7 @@ class ProductController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Product';
+    protected $title = 'Products & Services';
 
     /**
      * Make a grid builder.
@@ -29,20 +30,41 @@ class ProductController extends AdminController
     {
         $grid = new Grid(new Product());
 
-        $grid->column('id', __('Id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
-        $grid->column('administrator_id', __('Administrator id'));
-        $grid->column('name', __('Name'));
-        $grid->column('type', __('Type'));
-        $grid->column('photo', __('Photo'));
-        $grid->column('details', __('Details'));
+
+        $grid->column('created_at', __('Posted'))->display(function ($created_at) {
+            return Utils::my_date($created_at);
+        })->sortable();
+        $grid->quickSearch('name')->placeholder('Search by name');
+        $grid->column('photo', __('Photo'))
+            ->display(function ($avatar) {
+                $img = url("storage/" . $avatar);
+                return '<img class="img-fluid " style="border-radius: 10px;"  src="' . $img . '" >';
+            })
+            ->width(80)
+            ->sortable();
+        $grid->column('name', __('Product Name'));
+
+        $grid->column('details', __('Details'))->hide();
         $grid->column('price', __('Price'));
         $grid->column('offer_type', __('Offer type'));
         $grid->column('state', __('State'));
         $grid->column('category', __('Category'));
-        $grid->column('subcounty_id', __('Subcounty id'));
-        $grid->column('district_id', __('District id'));
+        $grid->column('type', __('Contact'));
+        $grid->column('subcounty_id', __('Locations'))->display(function ($subcounty_id) {
+            $this->subcounty = Location::find($subcounty_id);
+            if (!$this->subcounty) {
+                return 'Unknown';
+            }
+            return $this->subcounty->name_text;
+        })->sortable();
+
+        $grid->column('administrator_id', __('Posted By'))->display(function ($administrator_id) {
+            $this->administrator = Administrator::find($administrator_id);
+            if (!$this->administrator) {
+                return 'Unknown';
+            }
+            return $this->administrator->name;
+        })->sortable();
 
         return $grid;
     }
@@ -83,8 +105,6 @@ class ProductController extends AdminController
     protected function form()
     {
         $form = new Form(new Product());
-
-
 
         if (
             (Auth::user()->isRole('staff')) ||
@@ -137,7 +157,7 @@ class ProductController extends AdminController
             ->options(Location::get_sub_counties_array());
 
 
-        $form->quill('details', __('Details'))->rules('required');
+        $form->text('details', __('Details'))->rules('required');
 
         return $form;
     }

@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\GardenActivity;
+use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -15,7 +16,7 @@ class GardenActivityController extends AdminController
      *
      * @var string
      */
-    protected $title = 'GardenActivity';
+    protected $title = 'Garden Activities';
 
     /**
      * Make a grid builder.
@@ -25,28 +26,61 @@ class GardenActivityController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new GardenActivity());
+        $grid->disableBatchActions();
 
-        $grid->column('id', __('Id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
-        $grid->column('garden_id', __('Garden id'));
-        $grid->column('user_id', __('User id'));
-        $grid->column('crop_activity_id', __('Crop activity id'));
-        $grid->column('activity_name', __('Activity name'));
+        $grid->column('garden_id', __('Garden'))->display(function ($garden_id) {
+            $this->garden = \App\Models\Garden::find($garden_id);
+            if (!$this->garden) {
+                return 'Unknown';
+            }
+            return $this->garden->name;
+        })->sortable()->hide();
+        $grid->column('user_id', __('User'))->display(function ($garden_id) {
+            $this->garden = \App\Models\User::find($garden_id);
+            if (!$this->garden) {
+                return 'Unknown';
+            }
+            return $this->garden->name;
+        })->sortable();
+        $grid->quickSearch('activity_name')->placeholder('Search by activity name');
+        $grid->column('activity_name', __('Activity'))->sortable();
         $grid->column('activity_description', __('Activity description'));
-        $grid->column('activity_date_to_be_done', __('Activity date to be done'));
-        $grid->column('activity_due_date', __('Activity due date'));
-        $grid->column('activity_date_done', __('Activity date done'));
-        $grid->column('farmer_has_submitted', __('Farmer has submitted'));
+        $grid->column('activity_date_to_be_done', __('Date to be done'))
+            ->display(function ($created_at) {
+                return Utils::my_date($created_at);
+            })
+            ->sortable();
+        $grid->column('activity_due_date', __('Due date'))
+            ->display(function ($created_at) {
+                return Utils::my_date($created_at);
+            })
+            ->sortable();
+        $grid->column('farmer_has_submitted', __('Farmer Submitted'))->label();
+        $grid->column('activity_date_done', __('Activity Date Done'))
+            ->display(function ($created_at) {
+                if ($created_at == null) {
+                    return 'Not done';
+                }
+                return Utils::my_date($created_at);
+            })
+            ->sortable();
         $grid->column('farmer_activity_status', __('Farmer activity status'));
         $grid->column('farmer_submission_date', __('Farmer submission date'));
         $grid->column('farmer_comment', __('Farmer comment'));
-        $grid->column('agent_id', __('Agent id'));
-        $grid->column('agent_names', __('Agent names'));
-        $grid->column('agent_has_submitted', __('Agent has submitted'));
-        $grid->column('agent_activity_status', __('Agent activity status'));
-        $grid->column('agent_comment', __('Agent comment'));
-        $grid->column('agent_submission_date', __('Agent submission date'));
+        $grid->column('agent_id', __('Agent'))->hide();
+        $grid->column('agent_names', __('Agent names'))->hide();
+        $grid->column('agent_has_submitted', __('Agent has submitted'))->hide();
+        $grid->column('agent_activity_status', __('Agent activity status'))->hide();
+        $grid->column('agent_comment', __('Agent comment'))->hide();
+        $grid->column('agent_submission_date', __('Agent submission date'))->hide();
+
+        $grid->column('crop_activity_id', __('Crop activity'))->hide();
+
+        $grid->column('created_at', __('Created'))
+            ->display(function ($created_at) {
+                return Utils::my_date($created_at);
+            })
+            ->sortable();
 
         return $grid;
     }

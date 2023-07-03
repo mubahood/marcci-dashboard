@@ -31,13 +31,13 @@ class CropProtocolController extends AdminController
         $grid->model()->orderBy('step', 'asc');
         $grid->column('step', __('STEP'))->sortable();
         $grid->column('name', __('Activity'));
-        $grid->column('is_before_planting', __('Is before planting'));
-        $grid->column('is_activity_required', __('Is activity required'));
-        $grid->column('days_before_planting', __('Days before planting'));
-        $grid->column('days_after_planting', __('Days after planting'));
-        $grid->column('acceptable_timeline', __('Acceptable timeline'));
-        $grid->column('value', __('Value'));
-        $grid->column('details', __('Details'));
+        $grid->column('is_before_planting', __('Is before planting'))->sortable();
+        $grid->column('is_activity_required', __('Is activity required'))->sortable();
+        $grid->column('days_before_planting', __('Days before planting'))->sortable();
+        $grid->column('days_after_planting', __('Days after planting'))->sortable();
+        $grid->column('acceptable_timeline', __('Acceptable timeline'))->sortable();
+        $grid->column('value', __('Value'))->sortable();
+        $grid->column('details', __('Details'))->hide();
 
         return $grid;
     }

@@ -29,27 +29,35 @@ class ServiceProviderController extends AdminController
     {
         $grid = new Grid(new ServiceProvider());
 
-        $grid->column('id', __('Id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
-        $grid->column('administrator_id', __('Administrator id'));
-        $grid->column('name', __('Name'));
-        $grid->column('about', __('About'));
+        $grid->column('id', __('ID'))->sortable();
+        $grid->column('name', __('Name'))->sortable();
+        $grid->column('about', __('About'))->hide();
         $grid->column('address', __('Address'));
         $grid->column('parish', __('Parish'));
         $grid->column('village', __('Village'));
         $grid->column('phone_number', __('Phone number'));
         $grid->column('email', __('Email'));
-        $grid->column('district_id', __('District id'));
-        $grid->column('subcounty_id', __('Subcounty id'));
+        $grid->column('district_id', __('District'))->display(function ($district_id) {
+            $this->district = Location::find($district_id);
+            if (!$this->district) {
+                return 'Unknown';
+            }
+            return $this->district->name;
+        })->sortable();
+        $grid->column('subcounty_id', __('Subcounty id'))->display(function ($district_id) {
+            $this->district = Location::find($district_id);
+            if (!$this->district) {
+                return 'Unknown';
+            }
+            return $this->district->name_text;
+        })->sortable();
         $grid->column('website', __('Website'));
-        $grid->column('phone_number_2', __('Phone number 2'));
-        $grid->column('services_offered', __('Services offered'));
-        $grid->column('photo', __('Photo'));
-        $grid->column('gps_latitude', __('Gps latitude'));
-        $grid->column('gps_longitude', __('Gps longitude'));
-        $grid->column('status', __('Status'));
-        $grid->column('deleted_at', __('Deleted at'));
+        $grid->column('phone_number_2', __('Phone number 2'))->hide();
+        $grid->column('services_offered', __('Services offered'))->hide();
+        $grid->column('photo', __('Photo'))->hide();
+        $grid->column('gps_latitude', __('Gps latitude'))->hide();
+        $grid->column('gps_longitude', __('Gps longitude'))->hide();
+        $grid->column('status', __('Status'))->hide();
 
         return $grid;
     }
@@ -145,12 +153,12 @@ class ServiceProviderController extends AdminController
             ->rules('required');
         $form->text('gps_latitude', __('Business Gps latitude'));
         $form->text('gps_longitude', __('Business Gps longitude'));
-        $form->image('photo', __('Business logo')); 
+        $form->image('photo', __('Business logo'));
         $form->quill('about', __('About business'))->rules('required');
         $form->disableCreatingCheck();
         $form->disableEditingCheck();
         $form->disableReset();
-        $form->disableViewCheck();  
+        $form->disableViewCheck();
 
         return $form;
     }

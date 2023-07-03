@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Models\NewsPost;
 use App\Models\PostCategory;
+use App\Models\User;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -27,11 +28,27 @@ class NewsPostController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new NewsPost());
-
-        $grid->column('created_at', __('Date'));
-        $grid->column('title', __('Title'));
-        $grid->column('administrator_id', __('Posted by'));
-        $grid->column('post_category_id', __('Category'));
+        $grid->disableBatchActions();
+        $grid->column('created_at', __('Date'))->display(function ($created_at) {
+            return date('d M Y', strtotime($created_at));
+        })->sortable();
+        $grid->column('title', __('Title'))->sortable();
+        $grid->column('administrator_id', __('Posted by'))
+            ->display(function ($administrator_id) {
+                $this->administrator = User::find($administrator_id);
+                if (!$this->administrator) {
+                    return 'Unknown';
+                }
+                return $this->administrator->name;
+            })->sortable();
+        $grid->column('post_category_id', __('Category'))
+            ->display(function ($administrator_id) {
+                $this->administrator = PostCategory::find($administrator_id);
+                if (!$this->administrator) {
+                    return 'Unknown';
+                }
+                return $this->administrator->name;
+            })->sortable();
         $grid->column('views', __('Views'));
 
         return $grid;

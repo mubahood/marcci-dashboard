@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Models\Crop;
 use App\Models\Garden;
+use App\Models\Utils;
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -29,16 +30,27 @@ class GardenController extends AdminController
     {
         $grid = new Grid(new Garden());
 
-        $grid->column('id', __('Id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
-        $grid->column('name', __('Name'));
-        $grid->column('crop_name', __('Crop name'));
-        $grid->column('status', __('Status'));
-        $grid->column('production_scale', __('Production scale'));
-        $grid->column('planting_date', __('Planting date'));
-        $grid->column('land_occupied', __('Land occupied'));
-        $grid->column('crop_id', __('Crop id'));
+        $grid->disableBatchActions();
+        $grid->column('created_at', __('Created'))
+            ->display(function ($created_at) {
+                return Utils::my_date($created_at);
+            })
+            ->sortable();
+        $grid->column('name', __('Garden Name'))->sortable();
+        $grid->column('crop_id', __('Crop'))->display(function ($crop_id) {
+            $this->crop = Crop::find($crop_id);
+            if (!$this->crop) {
+                return 'Unknown';
+            }
+            return $this->crop->name;
+        })->sortable();
+        $grid->column('production_scale', __('Production Scale'));
+        $grid->column('planting_date', __('Planting date'))
+            ->display(function ($created_at) {
+                return Utils::my_date($created_at);
+            })
+            ->sortable();
+        $grid->column('land_occupied', __('Land Occupied (Acres)'));
         $grid->column('details', __('Details'));
 
         return $grid;
@@ -119,7 +131,7 @@ class GardenController extends AdminController
         $form->select('production_scale', __('Production scale'))
             ->options([
                 'Small scale' => 'Small scale',
-                'Medium scale' => 'Medium scale', 
+                'Medium scale' => 'Medium scale',
                 'Large scale' => 'Large scale',
             ]);
 
