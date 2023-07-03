@@ -47,12 +47,27 @@ class AuthController extends Controller
      */
     public function postLogin(Request $request)
     {
+
         if ($this->guard()->attempt([
-            'email' => 'mubs0x@gmail.com',
-            'password' => '4321',
+            'username' => $request->username,
+            'password' => $request->password,
         ], true)) {
-            return $this->sendLoginResponse($request);
+            if ($this->guard()->attempt([
+                'email' => $request->username,
+                'password' => $request->password,
+            ], true)) {
+                if ($this->guard()->attempt([
+                    'phone_number' => $request->username,
+                    'password' => $request->password,
+                ], true)) {
+                    return $this->sendLoginResponse($request);
+                }
+            }
         }
+
+        return back()
+            ->withErrors(['password' => 'Wrong credentials.'])
+            ->withInput();
 
 
         $r = $request;
@@ -102,7 +117,7 @@ class AuthController extends Controller
                 'email' => $_POST['email']
             ])->orwhere([
                 'username' => $_POST['email']
-            ])->first(); 
+            ])->first();
 
 
             if ($u != null) {
@@ -247,7 +262,7 @@ class AuthController extends Controller
         Utils::checkEventRegustration();
 
         $form = new Form(new $class());
-    
+
         $form->divider('Bio information');
 
         $form->radio('title', 'Title')
@@ -271,10 +286,10 @@ class AuthController extends Controller
         $form->date('dob', 'Date of birth');
 
         $form->textarea('intro', 'Breifly Introduce yourself')->rules('required')
-            ->help('Write a very short bio about yourself'); 
+            ->help('Write a very short bio about yourself');
 
- 
- 
+
+
 
         $form->select('country', 'Nationality')
             ->help('Your country of origin')
@@ -282,15 +297,15 @@ class AuthController extends Controller
 
 
         $form->text('occupation', 'Occupation');
- 
+
 
 
         $form->image('avatar', 'Porfile photo');
         $form->file('cv', 'CV File')->rules('mimes:doc,docx,pdf');
 
 
- 
- 
+
+
         $form->divider('Contact information');
         $form->text('address', 'Current Address')->help('Leave this field empty if you don\'t want it to appear on your profile.');
         $form->mobile('phone_number', 'Phone number')->options(['mask' => '+999 9999 99999'])->help('Leave this field empty if you don\'t want it to appear on your profile.');
