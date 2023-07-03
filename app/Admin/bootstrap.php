@@ -29,7 +29,7 @@ Utils::system_boot();
 
 Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
 
-    $u = Auth::user();
+/*     $u = Auth::user();
     $navbar->left(view('admin.search-bar', [
         'u' => $u
     ]));
@@ -61,7 +61,7 @@ Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
         'How to register to contact us' => '',
         'How to register to give a testimonial' => '',
         'How to register to contact counselors' => '',
-    ], 'fa-question')->title('HELP'));
+    ], 'fa-question')->title('HELP')); */
 });
 
 
