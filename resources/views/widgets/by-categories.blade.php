@@ -5,7 +5,7 @@ use App\Models\Utils;
     <!--begin::Header-->
     <div class="d-flex justify-content-between px-3 pt-2 px-md-4 border-bottom">
         <h4 style="line-height: 1; margrin: 0; " class="fs-22 fw-800">
-            Persons with Disabilities by Categories
+            Gardens By Crop
         </h4>
     </div>
     <div class="card-body py-2 py-md-3">
@@ -20,7 +20,7 @@ use App\Models\Utils;
             type: 'pie',
             data: {
                 datasets: [{
-                    data: [370, 57, 101, 210, 259, 712, 100],
+                    data: [2, 1],
                     backgroundColor: [
                         '#8EFCDF',
                         '#F43DE3',
@@ -36,13 +36,9 @@ use App\Models\Utils;
                     label: 'Dataset 1'
                 }],
                 labels: [
-                    'Vision Impairment - 370',
-                    'Deaf or hard of hearing - 57',
-                    'Mental health conditions - 101',
-                    'Intellectual disability - 210',
-                    'Acquired brain injury - 259',
-                    'Physical disability - 712',
-                    'Autism spectrum disorder - 100'
+                    'Cow Pies - 2',
+                    'Sorghum - 1'
+                   
                 ],
             },
             options: {
@@ -54,7 +50,7 @@ use App\Models\Utils;
                 },
                 title: {
                     display: false,
-                    text: 'Persons with Disabilities by Categories'
+                    text: 'Gardens By'
                 },
                 animation: {
                     animateScale: true,
