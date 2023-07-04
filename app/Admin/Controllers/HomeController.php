@@ -60,7 +60,7 @@ class HomeController extends Controller
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
                     'title' => 'Garden Activities',
-                    'sub_title' => rand(100, 400) . ' submitted.',
+                    'sub_title' => 'From System',
                     'number' => number_format(GardenActivity::count()),
                     'link' => 'javascript:;'
                 ]));
@@ -69,7 +69,7 @@ class HomeController extends Controller
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
                     'title' => 'Production Guides',
-                    'sub_title' => rand(100, 400) . ' mobile app, ' . rand(100, 300) . ' web browser.',
+                    'sub_title' => 'From system',
                     'number' => number_format(Crop::count()),
                     'link' => 'javascript:;'
                 ]));
