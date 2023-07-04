@@ -118,6 +118,7 @@ class GardenController extends AdminController
             ->options(Crop::all()->pluck('name', 'id'))->rules('required');
 
         $form->text('name', __('Garden Name'))->rules('required');
+        $form->image('photo', __('Garden photo'));
 
 
         if ($form->isEditing()) {
