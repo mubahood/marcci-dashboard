@@ -11,7 +11,7 @@ return [
     | login page.
     |
     */
-    'name' => 'MaRCCI - Admin',
+    'name' => 'Mobi Save',
 
     /*
     |--------------------------------------------------------------------------
@@ -22,7 +22,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo' => '<b>MaRCCI</b> admin',
+    'logo' => '<b>Mobi Save</b> admin',
 
     /*
     |--------------------------------------------------------------------------
@@ -34,7 +34,7 @@ return [
     | '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo-mini' => '<b>MaRCCI</b>',
+    'logo-mini' => '<b>Mobi Save</b>',
 
     /*
     |--------------------------------------------------------------------------
