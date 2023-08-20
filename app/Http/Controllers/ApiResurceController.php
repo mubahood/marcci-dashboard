@@ -15,6 +15,7 @@ use App\Models\Job;
 use App\Models\NewsPost;
 use App\Models\Person;
 use App\Models\Product;
+use App\Models\Sacco;
 use App\Models\ServiceProvider;
 use App\Models\Utils;
 use App\Traits\ApiResponser;
@@ -28,6 +29,15 @@ class ApiResurceController extends Controller
 {
 
     use ApiResponser;
+
+    public function saccos(Request $r)
+    {
+        return $this->success(
+            Sacco::where([])->orderby('id', 'desc')->get(),
+            $message = "Sussesfully",
+            200
+        );
+    }
 
     public function crops(Request $r)
     {

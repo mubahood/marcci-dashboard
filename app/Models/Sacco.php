@@ -24,7 +24,7 @@ class Sacco extends Model
             $u->save();
         });
         self::creating(function ($m) {
-            
+
             return $m;
         });
 

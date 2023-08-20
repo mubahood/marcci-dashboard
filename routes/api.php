@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get("saccos", [ApiResurceController::class, "saccos"]);
+
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
     Route::get("gardens", [ApiResurceController::class, "gardens"]);
     Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
