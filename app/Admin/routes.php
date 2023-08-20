@@ -11,14 +11,16 @@ Route::group([
     'as'            => config('admin.route.prefix') . '.',
 ], function (Router $router) {
 
+
     $router->get('/', 'HomeController@index')->name('home');
-    $router->resource('gens', GenController::class);   
+    $router->resource('gens', GenController::class);
+    $router->resource('saccos', SaccoController::class);
 
     /* ========================START OF NEW THINGS===========================*/
 
     $router->resource('crops', CropController::class);
     $router->resource('crop-protocols', CropProtocolController::class);
-    $router->resource('gardens', GardenController::class); 
+    $router->resource('gardens', GardenController::class);
     $router->resource('garden-activities', GardenActivityController::class);
 
     /* ========================END OF NEW THINGS=============================*/
