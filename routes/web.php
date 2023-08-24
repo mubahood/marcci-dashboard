@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('policy', function(){
     return view('policy'); 
 });
+
+Route::get('/gen-form', function () {
+    die(Gen::find($_GET['id'])->make_forms());
+})->name("gen-form");
+
+
 Route::get('generate-class', [MainController::class, 'generate_class']);
 Route::get('/gen', function () {
     die(Gen::find($_GET['id'])->do_get());
