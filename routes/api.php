@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get("saccos", [ApiResurceController::class, "saccos"]);
+Route::get("sacco-join-request", [ApiResurceController::class, "sacco_join_request"]);
 
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
     Route::get("gardens", [ApiResurceController::class, "gardens"]);

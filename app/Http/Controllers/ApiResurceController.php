@@ -39,6 +39,28 @@ class ApiResurceController extends Controller
         );
     }
 
+    public function sacco_join_request(Request $r)
+    {
+        $administrator_id = Utils::get_user_id($r);
+        $u = Administrator::find($administrator_id);
+
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $sacco = Sacco::find($r->sacco_id);
+        if ($sacco == null) {
+            return $this->error('Sacco not found.');
+        }
+
+        $sacco->sacco_join_status = 'Pending';
+        $sacco->save();
+
+        return $this->success(
+            'Sussesfully',
+            $message = "Request submitted successfully.",
+        );
+    }
+
     public function crops(Request $r)
     {
         $items = [];
