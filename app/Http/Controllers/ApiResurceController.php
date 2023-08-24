@@ -51,9 +51,9 @@ class ApiResurceController extends Controller
         if ($sacco == null) {
             return $this->error('Sacco not found.');
         }
-
-        $sacco->sacco_join_status = 'Pending';
-        $sacco->save();
+        $user = Administrator::find($u->id);
+        $user->sacco_join_status = 'Pending';
+        $user->save();
         return $this->success(
             'Sussesfully',
             $message = "Request submitted successfully.",
