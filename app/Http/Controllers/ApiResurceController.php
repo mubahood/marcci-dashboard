@@ -41,8 +41,8 @@ class ApiResurceController extends Controller
 
     public function sacco_join_request(Request $r)
     {
-        $administrator_id = Utils::get_user_id($r);
-        $u = Administrator::find($administrator_id);
+
+        $u = auth('api')->user();
 
         if ($u == null) {
             return $this->error('User not found.');
@@ -54,7 +54,6 @@ class ApiResurceController extends Controller
 
         $sacco->sacco_join_status = 'Pending';
         $sacco->save();
-
         return $this->success(
             'Sussesfully',
             $message = "Request submitted successfully.",
