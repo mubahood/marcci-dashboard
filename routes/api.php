@@ -21,6 +21,8 @@ Route::get("saccos", [ApiResurceController::class, "saccos"]);
 Route::post("sacco-join-request", [ApiResurceController::class, "sacco_join_request"]);
 
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
+    Route::get("sacco-members", [ApiResurceController::class, "sacco_members"]);
+
     Route::get("gardens", [ApiResurceController::class, "gardens"]);
     Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
     Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
