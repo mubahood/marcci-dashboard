@@ -155,7 +155,18 @@ class ApiResurceController extends Controller
         $activity = GardenActivity::find($r->activity_id);
 
         if ($activity == null) {
-            return $this->error('Activity not found.');
+            $graden = Garden::find($r->garden_id);
+            if ($graden == null) {
+                return $this->error('Garden not found.');
+            }
+            $activity = new GardenActivity();
+            $activity->garden_id = $r->garden_id;
+            $activity->user_id = $u->id;
+            $activity->crop_activity_id = 1;
+            $activity->activity_name = $r->activity_name;
+            $activity->crop_id = $graden->crop_id;
+            $activity->activity_date = Carbon::now();
+            $activity->activity_name = $graden->name;
         }
 
         $image = "";
