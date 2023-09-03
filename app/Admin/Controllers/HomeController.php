@@ -29,7 +29,7 @@ class HomeController extends Controller
     {
         $u = Auth::user();
         $content
-            ->title('MaRCCI - Dashboard')
+            ->title('NaRO - Dashboard')
             ->description('Hello ' . $u->name . "!");
 
 
@@ -85,14 +85,13 @@ class HomeController extends Controller
             });
         });
         $content->row(function (Row $row) {
-            
-        
+
+
             $row->column(6, function (Column $column) {
-                $sorghum_count = Garden::where('crop_id',2)->count();
-                $cow_peas = Garden::where('crop_id',1)->count();
+                $sorghum_count = Garden::where('crop_id', 2)->count();
+                $cow_peas = Garden::where('crop_id', 1)->count();
 
-                $column->append(view('widgets.by-categories', compact('sorghum_count','cow_peas')));
-
+                $column->append(view('widgets.by-categories', compact('sorghum_count', 'cow_peas')));
             });
             $row->column(6, function (Column $column) {
                 $column->append(view('widgets.faqs', []));
