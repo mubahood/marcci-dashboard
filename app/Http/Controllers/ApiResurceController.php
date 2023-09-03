@@ -164,7 +164,7 @@ class ApiResurceController extends Controller
             $activity->user_id = $u->id;
             $activity->crop_activity_id = 1;
             $activity->activity_name = $r->activity_name;
-            $activity->crop_id = $graden->crop_id;
+  
             $activity->activity_date = Carbon::now();
             $activity->activity_name = $graden->name;
         }
