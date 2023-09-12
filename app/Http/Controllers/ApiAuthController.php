@@ -126,10 +126,7 @@ class ApiAuthController extends Controller
             return $this->error('Password is required.');
         }
 
-        if ($r->name == null) {
-            return $this->error('Name is required.');
-        }
-
+    
         $u = Administrator::where('phone_number', $phone_number)
             ->orWhere('username', $phone_number)->first();
         if ($u != null) {
@@ -155,9 +152,10 @@ class ApiAuthController extends Controller
         $user->phone_number = $phone_number;
         $user->username = $r->username;
         $user->email = $r->email;
-        $user->last_name = $last_name;
-        $user->first_name = $first_name;
+        $user->last_name = $r->last_name;
+        $user->first_name =  $r->first_name;
         $user->gender = $r->gender;
+        $user->name = $r->last_name . ' ' . $r->first_name;
         $user->district_sub_county = $r->district_sub_county;
         $user->village = $r->village;
         $user->password = password_hash(trim($r->password), PASSWORD_DEFAULT);
