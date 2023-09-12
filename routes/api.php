@@ -26,13 +26,18 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
     Route::POST("garden-activities", [ApiResurceController::class, "activity_submit"]);
 });
 Route::get("crops", [ApiResurceController::class, "crops"]);
-
-
-
-
-
 Route::POST("users/login", [ApiAuthController::class, "login"]);
 Route::POST("users/register", [ApiAuthController::class, "register"]);
+
+
+
+
+
+
+
+
+
+
 Route::get("people", [ApiResurceController::class, "people"]);
 Route::POST("people", [ApiResurceController::class, "person_create"]);
 Route::get("jobs", [ApiResurceController::class, "jobs"]);

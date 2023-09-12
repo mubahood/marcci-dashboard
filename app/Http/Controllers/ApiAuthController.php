@@ -55,7 +55,7 @@ class ApiAuthController extends Controller
             return $this->error('Username is required.');
         }
 
-    if ($r->password == null) {
+        if ($r->password == null) {
             return $this->error('Password is required.');
         }
 
@@ -130,10 +130,6 @@ class ApiAuthController extends Controller
             return $this->error('Name is required.');
         }
 
-
-
-
-
         $u = Administrator::where('phone_number', $phone_number)
             ->orWhere('username', $phone_number)->first();
         if ($u != null) {
@@ -157,23 +153,13 @@ class ApiAuthController extends Controller
         }
 
         $user->phone_number = $phone_number;
-        $user->username = $phone_number;
-        $user->reg_number = $phone_number;
-        $user->country = $phone_number;
-        $user->occupation = $phone_number;
-        $user->profile_photo_large = '';
-        $user->location_lat = '';
-        $user->location_long = '';
-        $user->facebook = '';
-        $user->twitter = '';
-        $user->linkedin = '';
-        $user->website = '';
-        $user->other_link = '';
-        $user->cv = '';
-        $user->language = '';
-        $user->about = '';
-        $user->address = '';
-        $user->name = $name;
+        $user->username = $r->username;
+        $user->email = $r->email;
+        $user->last_name = $last_name;
+        $user->first_name = $first_name;
+        $user->gender = $r->gender;
+        $user->district_sub_county = $r->district_sub_county;
+        $user->village = $r->village;
         $user->password = password_hash(trim($r->password), PASSWORD_DEFAULT);
         if (!$user->save()) {
             return $this->error('Failed to create account. Please try again.');
@@ -193,5 +179,12 @@ class ApiAuthController extends Controller
         $new_user->token = $token;
         $new_user->remember_token = $token;
         return $this->success($new_user, 'Account created successfully.');
+    }
+
+    
+    public function logout()
+    {
+        auth('api')->logout();
+        return $this->success(null, 'Logged out successfully.');
     }
 }
