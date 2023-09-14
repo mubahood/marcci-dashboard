@@ -36,8 +36,6 @@ php artisan admin:make ParticipantController --model=App\\Participant
 
 php artisan admin:controller --model=App\FormSr4
 php artisan admin:make FormSr4Controller --model=App\FormSr4
-
- 
 php artisan admin:make CourseController --model=App\\Models\\Course
 php artisan admin:make ParticipantController --model=App\\Models\\Participant
 php artisan admin:make MembersController --model=App\Models\User
@@ -59,7 +57,10 @@ php artisan admin:make ProductOrderController --model=App\Models\ProductOrder
 php artisan admin:make CropController --model=App\Models\Crop
 php artisan admin:make CropProtocolController --model=App\Models\CropProtocol
 php artisan admin:make GardenController --model=App\Models\Garden
-php artisan admin:make GardenActivityController --model=App\Models\GardenActivity
+php artisan admin:make RegistrationController --model=App\Models\Registration
+
+ --model=app\
+
 
 php artisan make:factory TeacherFactory
 

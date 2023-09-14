@@ -156,7 +156,13 @@ class ApiAuthController extends Controller
         $user->first_name =  $r->first_name;
         $user->gender = $r->gender;
         $user->name = $r->last_name . ' ' . $r->first_name;
-        $user->district_sub_county = $r->district_sub_county;
+        $user->date_of_birth = $r->date_of_birth;
+        $user->national_id = $r->national_id;
+        $user->region = $r->region;
+        $user->district = $r->district;
+        $user->county = $r->county;
+        $user->sub_county = $r->sub_county;
+        $user->avatar = $r->avatar;   
         $user->village = $r->village;
         $user->password = password_hash(trim($r->password), PASSWORD_DEFAULT);
         if (!$user->save()) {

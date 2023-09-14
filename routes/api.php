@@ -3,6 +3,8 @@
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiResurceController;
 use App\Http\Middleware\EnsureTokenIsValid;
+use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\CropController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +30,8 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
 Route::get("crops", [ApiResurceController::class, "crops"]);
 Route::POST("users/login", [ApiAuthController::class, "login"]);
 Route::POST("users/register", [ApiAuthController::class, "register"]);
+Route::resource('registration', RegistrationController::class);
+Route::resource('crops', CropController::class);
 
 
 

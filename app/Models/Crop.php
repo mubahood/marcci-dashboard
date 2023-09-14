@@ -10,12 +10,18 @@ class Crop extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'photo',
+        'details',
+    ];
+
     public static function boot()
     {
         parent::boot();
-        self::deleting(function ($m) {
-            throw new Exception("Cannot delete this record.", 1);
-        });
+        // self::deleting(function ($m) {
+        //     throw new Exception("Cannot delete this record.", 1);
+        // });
     }
 
     public function activities()

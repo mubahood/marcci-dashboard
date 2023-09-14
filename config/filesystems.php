@@ -60,6 +60,7 @@ return [
             'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
         ],
+        
     ],
 
 
@@ -76,6 +77,7 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        public_path('images') => storage_path('app/images'),
     ],
 
 ];

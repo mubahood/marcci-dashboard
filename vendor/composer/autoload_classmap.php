@@ -110,6 +110,7 @@ return array(
     'App\\Models\\PostCategory' => $baseDir . '/app/Models/PostCategory.php',
     'App\\Models\\Product' => $baseDir . '/app/Models/Product.php',
     'App\\Models\\ProductOrder' => $baseDir . '/app/Models/ProductOrder.php',
+    'App\\Models\\Registration' => $baseDir . '/app/Models/Registration.php',
     'App\\Models\\ServiceProvider' => $baseDir . '/app/Models/ServiceProvider.php',
     'App\\Models\\TrafficRecord' => $baseDir . '/app/Models/TrafficRecord.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
