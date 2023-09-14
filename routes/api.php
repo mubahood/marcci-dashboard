@@ -5,6 +5,9 @@ use App\Http\Controllers\ApiResurceController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\CropController;
+use App\Http\Controllers\GardenController;
+use App\Http\Controllers\GardenActivityController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,11 +23,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
-    Route::get("gardens", [ApiResurceController::class, "gardens"]);
+    Route::get("garden", [ApiResurceController::class, "gardens"]);
     Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
     Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
     Route::POST("gardens", [ApiResurceController::class, "garden_create"]);
-    Route::POST("products", [ApiResurceController::class, "product_create"]);
+    Route::POST("product", [ApiResurceController::class, "product_create"]);
     Route::POST("garden-activities", [ApiResurceController::class, "activity_submit"]);
 });
 Route::get("crops", [ApiResurceController::class, "crops"]);
@@ -32,6 +35,13 @@ Route::POST("users/login", [ApiAuthController::class, "login"]);
 Route::POST("users/register", [ApiAuthController::class, "register"]);
 Route::resource('registration', RegistrationController::class);
 Route::resource('crops', CropController::class);
+Route::resource('gardens', GardenController::class);
+Route::resource('garden_activities', GardenActivityController::class);
+Route::resource('products', ProductController::class);
+
+
+
+
 
 
 

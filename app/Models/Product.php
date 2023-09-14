@@ -9,6 +9,19 @@ class Product extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'photo', 
+        'name', 
+        'details', 
+        'price', 
+        'offer_type',
+        'state', 
+        'category', 
+        'type', 
+        'subcounty_id',
+        'administrator_id'
+    ];
+
     public function getSubcountyTextAttribute()
     {
         $d = Location::find($this->subcounty_id);

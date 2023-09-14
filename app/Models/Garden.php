@@ -11,6 +11,17 @@ class Garden extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'photo',
+        'user_id',
+        'crop_id',
+        'production_scale',
+        'planting_date',
+        'land_occupied',
+        'details',
+    ];
+
     public static function boot()
     {
         parent::boot();
