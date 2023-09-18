@@ -103,7 +103,7 @@ class RegistrationController extends AdminController
             });
 
             $grid->column('user_id', __('Applicant'))->display(function ($user_id) {
-                return User::find($user_id)->name;
+                return User::find($user_id)->name ?? '_';
             });
 
             $grid->column('category', __('Category'));
