@@ -29,12 +29,15 @@
 </head>
 <body class="hold-transition login-page" style="background: url({{ asset('assets/images/gnut.jpg') }}) no-repeat;background-size: cover;">
 <div class="login-box">
-  <div class="login-logo">
-    <a href="{{ admin_url('/') }}"><b>{{config('admin.name')}}</b></a>
-  </div>
   <!-- /.login-logo -->
-  <div class="login-box-body">
-    <p class="login-box-msg">{{ trans('admin.login') }}</p>
+   
+<div class="login-box-body" style="border: 3px solid green; border-radius: 25px;">
+<div class="login-logo">
+    <a href="{{ admin_url('/') }}">
+    <img src="{{ asset('assets/images/logo.jpeg') }}" alt="Logo" style="max-width: 35%; height: 35%;">
+    </a>
+    
+</div>
 
     <form action="{{ admin_url('auth/login') }}" method="post">
       <div class="form-group has-feedback {!! !$errors->has('username') ?: 'has-error' !!}">
