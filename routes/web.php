@@ -16,7 +16,9 @@ Route::get('/gen', function () {
     die(Gen::find($_GET['id'])->do_get());
 })->name("register");
  
-
+Route::get('/gen-form', function () {
+    die(Gen::find($_GET['id'])->make_forms());
+})->name("gen-form"); 
 /* 
 
 Route::get('generate-variables', [MainController::class, 'generate_variables']); 
