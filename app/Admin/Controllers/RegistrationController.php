@@ -47,8 +47,11 @@ class RegistrationController extends AdminController
         {
             $grid->model()->where('user_id', auth('admin')->user()->id);
             $registration= Registration::where('user_id', auth('admin')->user()->id)->first();
+            if(!$registration){
+                return $grid;
+            }
 
-            //if registration exits disable create button
+          //if registration exits disable create button
             if($registration){
                 $grid->disableCreateButton();
             }
