@@ -50,12 +50,12 @@ class ApiAuthController extends Controller
 
 
     public function login(Request $r)
-    { 
+    {
         if ($r->username == null) {
             return $this->error('Username is required.');
         }
 
-    if ($r->password == null) {
+        if ($r->password == null) {
             return $this->error('Password is required.');
         }
 
@@ -87,9 +87,9 @@ class ApiAuthController extends Controller
             return $this->error('User account not found.');
         }
 
-        
+
         JWTAuth::factory()->setTTL(60 * 24 * 30 * 365);
-        
+
         $token = auth('api')->attempt([
             'id' => $u->id,
             'password' => trim($r->password),
@@ -99,9 +99,9 @@ class ApiAuthController extends Controller
         if ($token == null) {
             return $this->error('Wrong credentials.');
         }
- 
 
- 
+
+
         $u->token = $token;
         $u->remember_token = $token;
 
@@ -151,7 +151,7 @@ class ApiAuthController extends Controller
             isset($x[1])
         ) {
             $user->first_name = $x[0];
-            $user->last_name = $x[0];
+            $user->last_name = $x[1];
         } else {
             $user->first_name = $name;
         }

@@ -107,6 +107,22 @@ class ApiResurceController extends Controller
         );
     }
 
+    public function my_sacco_membership(Request $r)
+    {
+        $u = $r->user;
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $members = Administrator::where(['id' => $u->id])
+            ->limit(1)
+            ->orderBy('id', 'desc')
+            ->get();
+        return $this->success(
+            $members,
+            $message = "Sussesfully",
+            200
+        );
+    }
     public function sacco_members(Request $r)
     {
         $u = $r->user;
@@ -123,7 +139,7 @@ class ApiResurceController extends Controller
             200
         );
     }
-    
+
     public function gardens(Request $r)
     {
         $u = $r->user;
