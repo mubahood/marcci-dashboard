@@ -146,6 +146,9 @@ class ApiResurceController extends Controller
             return $this->error('User not found.');
         }
         $member = Administrator::find($r->member_id);
+        if($member == null){
+            return $this->error('Member not found.');
+        }
         $member->sacco_join_status = $r->sacco_join_status;
         $member->save();
         return $this->success(
