@@ -139,6 +139,21 @@ class ApiResurceController extends Controller
             200
         );
     }
+    public function sacco_members_review(Request $r)
+    {
+        $u = $r->user;
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $member = Administrator::find($r->member_id);
+        $member->sacco_join_status = $r->sacco_join_status;
+        $member->save();
+        return $this->success(
+            null,
+            $message = "Sussesfully",
+            200
+        );
+    }
 
     public function gardens(Request $r)
     {
