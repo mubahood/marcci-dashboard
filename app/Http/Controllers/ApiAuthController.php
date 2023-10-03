@@ -50,7 +50,7 @@ class ApiAuthController extends Controller
 
 
     public function login(Request $r)
-    { 
+    {
         if ($r->username == null) {
             return $this->error('Username is required.');
         }
@@ -87,9 +87,9 @@ class ApiAuthController extends Controller
             return $this->error('User account not found.');
         }
 
-        
+
         JWTAuth::factory()->setTTL(60 * 24 * 30 * 365);
-        
+
         $token = auth('api')->attempt([
             'id' => $u->id,
             'password' => trim($r->password),
@@ -99,9 +99,9 @@ class ApiAuthController extends Controller
         if ($token == null) {
             return $this->error('Wrong credentials.');
         }
- 
 
- 
+
+
         $u->token = $token;
         $u->remember_token = $token;
 
@@ -126,7 +126,7 @@ class ApiAuthController extends Controller
             return $this->error('Password is required.');
         }
 
-    
+
         $u = Administrator::where('phone_number', $phone_number)
             ->orWhere('username', $phone_number)->first();
         if ($u != null) {
@@ -162,7 +162,7 @@ class ApiAuthController extends Controller
         $user->district = $r->district;
         $user->county = $r->county;
         $user->sub_county = $r->sub_county;
-        $user->avatar = $r->avatar;   
+        $user->avatar = $r->avatar;
         $user->village = $r->village;
         $user->password = password_hash(trim($r->password), PASSWORD_DEFAULT);
         if (!$user->save()) {
@@ -176,8 +176,8 @@ class ApiAuthController extends Controller
         JWTAuth::factory()->setTTL(60 * 24 * 30 * 365);
 
         $token = auth('api')->attempt([
-            'username' => $phone_number,
-            'password' => trim($r->password),
+            'username' => $new_user->username,
+            'password' => $r->password,
         ]);
 
         $new_user->token = $token;
@@ -185,7 +185,7 @@ class ApiAuthController extends Controller
         return $this->success($new_user, 'Account created successfully.');
     }
 
-    
+
     public function logout()
     {
         auth('api')->logout();
