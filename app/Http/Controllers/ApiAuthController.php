@@ -169,7 +169,7 @@ class ApiAuthController extends Controller
             return $this->error('Failed to create account. Please try again.');
         }
 
-        $new_user = Administrator::find($user->id);
+        $new_user = Administrator::where('email', $r->email)->first();
         if ($new_user == null) {
             return $this->error('Account created successfully but failed to log you in.');
         }
