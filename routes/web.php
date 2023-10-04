@@ -6,6 +6,8 @@ use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Models\Gen;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\QuestionController;
 
 
 Route::get('policy', function(){
@@ -19,7 +21,12 @@ Route::get('/gen', function () {
 Route::get('/gen-form', function () {
     die(Gen::find($_GET['id'])->make_forms());
 })->name("gen-form"); 
+
+Route::get('chat', [ChatController::class, 'index']);
+Route::post('store', [QuestionController::class, 'store'])->name('store');
+Route::post('answers', [QuestionController::class, 'answers'])->name('answers');
 /* 
+Route::get('/about-us', [MainController::class, 'about_us']);
 
 Route::get('generate-variables', [MainController::class, 'generate_variables']); 
 Route::get('/', [MainController::class, 'index'])->name('home');

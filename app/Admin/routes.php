@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Routing\Router;
+use App\Admin\Controllers\GenController;
+
 
 Admin::routes();
 
@@ -12,13 +14,14 @@ Route::group([
 ], function (Router $router) {
 
     $router->get('/', 'HomeController@index')->name('home');
-    $router->resource('gens', GenController::class);   
+    $router->get('questions', 'HomeController@questions')->name('questions');
+    $router->resource('gens', GenController::class);
 
     /* ========================START OF NEW THINGS===========================*/
 
     $router->resource('crops', CropController::class);
     $router->resource('crop-protocols', CropProtocolController::class);
-    $router->resource('gardens', GardenController::class); 
+    $router->resource('gardens', GardenController::class);
     $router->resource('garden-activities', GardenActivityController::class);
 
     /* ========================END OF NEW THINGS=============================*/
@@ -44,7 +47,6 @@ Route::group([
     $router->resource('event-bookings', EventBookingController::class);
     $router->resource('products', ProductController::class);
     $router->resource('product-orders', ProductOrderController::class);
-    
-    $router->resource('registrations', RegistrationController::class);
 
+    $router->resource('registrations', RegistrationController::class);
 });

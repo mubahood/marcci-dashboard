@@ -70,3 +70,4 @@ Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
 Encore\Admin\Form::forget(['map', 'editor']);
 Admin::css(url('/assets/css/bootstrap.css'));
 Admin::css('/assets/css/styles.css');
+

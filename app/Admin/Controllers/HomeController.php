@@ -10,6 +10,7 @@ use App\Models\GardenActivity;
 use App\Models\Group;
 use App\Models\Location;
 use App\Models\Person;
+use App\Models\Question;
 use App\Models\User;
 use App\Models\Utils;
 use Carbon\Carbon;
@@ -18,6 +19,7 @@ use Encore\Admin\Controllers\Dashboard;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Layout\Column;
 use Encore\Admin\Layout\Content;
+use App\Http\Controllers\QuestionController;
 use Encore\Admin\Layout\Row;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +27,20 @@ use SplFileObject;
 
 class HomeController extends Controller
 {
+    public function questions(Content $content)
+    {
+
+        $u = Auth::user();
+        $content
+            ->title('Ask the expert');
+        $content->row(function (Row $row) {
+            $row->column(12, function (Column $column) {
+                $column->append(QuestionController::get_questions());
+            });
+            
+        });
+        return $content;
+    }
     public function index(Content $content)
     {
         $u = Auth::user();
