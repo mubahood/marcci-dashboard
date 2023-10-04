@@ -8,7 +8,9 @@ use App\Http\Controllers\CropController;
 use App\Http\Controllers\GardenController;
 use App\Http\Controllers\GardenActivityController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\QuestionAnswerController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\QuestionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,6 +40,7 @@ Route::resource('crops', CropController::class);
 Route::resource('gardens', GardenController::class);
 Route::resource('garden_activities', GardenActivityController::class);
 Route::resource('products', ProductController::class);
+Route::resource('questions', QuestionAnswerController::class);
 
 
 
