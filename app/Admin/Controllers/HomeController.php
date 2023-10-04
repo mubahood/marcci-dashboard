@@ -41,6 +41,20 @@ class HomeController extends Controller
         });
         return $content;
     }
+
+    public function answers(Content $content, $id)
+    {
+        $content
+            ->title('Answers');
+        $content->row(function (Row $row) use ($id) {
+            $row->column(12, function (Column $column) use ($id) {
+                $column->append(QuestionController::question_answers($id));
+            });
+        });
+        return $content;
+    }
+
+
     public function index(Content $content)
     {
         $u = Auth::user();

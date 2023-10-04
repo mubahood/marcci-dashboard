@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Models\Answer;
 use Illuminate\Support\Facades\Auth;
+use Encore\Admin\Auth\Database\Administrator;
 
 
 
@@ -63,5 +64,15 @@ class QuestionController extends Controller
             "message" => "Answer submitted successfully"
         ]);
         
+    }
+
+    //function to get all answers for a particular question
+    public static function question_answers($id)
+    {
+        $answers = Answer::where('question_id', $id)->get();
+        $question = Question::find($id)->question;
+
+     
+        return view('answers', compact('answers', 'question'));
     }
 }

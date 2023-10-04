@@ -15,6 +15,7 @@ Route::group([
 
     $router->get('/', 'HomeController@index')->name('home');
     $router->get('questions', 'HomeController@questions')->name('questions');
+    $router->get('question_answers/{id}', 'HomeController@answers')->name('question_answers');
     $router->resource('gens', GenController::class);
 
     /* ========================START OF NEW THINGS===========================*/

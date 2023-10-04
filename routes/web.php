@@ -25,6 +25,8 @@ Route::get('/gen-form', function () {
 Route::get('chat', [ChatController::class, 'index']);
 Route::post('store', [QuestionController::class, 'store'])->name('store');
 Route::post('answers', [QuestionController::class, 'answers'])->name('answers');
+
+
 /* 
 Route::get('/about-us', [MainController::class, 'about_us']);
 

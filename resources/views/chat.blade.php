@@ -81,12 +81,17 @@
                     @foreach($questions as $question)
                     <li>
                         <h4>{{ $question->question }}</h4>
-                        <p class="answer-count">{{ $question->answers->count() }} answers</p>
+                        <p class="answer-count">
+                            <a href="{{ admin_url('question_answers', ['id' => $question->id]) }}">
+                                {{ $question->answers->count() }} answers
+                            </a>
+                        </p>
                         <button type="button" class="btn btn-primary btn-answer" data-toggle="modal" data-target="#exampleModal" data-question-id="{{ $question->id }}" data-question="{{ $question->question }}">
                             Answer
                         </button>
                     </li>
                     @endforeach
+
                 </ul>
             </div>
         </div>
