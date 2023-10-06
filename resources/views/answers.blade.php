@@ -54,7 +54,8 @@
                 @endphp
                 <div class="answer_list">
                     <div  class="answer_profile">
-                    <img src="http://127.0.0.1:8000/storage/{{ $user->avatar }}" alt="User Image" class="user-image">
+                    <img src="{{ asset('storage/' . ($user->avatar ?? 'images/user.jpg')) }}" alt="User Image" class="user-image">
+
                     <div class="user-info">
                         <p class="user-name">{{ $user->name }}</p>
                         <p class="question-date">Date: {{ $date }}</p>
