@@ -60,6 +60,7 @@ return array(
     'App\\Http\\Controllers\\Auth\\VerificationController' => $baseDir . '/app/Http/Controllers/Auth/VerificationController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\ExpertAnswerController' => $baseDir . '/app/Http/Controllers/ExpertAnswerController.php',
+    'App\\Http\\Controllers\\HomeController' => $baseDir . '/app/Http/Controllers/HomeController.php',
     'App\\Http\\Controllers\\MainController' => $baseDir . '/app/Http/Controllers/MainController.php',
     'App\\Http\\Controllers\\PestAndDiseaseController' => $baseDir . '/app/Http/Controllers/PestAndDiseaseController.php',
     'App\\Http\\Controllers\\QuestionAnswerController' => $baseDir . '/app/Http/Controllers/QuestionAnswerController.php',
