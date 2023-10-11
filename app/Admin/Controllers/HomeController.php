@@ -93,15 +93,7 @@ class HomeController extends Controller
                     'link' => 'javascript:;'
                 ]));
             });
-            // $row->column(3, function (Column $column) {
-            //     $column->append(view('widgets.box-5', [
-            //         'is_dark' => false,
-            //         'title' => 'Registered Gardens',
-            //         'sub_title' => 'All time.',
-            //         'number' => number_format(Garden::count()),
-            //         'link' => 'javascript:;'
-            //     ]));
-            // });
+            
             $row->column(3, function (Column $column) {
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
@@ -144,53 +136,27 @@ class HomeController extends Controller
             });
         });
 
+        $content->row(function (Row $row) {
+            $row->column(6, function (Column $column) {
+                $column->append(view('widgets.groundnut-market', []));
+            });
+            $row->column(6, function (Column $column) {
+                $column->append(view('widgets.products-services', []));
+            });
+           
+        });
+
+        $content->row(function (Row $row) {
+            $row->column(12, function (Column $column) {
+                $column->append(view('widgets.weather', []));
+            });
+          
+           
+        });
+
 
         return $content;
 
-        // $content->row(function (Row $row) {
-        //     $row->column(6, function (Column $column) {
-        //         $column->append(view('widgets.by-categories', []));
-        //     });
-        //     $row->column(6, function (Column $column) {
-        //         $column->append(view('widgets.calender', []));
-        //     });
-        // });
-
-
-
-        // $content->row(function (Row $row) {
-        //     $row->column(6, function (Column $column) {
-        //         $column->append(Dashboard::dashboard_members());
-        //     });
-        //     $row->column(3, function (Column $column) {
-        //         $column->append(Dashboard::dashboard_events());
-        //     });
-        //     $row->column(3, function (Column $column) {
-        //         $column->append(Dashboard::dashboard_news());
-        //     });
-        // });
-
-
-
-
-        // return $content;
-        // return $content
-        //     ->title('Dashboard')
-        //     ->description('Description...')
-        //     ->row(Dashboard::title())
-        //     ->row(function (Row $row) {
-
-        //         $row->column(4, function (Column $column) {
-        //             $column->append(Dashboard::environment());
-        //         });
-
-        //         $row->column(4, function (Column $column) {
-        //             $column->append(Dashboard::extensions());
-        //         });
-
-        //         $row->column(4, function (Column $column) {
-        //             $column->append(Dashboard::dependencies());
-        //         });
-        //     });
+      
     }
 }
