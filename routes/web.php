@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\PestAndDiseaseController;
-
+use Illuminate\Support\Facades\Auth;
 
 Route::get('policy', function(){
     return view('policy'); 
