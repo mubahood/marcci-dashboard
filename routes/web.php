@@ -8,62 +8,32 @@ use App\Models\Gen;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\PestAndDiseaseController;
 
 
 Route::get('policy', function(){
     return view('policy'); 
 });
+
+//api generation
 Route::get('generate-class', [MainController::class, 'generate_class']);
 Route::get('/gen', function () {
     die(Gen::find($_GET['id'])->do_get());
 })->name("register");
- 
 Route::get('/gen-form', function () {
     die(Gen::find($_GET['id'])->make_forms());
 })->name("gen-form"); 
 
+//farmers forum
 Route::get('chat', [ChatController::class, 'index']);
 Route::post('store', [QuestionController::class, 'store'])->name('store');
 Route::post('answers', [QuestionController::class, 'answers'])->name('answers');
 
-
-/* 
-Route::get('/about-us', [MainController::class, 'about_us']);
-
-Route::get('generate-variables', [MainController::class, 'generate_variables']); 
-Route::get('/', [MainController::class, 'index'])->name('home');
-Route::get('/about-us', [MainController::class, 'about_us']);
-Route::get('/our-team', [MainController::class, 'our_team']);
-Route::get('/news-category/{id}', [MainController::class, 'news_category']);
-Route::get('/news-category', [MainController::class, 'news_category']);
-Route::get('/news', [MainController::class, 'news_category']);
-Route::get('/news/{id}', [MainController::class, 'news']);
-Route::get('/members', [MainController::class, 'members']);
-Route::get('/dinner', [MainController::class, 'dinner']);
-Route::get('/ucc', function(){ return view('chair-person-message'); });
-Route::get('/vision-mission', function(){ return view('vision-mission'); }); 
-Route::get('/constitution', function(){ return view('constitution'); }); 
-Route::get('/register', [AccountController::class, 'register'])->name('register');
-
-Route::get('/login', [AccountController::class, 'login'])->name('login')
-    ->middleware(RedirectIfAuthenticated::class);
-
-Route::post('/register', [AccountController::class, 'register_post'])
-    ->middleware(RedirectIfAuthenticated::class);
-
-Route::post('/login', [AccountController::class, 'login_post'])
-    ->middleware(RedirectIfAuthenticated::class);
+//pests and diseases
+Route::get('pest-and-diseases', [PestAndDiseaseController::class, 'index'])->name('pest-and-diseases');
 
 
-Route::get('/dashboard', [AccountController::class, 'dashboard'])
-    ->middleware(Authenticate::class);
 
+Auth::routes();
 
-Route::get('/account-details', [AccountController::class, 'account_details'])
-    ->middleware(Authenticate::class);
-
-Route::post('/account-details', [AccountController::class, 'account_details_post'])
-    ->middleware(Authenticate::class);
-
-Route::get('/logout', [AccountController::class, 'logout']);
- */
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

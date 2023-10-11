@@ -17,27 +17,17 @@ class CreateGardenActivitiesTable extends Migration
         Schema::create('garden_activities', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignIdFor(Garden::class);
-            $table->integer('user_id');
-            $table->integer('crop_activity_id');
+            $table->unsignedBigInteger('garden_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('activity_category')->nullable();
+            $table->string('description')->nullable();
+            $table->date('date')->nullable();
+            $table->string('person_responsible')->nullable();
+            $table->string('remarks')->nullable();
 
-            $table->text('activity_name')->nullable();
-            $table->text('activity_description')->nullable();
-            $table->text('activity_date_to_be_done')->nullable();
-            $table->text('activity_due_date')->nullable();
-            $table->text('activity_date_done')->nullable();
-
-            $table->string('farmer_has_submitted')->nullable();
-            $table->string('farmer_activity_status')->nullable();
-            $table->string('farmer_submission_date')->nullable();
-            $table->text('farmer_comment')->nullable();
-
-            $table->integer('agent_id')->nullable();
-            $table->string('agent_names')->nullable();
-            $table->string('agent_has_submitted')->nullable();
-            $table->string('agent_activity_status')->nullable();
-            $table->string('agent_comment')->nullable();
-            $table->string('agent_submission_date')->nullable();
+            $table->foreign('garden_id')->references('id')->on('gardens')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+      
         });
     }
 

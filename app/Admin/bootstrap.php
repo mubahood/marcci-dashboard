@@ -18,13 +18,13 @@
  *
  */
 
-use App\Models\Utils;
+
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Auth;
 use App\Admin\Extensions\Nav\Shortcut;
 use App\Admin\Extensions\Nav\Dropdown;
 
-Utils::system_boot();
+
 
 
 Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {

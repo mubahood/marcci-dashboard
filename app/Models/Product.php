@@ -22,14 +22,5 @@ class Product extends Model
         'administrator_id'
     ];
 
-    public function getSubcountyTextAttribute()
-    {
-        $d = Location::find($this->subcounty_id);
-        if ($d == null) {
-            return 'Not Subcounty.';
-        }
-        return $d->name_text;
-    }
-    protected $appends = ['subcounty_text'];
-
+  
 }

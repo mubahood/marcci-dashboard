@@ -41,7 +41,7 @@ class QuestionController extends Controller
         //get the authenticated user
         $user_id = Auth::user()->id;
 
-        return view('chat', compact('questions', 'user_id'));
+        return view('farmers-forum.chat', compact('questions', 'user_id'));
     }
 
     //function to submit answers
@@ -73,6 +73,6 @@ class QuestionController extends Controller
         $question = Question::find($id)->question;
 
      
-        return view('answers', compact('answers', 'question'));
+        return view('farmers-forum.answers', compact('answers', 'question'));
     }
 }

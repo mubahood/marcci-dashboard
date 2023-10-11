@@ -36,8 +36,6 @@ class User extends Authenticatable implements JWTSubject
             'avatar',
             'password',
           
-       
-       
     ];  
     protected $hidden = [
         'password',
@@ -53,14 +51,5 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
-    public function campus()
-    {
-        return $this->belongsTo(Campus::class, 'campus_id');
-    }
- 
-    public function programs()
-    {
-        return $this->hasMany(UserHasProgram::class, 'user_id');
-    }
- 
+  
 }

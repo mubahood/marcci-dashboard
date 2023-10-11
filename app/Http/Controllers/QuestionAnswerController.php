@@ -33,7 +33,11 @@ class QuestionAnswerController extends Controller
         $question->save();
 
         //return a json response
-        return Utils::success($question, 'Question submitted successfully.');
+        return response()->json([
+            "status" => "success",
+            "message" => "Question posted successfully",
+            "question" => $question
+        ]);
         
     }
     

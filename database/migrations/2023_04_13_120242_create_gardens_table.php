@@ -16,14 +16,21 @@ class CreateGardensTable extends Migration
         Schema::create('gardens', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('name')->nullable();
-            $table->string('crop_name')->nullable();
-            $table->string('status')->nullable();
-            $table->string('production_scale')->nullable();
+            $table->unsignedBigInteger('user_id');
+            $table->string('garden_name')->nullable();
+            $table->string('garden_size')->nullable();
+            $table->string('ownership')->nullable();
             $table->string('planting_date')->nullable();
-            $table->string('land_occupied')->nullable();
-            $table->string('crop_id')->nullable();
-            $table->text('details')->nullable();
+            $table->string('harvest_date')->nullable();
+            $table->string('variety_id')->nullable();
+            $table->string('seed_class')->nullable();
+            $table->string('certified_seller')->nullable();
+            $table->string('name_of_seller')->nullable();
+            $table->string('seller_location')->nullable();
+            $table->string('seller_contact')->nullable();
+            $table->string('purpose_of_seller')->nullable();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

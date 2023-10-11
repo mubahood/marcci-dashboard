@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\PestAndDiseaseController;
 use App\Models\Association;
 use App\Models\Crop;
 use App\Models\Garden;
@@ -32,7 +33,7 @@ class HomeController extends Controller
 
         $u = Auth::user();
         $content
-            ->title('Ask the expert');
+            ->title('Farmers Forum');
         $content->row(function (Row $row) {
             $row->column(12, function (Column $column) {
                 $column->append(QuestionController::get_questions());
@@ -50,6 +51,21 @@ class HomeController extends Controller
             $row->column(12, function (Column $column) use ($id) {
                 $column->append(QuestionController::question_answers($id));
             });
+        });
+        return $content;
+    }
+
+    public function pestsAndDiseases(Content $content)
+    {
+
+        $u = Auth::user();
+        $content
+            ->title('Ask the expert');
+        $content->row(function (Row $row) {
+            $row->column(12, function (Column $column) {
+                $column->append(PestAndDiseaseController::index());
+            });
+            
         });
         return $content;
     }
@@ -118,8 +134,8 @@ class HomeController extends Controller
 
 
             $row->column(6, function (Column $column) {
-                $sorghum_count = Garden::where('crop_id', 2)->count();
-                $cow_peas = Garden::where('crop_id', 1)->count();
+                $sorghum_count = Garden::where('variety_id', 2)->count();
+                $cow_peas = Garden::where('variety_id', 1)->count();
 
                 $column->append(view('widgets.by-categories', compact('sorghum_count', 'cow_peas')));
             });

@@ -43,9 +43,11 @@ class RegistrationController extends AdminController
        
       
          //show the user only his records
-        if (auth('admin')->user()->isRole('basic-user')) 
+        if (auth('admin')->user()->inRoles(['basic-user','garden_owner'])) 
         {
+          
             $grid->model()->where('user_id', auth('admin')->user()->id);
+            
             $registration= Registration::where('user_id', auth('admin')->user()->id)->first();
             if(!$registration){
                 return $grid;
@@ -73,7 +75,7 @@ class RegistrationController extends AdminController
             $grid->column('category', __('Category'));
 
             if($registration->category == 'farmer'){
-            $grid->column('farmers group', __('Farmers group'));
+            $grid->column('farmers_group', __('Farmers group'));
             $grid->column('farming_experience', __('Farming experience'));
             $grid->column('production_scale', __('Production scale'));
             }
@@ -93,6 +95,7 @@ class RegistrationController extends AdminController
             $grid->column('services_offered', __('Services offered'));
             
             }
+         
         }
         else
         {
@@ -111,19 +114,21 @@ class RegistrationController extends AdminController
 
             $grid->column('category', __('Category'));
             //$grid->column('status', __('Status'))->editable('select', [0 => 'Pending', 1 => 'Approved', 2 => 'Rejected']);
-            $grid->column('status', __('Status'))->display(function ($status) {
-                if($status == 0){
-                    return "<span class='label label-warning'>Pending</span>";
-                }
-                elseif($status == 1){
-                    return "<span class='label label-success'>Approved</span>";
-                }
-                elseif($status == 2){
-                    return "<span class='label label-danger'>Rejected</span>";
-                }
-            });
+       
 
         }
+
+        $grid->column('status', __('Status'))->display(function ($status) {
+            if($status == 0){
+                return "<span class='label label-warning'>Pending</span>";
+            }
+            elseif($status == 1){
+                return "<span class='label label-success'>Approved</span>";
+            }
+            elseif($status == 2){
+                return "<span class='label label-danger'>Rejected</span>";
+            }
+        });
 
      
 
@@ -150,7 +155,7 @@ class RegistrationController extends AdminController
         $show->field('level_of_education', __('Level of education'));
         $show->field('marital_status', __('Marital status'));
         $show->field('number_of_dependants', __('Number of dependants'));
-        $show->field('farmers group', __('Farmers group'));
+        $show->field('farmers_group', __('Farmers group'));
         $show->field('farming_experience', __('Farming experience'));
         $show->field('production_scale', __('Production scale'));
         }
@@ -198,11 +203,6 @@ class RegistrationController extends AdminController
 
         }
 
-        if ($form->isEditing()) 
-        {
-           
-        }
-
         if(!$user->isRole('basic-user'))
         {
             //get form id
@@ -213,7 +213,7 @@ class RegistrationController extends AdminController
                 $form->display('level_of_education', __('Level of education'));
                 $form->display('marital_status', __('Marital status'));
                 $form->display('number_of_dependants', __('Number of dependants'));
-                $form->display('farmers group', __('Farmers group'));
+                $form->display('farmers_group', __('Farmers group'));
                 $form->display('farming_experience', __('Farming experience'));
                 $form->display('production_scale', __('Production scale'));
                 $form->divider();
@@ -257,7 +257,9 @@ class RegistrationController extends AdminController
              }
           
         }
-        else{
+        else
+        {
+
                 $form->display('user_id', __('Applicant'))->default($user->name);
                 $form->radioCard('category', __('Category'))->options([
                         'farmer' => 'Farmer',
@@ -269,7 +271,7 @@ class RegistrationController extends AdminController
                     $form->text('level_of_education', __('Level of education'));
                     $form->text('marital_status', __('Marital status'));
                     $form->text('number_of_dependants', __('Number of dependants'));
-                    $form->text('farmers group', __('Farmers group'));
+                    $form->text('farmers_group', __('Farmers group'));
                     $form->text('farming_experience', __('Farming experience'));
                     $form->text('production_scale', __('Production scale'));
 

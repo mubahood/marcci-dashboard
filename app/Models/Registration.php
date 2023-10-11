@@ -36,4 +36,36 @@ class Registration extends Model
 
     ];
 
+  //on creating a registration the user role is set to 2
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($registration) {
+          
+        }          
+        );
+
+        static::updated(function ($registration) {
+         
+            //change the role of the basic user to that of the seed producer if approved
+            if($registration->isDirty('status') && $registration->status == 1){
+               
+                if($registration->category == 'farmer' || $registration->category == 'seed producer'){
+                  
+                    AdminRoleUser::where([
+                        'user_id' => $registration->user_id
+                    ])->delete();
+                    $new_role = new AdminRoleUser();
+                    $new_role->user_id = $registration->user_id;
+                    $new_role->role_id = 4;
+                    $new_role->save();
+                }
+            }
+        }  
+                    
+            );
+        }
+
+
 }
