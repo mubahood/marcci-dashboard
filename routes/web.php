@@ -9,10 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\PestAndDiseaseController;
-use App\Http\Controllers\HomeController;
-//use auth
 use Illuminate\Support\Facades\Auth;
-
 
 Route::get('policy', function(){
     return view('policy'); 
@@ -37,5 +34,22 @@ Route::get('pest-and-diseases', [PestAndDiseaseController::class, 'index'])->nam
 
 Auth::routes();
 
+Auth::routes();
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
