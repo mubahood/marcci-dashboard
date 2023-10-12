@@ -18,13 +18,51 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <style>
+        html, body {
+           height: 100%;
+        }
+        
+        body {
+        margin: 0;
+        padding: 0;
+        }
+
+        #app {
+        min-height: 100vh;
+        
+        }
+    
+        main {
+        text-align: center;
+        }
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon .icon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 20px;
+            
+        }
+
+        .input-icon .icon i {
+            color: #444;
+        }
+
+        .input-icon .icon.show-password i {
+            color: #444;
+        }
+    </style>
 </head>
 <body>
-    <div id="app">
+    <div id="app"  style="background: url({{ asset('assets/images/gnut.jpg') }}) no-repeat;background-size: cover;">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+                NARO GROUNDNUTS
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -42,7 +80,7 @@
                         @guest
                             @if (Route::has('login'))
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                <a class="nav-link" href="{{ url('auth/login') }}">{{ __('Login') }}</a>
                                 </li>
                             @endif
 

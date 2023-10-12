@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\PestAndDiseaseController;
+use App\Http\Controllers\HomeController;
+//use auth
+use Illuminate\Support\Facades\Auth;
 
 
 Route::get('policy', function(){
@@ -32,7 +35,7 @@ Route::post('answers', [QuestionController::class, 'answers'])->name('answers');
 //pests and diseases
 Route::get('pest-and-diseases', [PestAndDiseaseController::class, 'index'])->name('pest-and-diseases');
 
-
+Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 

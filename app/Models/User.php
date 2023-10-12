@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject ;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Encore\Admin\Auth\Database\Administrator;
 
 
 
@@ -21,18 +22,12 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
             'first_name',
             'last_name',
+            'middle_name',
             'username',
             'name',
             'gender',
-            'date_of_birth',
-            'national_id',
             'email',
             'phone_number',
-            'region',
-            'district',
-            'county',
-            'sub_county',
-            'village',
             'avatar',
             'password',
           
@@ -49,6 +44,18 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+       //assign a user a role of 3 once they are registered
+       public static function boot()
+       {
+           parent::boot();
+
+           static::created(function ($user) {
+            error_log('model thereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+               $user = Administrator::find($user->id);
+               $user->roles()->attach(3);
+           });
+       }
 
 
   

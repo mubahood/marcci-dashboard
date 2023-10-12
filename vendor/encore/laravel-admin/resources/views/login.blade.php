@@ -28,6 +28,49 @@
   <![endif]-->
 </head>
 <body class="hold-transition login-page" style="background: url({{ asset('assets/images/gnut.jpg') }}) no-repeat;background-size: cover;">
+<nav class="navbar navbar-default" role="navigation" >
+    <div class="container">
+       <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbarSupportedContent" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="{{ url('/') }}">
+       
+        <span class="brand-text" style="font-size: 18px; font-weight: bold;">NARO GROUNDNUTS</span>
+    </a>
+</div>
+
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Left Side Of Navbar -->
+            <ul class="nav navbar-nav">
+
+            </ul>
+
+            <!-- Right Side Of Navbar -->
+            <ul class="nav navbar-nav navbar-right">
+                <!-- Authentication Links -->
+                @guest
+                    @if (Route::has('login'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ admin_url('auth/login') }}">{{ __('Login') }}</a>
+                        </li>
+                    @endif
+
+                    @if (Route::has('register'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                        </li>
+                    @endif
+
+                @endguest
+            </ul>
+        </div>
+    </div>
+</nav>
 <div class="login-box">
   <!-- /.login-logo -->
    
