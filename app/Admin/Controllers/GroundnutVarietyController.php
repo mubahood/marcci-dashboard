@@ -52,7 +52,7 @@ class GroundnutVarietyController extends AdminController
 
         $show->field('id', __('Id'));
         $show->field('name', __('Name'));
-        $show->field('photo', __('Photo'));
+        $show->field('photo', __('Photo'))->image();
         $show->field('details', __('Details'));
         $show->field('created_at', __('Created at'));
         $show->field('updated_at', __('Updated at'));
