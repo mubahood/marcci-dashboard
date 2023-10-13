@@ -69,7 +69,7 @@ class GardenController extends AdminController
         $show->field('planting_date', __('Planting date'));
         $show->field('harvest_date', __('Expected harvest date'));
         $show->field('variety_id', __('Crop variety planted'))->as(function ($variety_id) {
-            return Crop::find($variety_id)->name;
+            return GroundnutVariety::find($variety_id)->name;
         });
         $show->field('seed_class', __('Seed class'));
         $show->field('certified_seller', __('Bought from certified seller'))->as(function ($certified_seller) {
