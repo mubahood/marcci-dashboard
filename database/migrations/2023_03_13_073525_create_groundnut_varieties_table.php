@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCropCategoriesTable extends Migration
+class CreateGroundnutVarietiesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateCropCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('crops', function (Blueprint $table) {
+        Schema::create('groundnut_varieties', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->string('name')->nullable();
             $table->string('photo')->nullable();
             $table->string('details')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -29,6 +29,6 @@ class CreateCropCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('crops');
+        Schema::dropIfExists('groundnut_varieties');
     }
 }

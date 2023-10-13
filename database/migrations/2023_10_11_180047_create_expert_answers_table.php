@@ -19,6 +19,9 @@ class CreateExpertAnswersTable extends Migration
             $table->unsignedBigInteger('question_id');
             $table->text('answer');                                  
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('question_id')->references('id')->on('pests_and_diseases')->onDelete('cascade');
         });
     }
 

@@ -4,27 +4,17 @@ namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\PestAndDiseaseController;
-use App\Models\Association;
-use App\Models\Crop;
 use App\Models\Garden;
 use App\Models\GardenActivity;
-use App\Models\Group;
-use App\Models\Location;
-use App\Models\Person;
-use App\Models\Question;
 use App\Models\User;
-use App\Models\Utils;
-use Carbon\Carbon;
-use Encore\Admin\Auth\Database\Administrator;
-use Encore\Admin\Controllers\Dashboard;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Layout\Column;
 use Encore\Admin\Layout\Content;
 use App\Http\Controllers\QuestionController;
+use App\Models\GroundnutVariety;
 use Encore\Admin\Layout\Row;
-use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Auth;
-use SplFileObject;
+
 
 class HomeController extends Controller
 {
@@ -108,7 +98,7 @@ class HomeController extends Controller
                     'is_dark' => false,
                     'title' => 'Production Guides',
                     'sub_title' => 'From system',
-                    'number' => number_format(Crop::count()),
+                    'number' => number_format(GroundnutVariety::count()),
                     'link' => 'javascript:;'
                 ]));
             });

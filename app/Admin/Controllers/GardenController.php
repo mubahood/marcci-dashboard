@@ -8,6 +8,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 use App\Models\Crop;
+use App\Models\GroundnutVariety;
 
 class GardenController extends AdminController
 {
@@ -43,7 +44,7 @@ class GardenController extends AdminController
         $grid->column('garden_name', __('Garden name'));
         $grid->column('garden_size', __('Garden size(in acres)'));
         $grid->column('variety_id', __('Variety'))->display(function ($variety_id) {
-            return Crop::find($variety_id)->name;
+            return GroundnutVariety::find($variety_id)->name;
         });
         $grid->column('seed_class', __('Seed class'));
  

@@ -8,6 +8,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 use App\Models\Crop;
+use App\Models\GroundnutVariety;
 
 class PestsAndDiseaseController extends AdminController
 {
@@ -50,7 +51,7 @@ class PestsAndDiseaseController extends AdminController
             return \App\Models\User::find($user_id)->name;
         });
         $grid->column('variety_id', __('Variety'))->display(function($variety_id) {
-            return \App\Models\Crop::find($variety_id)->name;
+            return \App\Models\GroundnutVariety::find($variety_id)->name;
         });
         $grid->column('category', __('Category'));
   
@@ -72,7 +73,7 @@ class PestsAndDiseaseController extends AdminController
             return \App\Models\User::find($user_id)->name;
         });
         $show->field('variety_id', __('Variety'))->as(function($variety_id){
-            return \App\Models\Crop::find($variety_id)->name;
+            return \App\Models\GroundnutVariety::find($variety_id)->name;
         });
         $show->field('category', __('Category'));
         $show->field('photo', __('Photo'))->image();
@@ -111,7 +112,7 @@ class PestsAndDiseaseController extends AdminController
         });
 
         $form->text('garden_location', __('Garden location'));
-        $form->select('variety_id', __('Variety '))->options(Crop::pluck('name', 'id'))->rules('required');
+        $form->select('variety_id', __('Variety '))->options(GroundnutVariety::pluck('name', 'id'))->rules('required');
         $form->text('category', __('Category'));
         $form->file('photo', __('Photo'));
         $form->file('video', __('Video'));

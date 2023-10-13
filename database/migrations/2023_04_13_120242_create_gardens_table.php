@@ -17,12 +17,12 @@ class CreateGardensTable extends Migration
             $table->id();
             $table->timestamps();
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('variety_id');
             $table->string('garden_name')->nullable();
             $table->string('garden_size')->nullable();
             $table->string('ownership')->nullable();
             $table->string('planting_date')->nullable();
             $table->string('harvest_date')->nullable();
-            $table->string('variety_id')->nullable();
             $table->string('seed_class')->nullable();
             $table->string('certified_seller')->nullable();
             $table->string('name_of_seller')->nullable();
@@ -31,6 +31,7 @@ class CreateGardensTable extends Migration
             $table->string('purpose_of_seller')->nullable();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('variety_id')->references('id')->on('groundnut_varieties')->onDelete('cascade');
         });
     }
 

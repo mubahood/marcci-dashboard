@@ -51,7 +51,6 @@ class User extends Authenticatable implements JWTSubject
            parent::boot();
 
            static::created(function ($user) {
-            error_log('model thereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
                $user = Administrator::find($user->id);
                $user->roles()->attach(3);
            });

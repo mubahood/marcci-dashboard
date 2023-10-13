@@ -25,8 +25,8 @@ class CreatePestsAndDiseasesTable extends Migration
             $table->string('description')->nullable();
             $table->timestamps();
 
-            $table->foreign('variety_id')->references('id')->on('crops')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('variety_id')->references('id')->on('groundnut_varieties')->onDelete('cascade');
         });
     }
 
