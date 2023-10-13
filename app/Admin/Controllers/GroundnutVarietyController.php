@@ -70,7 +70,7 @@ class GroundnutVarietyController extends AdminController
         $form = new Form(new GroundnutVariety());
 
         $form->text('name', __('Name'));
-        $form->text('photo', __('Photo'));
+        $form->image('photo', __('Photo'));
         $form->text('details', __('Details'));
 
         return $form;
