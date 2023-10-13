@@ -7,7 +7,6 @@ use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
-use App\Models\Crop;
 use App\Models\GroundnutVariety;
 
 class GardenController extends AdminController
@@ -68,7 +67,7 @@ class GardenController extends AdminController
         $show->field('ownership', __('Ownership of land'));
         $show->field('planting_date', __('Planting date'));
         $show->field('harvest_date', __('Expected harvest date'));
-        $show->field('variety_id', __('Crop variety planted'))->as(function ($variety_id) {
+        $show->field('variety_id', __('Groundnut variety planted'))->as(function ($variety_id) {
             return GroundnutVariety::find($variety_id)->name;
         });
         $show->field('seed_class', __('Seed class'));
@@ -120,8 +119,8 @@ class GardenController extends AdminController
         $form->text('ownership', __('Ownership of land'))->required();
         $form->date('planting_date', __('Planting date'))->required();
         $form->date('harvest_date', __('Expected harvest date'))->required();
-        $form->select('variety_id', __('Crop variety planted'))
-        ->options(Crop::all()->pluck('name', 'id'))
+        $form->select('variety_id', __('Groundnut variety planted'))
+        ->options(GroundnutVariety::all()->pluck('name', 'id'))
         ->required()->rules('required');
         $form->text('seed_class', __('Seed class'))->required();
         $form->radioButton('certified_seller', __('Bougth from certified seller?'))
