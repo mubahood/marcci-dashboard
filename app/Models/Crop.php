@@ -24,8 +24,5 @@ class Crop extends Model
         // });
     }
 
-    public function activities()
-    {
-        return $this->hasMany(CropProtocol::class);
-    }
+   
 }
