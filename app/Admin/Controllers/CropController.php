@@ -73,36 +73,10 @@ class CropController extends AdminController
         $form->image('photo', __('Photo'))->required();
         $form->textarea('details', __('Details'))->required();
         $form->divider('Production Guides');
-        $form->morphMany('activities', 'Click on new to add a production guid', function (Form\NestedForm $form) {
-
-
-            $form->select('crop_id', __('Select crop'))
-                ->options(Crop::all()->pluck('name', 'id'))->rules('required');
-            $form->text('name', __('Activity Name'))->required();
-            $form->decimal('step', __('Step'))->required();
-            $form->decimal('value', __('Value (Out of 5)'))->required();
-            $form->radio('is_before_planting', 'Actvity type')
-                ->options([
-                    'Pre-planting' => 'Pre-planting',
-                    'Post-planting' => 'Post-planting',
-                ])
-                ->rules('required');
-            $form->decimal('days_before_planting', __('Days before planting'));
-            $form->decimal('days_after_planting', __('Days after planting'));
-
-            $form->decimal('acceptable_timeline', __('Acceptable period (In Days)'))->required();
-
-            $form->radio('is_activity_required', __('Is this activity compulsory?'))
-                ->options([
-                    'Yes' => 'Yes',
-                    'No' => 'No',
-                ])
-                ->rules('required');
-            $form->textarea('details', __('Details'));
-        });
+       
         $form->disableCreatingCheck();
         $form->disableViewCheck();
-        $form->disableReset();
+      
 
         return $form;
     }
