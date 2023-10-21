@@ -63,7 +63,6 @@ class ApiAuthController extends Controller
 
         $u = User::where('phone_number', $r->username)
             ->orWhere('username', $r->username)
-            ->orWhere('id', $r->username)
             ->orWhere('email', $r->username)
             ->first();
 

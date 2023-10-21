@@ -17,6 +17,7 @@ use App\Models\Person;
 use App\Models\Product;
 use App\Models\Sacco;
 use App\Models\ServiceProvider;
+use App\Models\Transaction;
 use App\Models\Utils;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
@@ -39,11 +40,53 @@ class ApiResurceController extends Controller
         );
     }
 
+    public function transactions_create(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        if (!$u->isRole('admin')) {
+            return $this->error('You are not allowed to perform this action.');
+        }
+        if (
+            $r->user_id == null ||
+            $r->type == null ||
+            $r->source_type == null ||
+            $r->source_mobile_money_number == null ||
+            $r->amount == null
+        ) {
+            return $this->error('Some Information is still missing. Fill the missing information and try again.');
+        }
+        $tra = new Transaction();
+        $tra->user_id = $r->user_id;
+        $tra->source_user_id = $u->id;
+        $tra->type = $r->type;
+        $tra->source_type = $r->source_type;
+        $tra->source_mobile_money_number = $r->source_mobile_money_number;
+        $tra->source_mobile_money_transaction_id = $r->source_mobile_money_transaction_id;
+        $tra->source_bank_account_number = $r->source_bank_account_number;
+        $tra->source_bank_transaction_id = $r->source_bank_transaction_id;
+        $tra->desination_type = $r->desination_type;
+        $tra->desination_mobile_money_number = $r->desination_mobile_money_number;
+        $tra->desination_mobile_money_transaction_id = $r->desination_mobile_money_transaction_id;
+        $tra->desination_bank_account_number = $r->desination_bank_account_number;
+        $tra->desination_bank_transaction_id = $r->desination_bank_transaction_id;
+        $tra->amount = $r->amount;
+        $tra->description = $r->description;
+        $tra->details = $r->details;
+
+        try {
+            $tra->save();
+            return $this->success(null, $message = "Transaction created successfully.", 200);
+        } catch (\Throwable $th) {
+            return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
+        }
+    }
     public function sacco_join_request(Request $r)
     {
 
         $u = auth('api')->user();
-
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -146,7 +189,7 @@ class ApiResurceController extends Controller
             return $this->error('User not found.');
         }
         $member = Administrator::find($r->member_id);
-        if($member == null){
+        if ($member == null) {
             return $this->error('Member not found.');
         }
         $member->sacco_join_status = $r->sacco_join_status;
@@ -265,7 +308,7 @@ class ApiResurceController extends Controller
             $activity->save();
             return $this->success(null, $message = "Sussesfully created!", 200);
         } catch (\Throwable $th) {
-            return $this->error('Failed to save activity, becase ' . $th->getMessage() . '');
+            return $this->error('Failed to save activity, because ' . $th->getMessage() . '');
         }
     }
 
@@ -353,7 +396,7 @@ class ApiResurceController extends Controller
             $obj->save();
             return $this->success(null, $message = "Product Uploaded Sussesfully!", 200);
         } catch (\Throwable $th) {
-            return $this->error('Failed to save product, becase ' . $th->getMessage() . '');
+            return $this->error('Failed to save product, because ' . $th->getMessage() . '');
             //throw $th;
         }
     }

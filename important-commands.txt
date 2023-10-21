@@ -3,7 +3,7 @@ php artisan migrate
 php artisan make:migration create_courses_table 
 
  
-php artisan admin:make SaccoController --model=App\Models\Sacco
+php artisan admin:make TransactionController --model=App\\Models\\Transaction
  
-php artisan make:model Sacco -m
 
+php artisan make:model Transaction -m
