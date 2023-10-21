@@ -31,6 +31,7 @@ class HomeController extends Controller
     public function index(Content $content)
     {
 
+        /*  
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
@@ -51,7 +52,7 @@ class HomeController extends Controller
             $table->string('amount');
             $table->text('description')->nullable();
             $table->text('details')->nullable();
-        });
+        }); */
 
         $u = Auth::user();
         $content
