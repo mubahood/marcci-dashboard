@@ -50,7 +50,6 @@ class ApiResurceController extends Controller
             return $this->error('You are not allowed to perform this action.');
         }
         if (
-            $r->user_id == null ||
             $r->type == null ||
             $r->source_type == null ||
             $r->amount == null 
