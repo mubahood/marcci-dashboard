@@ -53,8 +53,7 @@ class ApiResurceController extends Controller
             $r->user_id == null ||
             $r->type == null ||
             $r->source_type == null ||
-            $r->source_mobile_money_number == null ||
-            $r->amount == null
+            $r->amount == null 
         ) {
             return $this->error('Some Information is still missing. Fill the missing information and try again.');
         }
