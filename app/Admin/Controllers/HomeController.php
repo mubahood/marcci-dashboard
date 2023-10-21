@@ -20,20 +20,42 @@ use Encore\Admin\Layout\Column;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Layout\Row;
 use Faker\Factory as Faker;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use SplFileObject;
 
 class HomeController extends Controller
 {
     public function index(Content $content)
     {
+
+        Schema::create('transactions', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+            $table->foreignIdFor(Administrator::class, 'user_id');
+            $table->foreignIdFor(Administrator::class, 'source_user_id');
+            $table->foreignIdFor(Sacco::class, 'sacco_id');
+            $table->string('type')->default('Deposit');
+            $table->string('source_type')->default('Mobile Money');
+            $table->string('source_mobile_money_number')->nullable();
+            $table->string('source_mobile_money_transaction_id')->nullable();
+            $table->string('source_bank_account_number')->nullable();
+            $table->string('source_bank_transaction_id')->nullable();
+            $table->string('desination_type')->default('Mobile Money');
+            $table->string('desination_mobile_money_number')->nullable();
+            $table->string('desination_mobile_money_transaction_id')->nullable();
+            $table->string('desination_bank_account_number')->nullable();
+            $table->string('desination_bank_transaction_id')->nullable();
+            $table->string('amount');
+            $table->text('description')->nullable();
+            $table->text('details')->nullable();
+        });
+
         $u = Auth::user();
         $content
             ->title('MaRCCI - Dashboard')
             ->description('Hello ' . $u->name . "!");
-
-
-
         $u = Admin::user();
 
 
@@ -85,14 +107,13 @@ class HomeController extends Controller
             });
         });
         $content->row(function (Row $row) {
-            
-        
+
+
             $row->column(6, function (Column $column) {
-                $sorghum_count = Garden::where('crop_id',2)->count();
-                $cow_peas = Garden::where('crop_id',1)->count();
+                $sorghum_count = Garden::where('crop_id', 2)->count();
+                $cow_peas = Garden::where('crop_id', 1)->count();
 
-                $column->append(view('widgets.by-categories', compact('sorghum_count','cow_peas')));
-
+                $column->append(view('widgets.by-categories', compact('sorghum_count', 'cow_peas')));
             });
             $row->column(6, function (Column $column) {
                 $column->append(view('widgets.faqs', []));
