@@ -93,12 +93,12 @@ class ApiResurceController extends Controller
         if (
             $r->amount == null ||
             $r->desination_type == null ||
-            $r->user_id == null
+            $r->receiver_id == null
         ) {
             return $this->error('Some Information is still missing. Fill the missing information and try again.');
         }
 
-        $receiver = User::find($r->user_id);
+        $receiver = User::find($r->receiver_id);
         if ($receiver == null) {
             return $this->error('Receiver not found.');
         }
