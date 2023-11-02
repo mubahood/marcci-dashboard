@@ -1,9 +1,11 @@
 php artisan migrate
 
+ssh -p 2211 cpaneluser@10.0.10.10
+
 php artisan make:migration create_courses_table 
 
  
 php artisan admin:make TransactionController --model=App\\Models\\Transaction
  
 
-php artisan make:model Transaction -m
+php artisan make:model LoanScheem -m
