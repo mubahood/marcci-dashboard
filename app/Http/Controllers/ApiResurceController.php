@@ -38,6 +38,11 @@ class ApiResurceController extends Controller
     public function loan_schemes(Request $r)
     {
         $u = auth('api')->user();
+
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
         return $this->success(
             Sacco::where(
                 [
