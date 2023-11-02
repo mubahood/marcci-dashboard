@@ -45,7 +45,7 @@ class Transaction extends Model
         }
 
         if ($sender->id == $receiver->id) {
-            throw new Exception("You cannot send money to yourself.");
+            throw new Exception("You cannot send money to yourself. ".$sender->id ."==". $receiver->id);
         }
 
         $sender_transactions = new Transaction();
