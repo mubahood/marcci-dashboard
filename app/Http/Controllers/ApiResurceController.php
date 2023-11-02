@@ -12,6 +12,9 @@ use App\Models\GardenActivity;
 use App\Models\Group;
 use App\Models\Institution;
 use App\Models\Job;
+use App\Models\Loan;
+use App\Models\LoanScheem;
+use App\Models\LoanTransaction;
 use App\Models\NewsPost;
 use App\Models\Person;
 use App\Models\Product;
@@ -32,6 +35,19 @@ class ApiResurceController extends Controller
 
     use ApiResponser;
 
+    public function loan_schemes(Request $r)
+    {
+        $u = auth('api')->user();
+        return $this->success(
+            Sacco::where(
+                [
+                    'id' => $u->sacco_id
+                ]
+            )->orderby('id', 'desc')->get(),
+            $message = "Sussesfully",
+            200
+        );
+    }
     public function saccos(Request $r)
     {
         return $this->success(
@@ -41,14 +57,184 @@ class ApiResurceController extends Controller
         );
     }
 
-    public function transactions_create(Request $r)
+    public function loan_create(Request $r)
     {
         $u = auth('api')->user();
         if ($u == null) {
             return $this->error('User not found.');
         }
-        if (!$u->isRole('admin')) {
-            return $this->error('You are not allowed to perform this action.');
+
+        $u = User::find($u->id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+        if (
+            $r->loan_scheem_id == null ||
+            $r->amount == null
+        ) {
+            return $this->error('Some Information is still missing. Fill the missing information and try again.');
+        }
+
+        $loan_scheem = LoanScheem::find($r->loan_scheem_id);
+        if ($loan_scheem == null) {
+            return $this->error('Loan scheem not found.');
+        }
+
+        $total_deposit = Transaction::where([
+            'user_id' => $u->id,
+        ])
+            ->where('amount', '>', 0)
+            ->sum('amount');
+
+        if ($loan_scheem->min_balance > $total_deposit) {
+            return $this->error('You have not saved enough money to apply for this loan. You need to save at least UGX ' . number_format($loan_scheem->min_balance) . ' to apply for this loan.');
+        }
+
+        $oldLoans = Loan::where([
+            'user_id' => $u->id,
+            'is_fully_paid' => 'no',
+        ])->get();
+
+        if (count($oldLoans) > 0) {
+            //return $this->error('You have an existing loan that is not fully paid. You cannot apply for another loan until you have fully paid the existing loan.');
+        }
+
+        $sacco = Sacco::find($u->sacco_id);
+        if ($sacco == null) {
+            return $this->error('Sacco not found.');
+        }
+
+        if ($loan_scheem->max_amount < $r->amount) {
+            return $this->error('You cannot apply for a loan of more than UGX ' . number_format($loan_scheem->max_amount) . '.');
+        }
+
+        if ($sacco->balance < $r->amount) {
+            return $this->error('The sacco does not have enough money to lend you UGX ' . number_format($r->amount) . '.');
+        }
+
+        $amount = $r->amount;
+        $amount = abs($amount);
+        $amount = -1 * $amount;
+
+        $loan = new Loan();
+        $loan->sacco_id = $u->sacco_id;
+        $loan->user_id = $u->id;
+        $loan->loan_scheem_id = $r->loan_scheem_id;
+        $loan->amount = $amount;
+        $loan->balance = $amount;
+        $loan->is_fully_paid = 'No';
+        $loan->scheme_name = $loan_scheem->name;
+        $loan->scheme_description = $loan_scheem->description;
+        $loan->scheme_initial_interest_type = $loan_scheem->initial_interest_type;
+        $loan->scheme_initial_interest_flat_amount = $loan_scheem->initial_interest_flat_amount;
+        $loan->scheme_initial_interest_percentage = $loan_scheem->initial_interest_percentage;
+        $loan->scheme_bill_periodically = $loan_scheem->bill_periodically;
+        $loan->scheme_billing_period = $loan_scheem->billing_period;
+        $loan->scheme_periodic_interest_type = $loan_scheem->periodic_interest_type;
+        $loan->scheme_periodic_interest_percentage = $loan_scheem->periodic_interest_percentage;
+        $loan->scheme_periodic_interest_flat_amount = $loan_scheem->periodic_interest_flat_amount;
+        $loan->scheme_min_amount = $loan_scheem->min_amount;
+        $loan->scheme_max_amount = $loan_scheem->max_amount;
+        $loan->scheme_min_balance = $loan_scheem->min_balance;
+        $loan->scheme_max_balance = $loan_scheem->max_balance;
+
+        try {
+            $loan->save();
+        } catch (\Throwable $th) {
+            return $this->error('Failed to save loan, because ' . $th->getMessage() . '');
+        }
+
+
+
+        $sacco_transactions = new Transaction();
+        $sacco_transactions->user_id = $sacco->administrator_id;
+        $sacco_transactions->source_user_id = $u->id;
+        $sacco_transactions->sacco_id = $sacco->id;
+        $sacco_transactions->type = 'Loan Disbursement';
+        $sacco_transactions->source_type = 'Loan';
+        $sacco_transactions->source_mobile_money_number = null;
+        $sacco_transactions->source_mobile_money_transaction_id = null;
+        $sacco_transactions->source_bank_account_number = null;
+        $sacco_transactions->source_bank_transaction_id = null;
+        $sacco_transactions->desination_bank_account_number = null;
+        $sacco_transactions->desination_type = 'User';
+        $sacco_transactions->desination_mobile_money_number = $u->phone_number;
+        $sacco_transactions->desination_mobile_money_transaction_id = null;
+        $sacco_transactions->desination_bank_transaction_id = null;
+        $sacco_transactions->amount = $amount;
+        $sacco_transactions->description = "Loan Disbursement of UGX " . number_format($amount) . " to {$u->phone_number} - $u->name. Loan Scheem: {$loan_scheem->name}. Reference: {$loan->id}.";
+        $sacco_transactions->details = "Loan Disbursement of UGX " . number_format($amount) . " to {$u->phone_number} - $u->name. Loan Scheem: {$loan_scheem->name}. Reference: {$loan->id}.";
+        try {
+            $sacco_transactions->save();
+        } catch (\Throwable $th) {
+            return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
+        }
+
+        $receiver_transactions = new Transaction();
+        $receiver_transactions->user_id = $u->id;
+        $receiver_transactions->source_user_id = $sacco->administrator_id;
+        $receiver_transactions->type = 'Loan Disbursement';
+        $receiver_transactions->source_type = 'Loan';
+        $receiver_transactions->source_mobile_money_number = null;
+        $receiver_transactions->source_mobile_money_transaction_id = null;
+        $receiver_transactions->source_bank_account_number = null;
+        $receiver_transactions->source_bank_transaction_id = null;
+        $receiver_transactions->desination_bank_account_number = null;
+        $receiver_transactions->desination_type = 'User';
+        $receiver_transactions->desination_mobile_money_number = $u->phone_number;
+        $receiver_transactions->desination_mobile_money_transaction_id = null;
+        $receiver_transactions->desination_bank_transaction_id = null;
+        $amount = abs($amount);
+        $receiver_transactions->amount = $amount;
+        $receiver_transactions->description = "Received Loan of UGX " . number_format($amount) . " from  $sacco->name -  Sacco Loan Scheem: {$loan_scheem->name}. Reference: {$loan->id}.";
+        $receiver_transactions->details = "Received Loan of UGX " . number_format($amount) . " from  $sacco->name -  Sacco Loan Scheem: {$loan_scheem->name}. Reference: {$loan->id}.";
+
+        try {
+            $receiver_transactions->save();
+        } catch (\Throwable $th) {
+            return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
+        }
+
+
+        $LoanTransaction = new LoanTransaction();
+        $LoanTransaction->user_id = $u->id;
+        $LoanTransaction->loan_id = $loan->id;
+        $LoanTransaction->sacco_id = $sacco->id;
+        $amount = abs($amount);
+        $LoanTransaction->amount = -1 * $amount;
+        $LoanTransaction->balance = 0;
+        $LoanTransaction->description = "Borrowed UGX " . number_format($amount) . " from {$sacco->name} - {$loan_scheem->name}. Reference: {$loan->id}.";
+        $LoanTransaction->save();
+        $LoanTransaction->balance = $loan->balance;
+        $LoanTransaction->save();
+
+        $initialBalance = $loan->balance;
+        if ($loan_scheem->initial_interest_type == 'Flat') {
+            $initialBalance =  $loan->initial_interest_flat_amount;
+        } else {
+            $_amount = abs($amount);
+            $initialBalance =  (($loan_scheem->initial_interest_percentage / 100)) * $_amount;
+        }
+        $initialBalance = abs($initialBalance);
+        $initialInterestTransaction = new LoanTransaction();
+        $initialInterestTransaction->user_id = $u->id;
+        $initialInterestTransaction->loan_id = $loan->id;
+        $initialInterestTransaction->sacco_id = $sacco->id;
+        $initialInterestTransaction->amount = -1 * $initialBalance;
+        $initialInterestTransaction->balance = $initialBalance;
+        $initialInterestTransaction->description = "Initial Interest of UGX " . number_format($initialBalance) . " for {$sacco->name} - {$loan_scheem->name}. Reference: {$loan->id}.";
+        $initialInterestTransaction->save();
+        $LoanTransaction->balance = $loan->balance;
+        $LoanTransaction->save();
+
+        return $this->success(null, $message = "Loan applied successfully. You will receive a confirmation message shortly.", 200);
+    }
+    public function transactions_create(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error('User not found.');
         }
         if (
             $r->type == null ||

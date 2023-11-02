@@ -15,6 +15,8 @@ Route::group([
     $router->get('/', 'HomeController@index')->name('home');
     $router->resource('gens', GenController::class);
     $router->resource('saccos', SaccoController::class);
+    $router->resource('loan-scheems', LoanScheemController::class); 
+    $router->resource('loans', LoanController::class); 
 
     /* ========================START OF NEW THINGS===========================*/
 

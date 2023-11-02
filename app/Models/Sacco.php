@@ -29,6 +29,7 @@ class Sacco extends Model
         });
 
 
+
         self::updating(function ($m) {
 
             $u = User::find($m->administrator_id);
@@ -41,4 +42,13 @@ class Sacco extends Model
             return $m;
         });
     }
+
+    //balance
+    public function getBalanceAttribute()
+    {
+        return Transaction::where('user_id', $this->administrator_id)->sum('amount');
+    }
+
+    //appends
+    protected $appends = ['balance'];
 }
