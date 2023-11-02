@@ -18,6 +18,7 @@ use App\Models\Product;
 use App\Models\Sacco;
 use App\Models\ServiceProvider;
 use App\Models\Transaction;
+use App\Models\User;
 use App\Models\Utils;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
@@ -52,7 +53,7 @@ class ApiResurceController extends Controller
         if (
             $r->type == null ||
             $r->source_type == null ||
-            $r->amount == null 
+            $r->amount == null
         ) {
             return $this->error('Some Information is still missing. Fill the missing information and try again.');
         }
@@ -81,6 +82,43 @@ class ApiResurceController extends Controller
             return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
         }
     }
+
+
+    public function transactions_transfer(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        if (!$u->isRole('admin')) {
+            return $this->error('You are not allowed to perform this action.');
+        }
+        if (
+            $r->amount == null ||
+            $r->desination_type == null ||
+            $r->user_id == null
+        ) {
+            return $this->error('Some Information is still missing. Fill the missing information and try again.');
+        }
+
+        $receiver = User::find($r->user_id);
+        if ($receiver == null) {
+            return $this->error('Receiver not found.');
+        }
+
+        $sender = User::find($u->id);
+        if ($sender == null) {
+            return $this->error('Sender not found.');
+        }
+
+        try {
+            Transaction::send_money($sender->id, $receiver->id, $r->amount, $r->description, $r->desination_type);
+            return $this->success(null, $message = "Sent UGX " . number_format($r->amount) . " to {$receiver->phone_number} - $receiver->name. Your balance is now UGX " . number_format($sender->balance) . ".", 200);
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage() . '');
+        }
+    }
+
     public function sacco_join_request(Request $r)
     {
 

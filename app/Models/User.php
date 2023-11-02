@@ -7,7 +7,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany as RelationsBelongsToMany;
 use Laravel\Sanctum\HasApiTokens;
-use Tymon\JWTAuth\Contracts\JWTSubject ;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -15,9 +15,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory; 
+    use HasFactory;
     use Notifiable;
- 
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -28,14 +28,17 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
-    public function campus()
+    //appends balance
+    protected $appends = ['balance'];
+
+    //getter for balance
+    public function getBalanceAttribute()
     {
-        return $this->belongsTo(Campus::class, 'campus_id');
+        return Transaction::where('user_id', $this->id)->sum('amount');
     }
- 
-    public function programs()
+
+    public function transactions()
     {
-        return $this->hasMany(UserHasProgram::class, 'user_id');
+        return $this->hasMany(Transaction::class, 'user_id');
     }
- 
 }

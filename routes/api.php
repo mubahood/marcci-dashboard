@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::get("saccos", [ApiResurceController::class, "saccos"]);
 Route::post("sacco-join-request", [ApiResurceController::class, "sacco_join_request"]);
 Route::POST("transactions-create", [ApiResurceController::class, "transactions_create"]);
+Route::POST("transactions-transfer", [ApiResurceController::class, "transactions_transfer"]);
 
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
     Route::get("sacco-members", [ApiResurceController::class, "sacco_members"]);
