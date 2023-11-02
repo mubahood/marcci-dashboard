@@ -86,12 +86,9 @@ class ApiResurceController extends Controller
 
     public function transactions_transfer(Request $r)
     {
-        $u = auth('api')->user();
-        if ($u == null) {
+        $sender = auth('api')->user();
+        if ($sender == null) {
             return $this->error('User not found.');
-        }
-        if (!$u->isRole('admin')) {
-            return $this->error('You are not allowed to perform this action.');
         }
         if (
             $r->amount == null ||
@@ -104,11 +101,6 @@ class ApiResurceController extends Controller
         $receiver = User::find($r->user_id);
         if ($receiver == null) {
             return $this->error('Receiver not found.');
-        }
-
-        $sender = User::find($u->id);
-        if ($sender == null) {
-            return $this->error('Sender not found.');
         }
 
         try {
