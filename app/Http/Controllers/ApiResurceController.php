@@ -44,7 +44,7 @@ class ApiResurceController extends Controller
         }
 
         return $this->success(
-            Sacco::where(
+            LoanScheem::where(
                 [
                     'id' => $u->sacco_id
                 ]
