@@ -49,7 +49,30 @@ class ApiResurceController extends Controller
                     'id' => $u->sacco_id
                 ]
             )->orderby('id', 'desc')->get(),
-            $message = "Sussesfully",
+            $message = "Success",
+            200
+        );
+    }
+
+    public function transactions(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $conds = [];
+        if ($u->isRole('sacco')) {
+            $conds = [
+                'sacco_id' => $u->sacco_id
+            ];
+        } else {
+            $conds = [
+                'administrator_id' => $u->id
+            ];
+        }
+        return $this->success(
+            Sacco::where($conds)->orderby('id', 'desc')->get(),
+            $message = "Success",
             200
         );
     }
@@ -57,7 +80,7 @@ class ApiResurceController extends Controller
     {
         return $this->success(
             Sacco::where([])->orderby('id', 'desc')->get(),
-            $message = "Sussesfully",
+            $message = "Susse",
             200
         );
     }
@@ -318,7 +341,7 @@ class ApiResurceController extends Controller
         $user->sacco_join_status = 'Pending';
         $user->save();
         return $this->success(
-            'Sussesfully',
+            'Success',
             $message = "Request submitted successfully.",
         );
     }
@@ -338,7 +361,7 @@ class ApiResurceController extends Controller
 
         return $this->success(
             $items,
-            $message = "Sussesfully",
+            $message = "Success",
             200
         );
     }
@@ -365,7 +388,7 @@ class ApiResurceController extends Controller
 
         return $this->success(
             $gardens,
-            $message = "Sussesfully",
+            $message = "Success",
             200
         );
     }
@@ -382,7 +405,7 @@ class ApiResurceController extends Controller
             ->get();
         return $this->success(
             $members,
-            $message = "Sussesfully",
+            $message = "Success",
             200
         );
     }
@@ -398,7 +421,7 @@ class ApiResurceController extends Controller
             ->get();
         return $this->success(
             $members,
-            $message = "Sussesfully",
+            $message = "Success",
             200
         );
     }
@@ -416,7 +439,7 @@ class ApiResurceController extends Controller
         $member->save();
         return $this->success(
             null,
-            $message = "Sussesfully",
+            $message = "Success",
             200
         );
     }
@@ -443,7 +466,7 @@ class ApiResurceController extends Controller
 
         return $this->success(
             $gardens,
-            $message = "Sussesfully",
+            $message = "Success",
             200
         );
     }
@@ -462,7 +485,7 @@ class ApiResurceController extends Controller
                 ->limit(100)
                 ->orderBy('id', 'desc')
                 ->get(),
-            $message = "Sussesfully",
+            $message = "Success",
             200
         );
     }
@@ -478,7 +501,7 @@ class ApiResurceController extends Controller
                 ->orderBy('id', 'desc')
                 ->limit(100)
                 ->get(),
-            $message = "Sussesfully",
+            $message = "Success",
         );
     }
 
@@ -526,7 +549,7 @@ class ApiResurceController extends Controller
 
         try {
             $activity->save();
-            return $this->success(null, $message = "Sussesfully created!", 200);
+            return $this->success(null, $message = "Success created!", 200);
         } catch (\Throwable $th) {
             return $this->error('Failed to save activity, because ' . $th->getMessage() . '');
         }
@@ -570,7 +593,7 @@ class ApiResurceController extends Controller
         $obj->save();
 
 
-        return $this->success(null, $message = "Sussesfully created!", 200);
+        return $this->success(null, $message = "Success created!", 200);
     }
 
     public function product_create(Request $r)
@@ -614,7 +637,7 @@ class ApiResurceController extends Controller
 
         try {
             $obj->save();
-            return $this->success(null, $message = "Product Uploaded Sussesfully!", 200);
+            return $this->success(null, $message = "Product Uploaded Success!", 200);
         } catch (\Throwable $th) {
             return $this->error('Failed to save product, because ' . $th->getMessage() . '');
             //throw $th;
@@ -675,7 +698,7 @@ class ApiResurceController extends Controller
         $obj->save();
 
 
-        return $this->success(null, $message = "Sussesfully registered!", 200);
+        return $this->success(null, $message = "Success registered!", 200);
     }
 
     public function groups()

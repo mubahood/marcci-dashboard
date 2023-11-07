@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get("transactions", [ApiResurceController::class, "transactions"]);
 Route::get("saccos", [ApiResurceController::class, "saccos"]);
 Route::get("loan-schemes", [ApiResurceController::class, "loan_schemes"]);
 Route::post("sacco-join-request", [ApiResurceController::class, "sacco_join_request"]);
