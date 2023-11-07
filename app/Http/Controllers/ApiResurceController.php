@@ -143,6 +143,7 @@ class ApiResurceController extends Controller
         $loan->scheme_max_amount = $loan_scheem->max_amount;
         $loan->scheme_min_balance = $loan_scheem->min_balance;
         $loan->scheme_max_balance = $loan_scheem->max_balance;
+        $loan->reason = $r->reason;
 
         try {
             $loan->save();

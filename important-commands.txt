@@ -2,8 +2,7 @@ php artisan migrate
 
 ssh -p 2211 cpaneluser@10.0.10.10
 
-php artisan make:migration create_courses_table 
-
+php artisan make:migration add_reason_col_to_reason --table=loans 
  
 php artisan admin:make LoanController --model=App\\Models\\Loan
  
