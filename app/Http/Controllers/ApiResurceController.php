@@ -71,7 +71,7 @@ class ApiResurceController extends Controller
             ];
         }
         return $this->success(
-            Sacco::where($conds)->orderby('id', 'desc')->get(),
+            Transaction::where($conds)->orderby('id', 'desc')->get(),
             $message = "Success",
             200
         );
@@ -80,7 +80,7 @@ class ApiResurceController extends Controller
     {
         return $this->success(
             Sacco::where([])->orderby('id', 'desc')->get(),
-            $message = "Susse",
+            $message = "Sussess",
             200
         );
     }
