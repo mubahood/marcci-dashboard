@@ -67,7 +67,7 @@ class ApiResurceController extends Controller
             ];
         } else {
             $conds = [
-                'administrator_id' => $u->id
+                'user_id' => $u->id
             ];
         }
         return $this->success(
