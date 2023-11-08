@@ -25,13 +25,8 @@ class LoanTransaction extends Model
 
         //creatd
         static::created(function ($model) {
-            $loan = Loan::find($model->loan_id);
-            if ($loan == null) {
-                throw new Exception("Loan not found");
-            }
-            $loan->balance = LoanTransaction::where('loan_id', $loan->id)->sum('amount');
-            $loan->save();
-            return $model;
+            $model->balance = LoanTransaction::where('loan_id', $model->loan_id)->sum('amount');
+            $model->save();
         });
         static::updated(function ($model) {
             $loan = Loan::find($model->loan_id);

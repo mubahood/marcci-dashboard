@@ -27,12 +27,8 @@ class Transaction extends Model
 
         //creatd
         static::created(function ($model) {
-            $user = Administrator::find($model->user_id);
-            if ($user == null) {
-                throw new Exception("User not found");
-            }
-            $user->balance = Transaction::where('user_id', $user->id)->sum('amount');
-            $user->save();
+            $model->balance = Transaction::where('user_id', $model->user_id)->sum('amount');
+            $model->save();
             return $model;
         });
     }
