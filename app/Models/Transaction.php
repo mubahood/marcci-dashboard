@@ -24,6 +24,17 @@ class Transaction extends Model
             $model->sacco_id = $user->sacco_id;
             return $model;
         });
+
+        //creatd
+        static::created(function ($model) {
+            $user = Administrator::find($model->user_id);
+            if ($user == null) {
+                throw new Exception("User not found");
+            }
+            $user->balance = Transaction::where('user_id', $user->id)->sum('amount');
+            $user->save();
+            return $model;
+        });
     }
 
     public static function send_money($sender_id, $receiver_id, $amount, $description, $password)
@@ -45,7 +56,7 @@ class Transaction extends Model
         }
 
         if ($sender->id == $receiver->id) {
-            throw new Exception("You cannot send money to yourself. ".$sender->id ."==". $receiver->id);
+            throw new Exception("You cannot send money to yourself. " . $sender->id . "==" . $receiver->id);
         }
 
         $sender_transactions = new Transaction();
