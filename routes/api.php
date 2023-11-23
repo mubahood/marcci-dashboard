@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get("manifest", [ApiResurceController::class, "manifest"]);
 Route::get("loans", [ApiResurceController::class, "loans"]);
 Route::get("transactions", [ApiResurceController::class, "transactions"]);
 Route::get("loan-transactions", [ApiResurceController::class, "loan_transactions"]);

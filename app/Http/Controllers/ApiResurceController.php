@@ -77,6 +77,21 @@ class ApiResurceController extends Controller
         );
     }
 
+    public function manifest(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        
+        return $this->success(
+            $u,
+            $message = "Success",
+            200
+        );
+    }
+
+
     public function loans(Request $r)
     {
         $u = auth('api')->user();
