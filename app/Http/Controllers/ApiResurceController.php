@@ -70,16 +70,8 @@ class ApiResurceController extends Controller
                 'user_id' => $u->id
             ];
         }
-        $U = User::find($u->id);
-        $U->updated_at = Carbon::now();
-        $U->save();
         return $this->success(
-            json_encode([
-                'balance' => $u->balance,
-                'name' => $u->name,
-                'id' => $u->id,
-                'updated_at' => $u->updated_at,
-            ]),
+            LoanTransaction::where($conds)->orderby('id', 'desc')->get(),
             $message = "Success",
             200
         );
@@ -91,9 +83,16 @@ class ApiResurceController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
-
+        $U = User::find($u->id);
+        $U->updated_at = Carbon::now();
+        $U->save();
         return $this->success(
-            $u,
+            json_encode([
+                'balance' => $u->balance,
+                'name' => $u->name,
+                'id' => $u->id,
+                'updated_at' => $u->updated_at,
+            ]),
             $message = "Success",
             200
         );
