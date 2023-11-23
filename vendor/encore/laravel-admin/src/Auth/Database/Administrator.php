@@ -3,6 +3,7 @@
 namespace Encore\Admin\Auth\Database;
 
 use App\Models\Campus;
+use App\Models\Transaction;
 use App\Models\UserHasProgram;
 use Carbon\Carbon;
 use Encore\Admin\Traits\DefaultDatetimeFormat;
@@ -23,6 +24,14 @@ class Administrator extends Model implements AuthenticatableContract, JWTSubject
     use Authenticatable;
     use HasPermissions;
     use DefaultDatetimeFormat;
+
+    //appends for balance
+    protected $appends = ['balance'];
+    //getter for balance
+    public function getBalanceAttribute()
+    {
+        return Transaction::where('user_id', $this->id)->sum('amount'); 
+    }
 
     public function getJWTIdentifier()
     {
@@ -67,7 +76,7 @@ class Administrator extends Model implements AuthenticatableContract, JWTSubject
             $n = $m->first_name . " " . $m->last_name;
             if (strlen(trim($n)) > 1) {
                 $m->name = trim($n);
-            } 
+            }
         });
     }
 
