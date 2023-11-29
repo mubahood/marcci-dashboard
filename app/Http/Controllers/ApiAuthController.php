@@ -61,11 +61,14 @@ class ApiAuthController extends Controller
 
         $r->username = trim($r->username);
 
-        $u = User::where('phone_number', $r->username)
-            ->orWhere('username', $r->username)
-            ->orWhere('email', $r->username)
-            ->first();
-
+        $u = User::where('phone_number', $r->username)->first();
+        if ($u == null) {
+            $u = User::where('phone_number', $r->username)
+                ->first();
+        }
+        if ($u == null) {
+            $u = User::where('email', $r->username)->first();
+        }
 
 
         if ($u == null) {
@@ -74,11 +77,12 @@ class ApiAuthController extends Controller
 
             if (Utils::phone_number_is_valid($phone_number)) {
                 $phone_number = $r->phone_number;
+                $u = User::where('phone_number', $phone_number)->first();
 
-                $u = User::where('phone_number', $phone_number)
-                    ->orWhere('username', $phone_number)
-                    ->orWhere('email', $phone_number)
-                    ->first();
+                if ($u == null) {
+                    $u = User::where('username', $phone_number)
+                        ->first();
+                }
             }
         }
 
