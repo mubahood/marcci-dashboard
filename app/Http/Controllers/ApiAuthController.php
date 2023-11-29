@@ -87,7 +87,7 @@ class ApiAuthController extends Controller
         }
 
         if ($u == null) {
-            return $this->error('User account not found.');
+            return $this->error('User account not found.(' . $phone_number . ')');
         }
 
 
