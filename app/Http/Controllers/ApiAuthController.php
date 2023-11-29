@@ -75,8 +75,9 @@ class ApiAuthController extends Controller
 
             $phone_number = Utils::prepare_phone_number($r->username);
 
+
             if (Utils::phone_number_is_valid($phone_number)) {
-                $phone_number = $r->phone_number;
+
                 $u = User::where('phone_number', $phone_number)->first();
 
                 if ($u == null) {
@@ -86,8 +87,9 @@ class ApiAuthController extends Controller
             }
         }
 
+
         if ($u == null) {
-            return $this->error('User account not found.(' . $phone_number .' - '.$r->username. ')');
+            return $this->error('User account not found (' . $phone_number . '.)');
         }
 
 
