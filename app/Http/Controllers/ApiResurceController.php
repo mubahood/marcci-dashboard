@@ -158,17 +158,14 @@ class ApiResurceController extends Controller
 
     public function loan_create(Request $r)
     {
-        $admin = auth('api')->user();
-        if ($admin == null) {
+        $u = auth('api')->user();
+        if ($u == null) {
             return $this->error('User not found.');
         }
-        if ($admin->user_type != 'Admin') {
-            return $this->error('Only admins can create a transaction.');
-        }
 
-        $u = User::find($r->user_id);
+        $u = User::find($u->id);
         if ($u == null) {
-            return $this->error('Receiver account not found.');
+            return $this->error('User not found.');
         }
 
         if (
@@ -335,7 +332,19 @@ class ApiResurceController extends Controller
     }
     public function transactions_create(Request $r)
     {
-        $u = auth('api')->user();
+        $admin = auth('api')->user();
+        if ($admin == null) {
+            return $this->error('User not found.');
+        }
+        if ($admin->user_type != 'Admin') {
+            return $this->error('Only admins can create a transaction.');
+        }
+
+        $u = User::find($r->user_id);
+        if ($u == null) {
+            return $this->error('Receiver account not found.');
+        }
+
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -347,8 +356,8 @@ class ApiResurceController extends Controller
             return $this->error('Some Information is still missing. Fill the missing information and try again.');
         }
         $tra = new Transaction();
-        $tra->user_id = $r->user_id;
-        $tra->source_user_id = $u->id;
+        $tra->user_id = $u->id;
+        $tra->source_user_id = $admin->id;
         $tra->type = $r->type;
         $tra->source_type = $r->source_type;
         $tra->source_mobile_money_number = $r->source_mobile_money_number;
