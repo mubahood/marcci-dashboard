@@ -21,8 +21,25 @@ class Sacco extends Model
                 throw new \Exception("Sacco Administrator not found");
             }
             $u->sacco_id = $m->id;
+            $u->user_type = 'Admin';
+            $u->status = 'Active';
+            $u->sacco_join_status = 'Approved';
             $u->save();
         });
+
+        //updated
+        self::updated(function ($m) {
+            $u = User::find($m->administrator_id);
+            if ($u == null) {
+                throw new \Exception("Sacco Administrator not found");
+            }
+            $u->sacco_id = $m->id;
+            $u->user_type = 'Admin';
+            $u->status = 'Active';
+            $u->sacco_join_status = 'Approved';
+            $u->save();
+        });
+
         self::creating(function ($m) {
 
             return $m;

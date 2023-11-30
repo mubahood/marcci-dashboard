@@ -28,23 +28,20 @@ class SaccoController extends AdminController
         $grid = new Grid(new Sacco());
 
         $grid->column('id', __('Id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
-        $grid->column('administrator_id', __('Administrator id'));
-        $grid->column('name', __('Name'));
-        $grid->column('phone_number', __('Phone number'));
-        $grid->column('email_address', __('Email address'));
-        $grid->column('physical_address', __('Physical address'));
-        $grid->column('establishment_date', __('Establishment date'));
-        $grid->column('registration_number', __('Registration number'));
-        $grid->column('chairperson_name', __('Chairperson name'));
-        $grid->column('chairperson_phone_number', __('Chairperson phone number'));
-        $grid->column('chairperson_email_address', __('Chairperson email address'));
-        $grid->column('about', __('About'));
-        $grid->column('terms', __('Terms'));
+        $grid->column('name', __('Name'))->sortable();
+        $grid->column('phone_number', __('Phone number'))->sortable();
+        $grid->column('email_address', __('Email address'))->sortable();
+        $grid->column('physical_address', __('Physical address'))->sortable();
+        $grid->column('establishment_date', __('Establishment date'))->sortable();
+        $grid->column('registration_number', __('Registration number'))->sortable();
+        $grid->column('chairperson_name', __('Chairperson name'))->sortable();
+        $grid->column('chairperson_phone_number', __('Chairperson phone number'))->hide();
+        $grid->column('chairperson_email_address', __('Chairperson email address'))->hide();
+        $grid->column('about', __('About'))->hide();
+        $grid->column('terms', __('Terms'))->hide();
         $grid->column('mission', __('Mission'));
-        $grid->column('vision', __('Vision'));
-        $grid->column('logo', __('Logo'));
+        $grid->column('vision', __('Vision'))->hide();
+        $grid->column('logo', __('Logo'))->hide();
 
         return $grid;
     }
