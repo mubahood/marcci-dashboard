@@ -341,8 +341,8 @@ class ApiResurceController extends Controller
         }
 
         $u = User::find($r->user_id);
-        if ($u == null) {
-            return $this->error('Receiver account not found.');
+        if ($u != null) {
+            return $this->error('Receiver account not found. '.$u->name);
         }
 
         if ($u == null) {
