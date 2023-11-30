@@ -158,14 +158,17 @@ class ApiResurceController extends Controller
 
     public function loan_create(Request $r)
     {
-        $u = auth('api')->user();
-        if ($u == null) {
+        $admin = auth('api')->user();
+        if ($admin == null) {
             return $this->error('User not found.');
         }
+        if ($admin->user_type != 'Admin') {
+            return $this->error('Only admins can create a transaction.');
+        }
 
-        $u = User::find($u->id);
+        $u = User::find($r->user_id);
         if ($u == null) {
-            return $this->error('User not found.');
+            return $this->error('Receiver account not found.');
         }
 
         if (
