@@ -510,10 +510,7 @@ class ApiResurceController extends Controller
     }
     public function sacco_members_review(Request $r)
     {
-        $u = $r->user;
-        if ($u == null) {
-            return $this->error('User not found.');
-        }
+        
         $member = Administrator::find($r->member_id);
         if ($member == null) {
             return $this->error('Member not found.');
