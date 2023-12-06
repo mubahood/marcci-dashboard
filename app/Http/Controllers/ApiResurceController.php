@@ -336,9 +336,9 @@ class ApiResurceController extends Controller
         if ($admin == null) {
             return $this->error('User not found.');
         }
-        if ($admin->user_type != 'Admin') {
+/*         if ($admin->user_type != 'Admin') {
             return $this->error('Only admins can create a transaction.');
-        }
+        } */
 
         $u = User::find($r->user_id);
         if ($u == null) {
