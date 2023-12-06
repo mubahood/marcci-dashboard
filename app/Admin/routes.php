@@ -17,6 +17,7 @@ Route::group([
     $router->resource('saccos', SaccoController::class);
     $router->resource('loan-scheems', LoanScheemController::class); 
     $router->resource('loans', LoanController::class); 
+    $router->resource('meetings', MeetingController::class);
 
     /* ========================START OF NEW THINGS===========================*/
 

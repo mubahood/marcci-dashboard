@@ -695,6 +695,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Models\\LoanScheem' => __DIR__ . '/../..' . '/app/Models/LoanScheem.php',
         'App\\Models\\LoanTransaction' => __DIR__ . '/../..' . '/app/Models/LoanTransaction.php',
         'App\\Models\\Location' => __DIR__ . '/../..' . '/app/Models/Location.php',
+        'App\\Models\\Meeting' => __DIR__ . '/../..' . '/app/Models/Meeting.php',
         'App\\Models\\NewsPost' => __DIR__ . '/../..' . '/app/Models/NewsPost.php',
         'App\\Models\\Participant' => __DIR__ . '/../..' . '/app/Models/Participant.php',
         'App\\Models\\Person' => __DIR__ . '/../..' . '/app/Models/Person.php',
