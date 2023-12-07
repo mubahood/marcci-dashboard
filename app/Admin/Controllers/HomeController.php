@@ -30,6 +30,7 @@ class HomeController extends Controller
 {
     public function index(Content $content)
     {
+        return $content;
 
         /*  
         Schema::create('transactions', function (Blueprint $table) {
@@ -56,7 +57,7 @@ class HomeController extends Controller
 
         $u = Auth::user();
         $content
-            ->title('MaRCCI - Dashboard')
+            ->title('Digisave - Dashboard')
             ->description('Hello ' . $u->name . "!");
         $u = Admin::user();
 

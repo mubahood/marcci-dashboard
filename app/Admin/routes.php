@@ -15,9 +15,10 @@ Route::group([
     $router->get('/', 'HomeController@index')->name('home');
     $router->resource('gens', GenController::class);
     $router->resource('saccos', SaccoController::class);
-    $router->resource('loan-scheems', LoanScheemController::class); 
-    $router->resource('loans', LoanController::class); 
+    $router->resource('loan-scheems', LoanScheemController::class);
+    $router->resource('loans', LoanController::class);
     $router->resource('meetings', MeetingController::class);
+    $router->resource('loan-transactions', LoanTransactionController::class); 
 
     /* ========================START OF NEW THINGS===========================*/
 
@@ -25,6 +26,8 @@ Route::group([
     $router->resource('crop-protocols', CropProtocolController::class);
     $router->resource('gardens', GardenController::class);
     $router->resource('garden-activities', GardenActivityController::class);
+    $router->resource('cycles', CycleController::class);
+    $router->resource('share-records', ShareRecordController::class);
 
     /* ========================END OF NEW THINGS=============================*/
 
@@ -50,5 +53,4 @@ Route::group([
     $router->resource('products', ProductController::class);
     $router->resource('product-orders', ProductOrderController::class);
     $router->resource('transactions', TransactionController::class);
-
 });

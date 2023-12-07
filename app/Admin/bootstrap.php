@@ -29,7 +29,7 @@ Utils::system_boot();
 
 Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
 
-/*     $u = Auth::user();
+    /*     $u = Auth::user();
     $navbar->left(view('admin.search-bar', [
         'u' => $u
     ]));
@@ -66,7 +66,42 @@ Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
 
 
 
-
 Encore\Admin\Form::forget(['map', 'editor']);
 Admin::css(url('/assets/css/bootstrap.css'));
 Admin::css('/assets/css/styles.css');
+
+//disable delete on form tools
+Encore\Admin\Form::init(function (Encore\Admin\Form $form) {
+    $form->tools(function ($tools) {
+        $tools->disableDelete();
+        $tools->disableView();
+    });
+    $form->disableReset();
+    $form->disableViewCheck();
+});
+
+//grid each see for their respective sacco_id
+Encore\Admin\Grid::init(function (Encore\Admin\Grid $grid) {
+    $u = Admin::user();
+    //get current segment
+    $current_segment = request()->segment(1);
+
+    $exclude = ['saccos', 'gens', 'loan-scheems', 'loans', 'meetings', 'crops', 'crop-protocols', 'gardens', 'garden-activities', 'cycles', 'service-providers', 'groups', 'associations', 'people', 'disabilities', 'institutions', 'counselling-centres', 'jobs', 'job-applications', 'course-categories', 'courses', 'settings', 'participants', 'members', 'post-categories', 'news-posts', 'events', 'event-bookings', 'products', 'product-orders', 'transactions'];
+
+    if (!$u->isRole('admin')) {
+        if (!in_array($current_segment, $exclude)) {
+            $grid->model()->where('sacco_id', $u->sacco_id);
+        }
+    }
+    $grid->model()->orderBy('id', 'desc');
+});
+//show each see for their respective sacco_id
+Encore\Admin\Show::init(function (Encore\Admin\Show $show) {
+    $u = Admin::user();
+    if (!$u->isRole('admin')) {
+        $show->panel()->tools(function ($tools) {
+            $tools->disableDelete();
+            $tools->disableEdit();
+        });
+    }
+});

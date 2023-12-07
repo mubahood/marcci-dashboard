@@ -11,7 +11,7 @@ return [
     | login page.
     |
     */
-    'name' => 'Mobi Save',
+    'name' => 'Digi Save',
 
     /*
     |--------------------------------------------------------------------------
@@ -22,7 +22,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo' => '<b>Mobi Save</b> admin',
+    'logo' => '<b>Digi Save</b> admin',
 
     /*
     |--------------------------------------------------------------------------
@@ -34,7 +34,7 @@ return [
     | '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo-mini' => '<b>Mobi Save</b>',
+    'logo-mini' => '<b>Digi Save</b>',
 
     /*
     |--------------------------------------------------------------------------
@@ -310,7 +310,7 @@ return [
     | each page
     |
     */
-    'show_version' => false,
+    'show_version' => TRUE,
 
     /*
     |--------------------------------------------------------------------------

@@ -14,6 +14,7 @@ class Sacco extends Model
     {
         parent::boot();
         self::deleting(function ($m) {
+            throw new \Exception("Cannot delete Sacco");
         });
         self::created(function ($m) {
             $u = User::find($m->administrator_id);

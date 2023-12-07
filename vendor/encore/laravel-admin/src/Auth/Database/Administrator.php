@@ -2,9 +2,9 @@
 
 namespace Encore\Admin\Auth\Database;
 
-use App\Models\Campus;
 use App\Models\Transaction;
 use App\Models\UserHasProgram;
+use App\Models\Utils;
 use Carbon\Carbon;
 use Encore\Admin\Traits\DefaultDatetimeFormat;
 use Illuminate\Auth\Authenticatable;
@@ -30,7 +30,7 @@ class Administrator extends Model implements AuthenticatableContract, JWTSubject
     //getter for balance
     public function getBalanceAttribute()
     {
-        return Transaction::where('user_id', $this->id)->sum('amount'); 
+        return Transaction::where('user_id', $this->id)->sum('amount');
     }
 
     public function getJWTIdentifier()
@@ -67,12 +67,81 @@ class Administrator extends Model implements AuthenticatableContract, JWTSubject
         parent::boot();
 
         self::creating(function ($m) {
+            $m->phone_number = Utils::prepare_phone_number($m->phone_number);
+            if (!Utils::phone_number_is_valid($m->phone_number)) {
+                throw new \Exception("Invalid phone number");
+            }
+            //check if phone number exists
+            $u = Administrator::where('phone_number', $m->phone_number)->first();
+            if ($u != null)
+                if ($u != null) {
+                    throw new \Exception("User with same phone number already exists.");
+                }
+            $m->username = $m->phone_number;
+
+            //check if username exists
+            $u = Administrator::where('username', $m->username)->first();
+            if ($u != null)
+                if ($u != null) {
+                    throw new \Exception("User with same username already exists.");
+                }
+
+            //if email is set, validate it
+            if ($m->email != null) {
+                $m->email = trim($m->email);
+                if (!filter_var($m->email, FILTER_VALIDATE_EMAIL)) {
+                    throw new \Exception("Invalid email address");
+                }
+                //check if email exists
+                $u = Administrator::where('email', $m->email)->first();
+                if ($u != null)
+                    if ($u != null)
+                        if ($u->id != $m->id) {
+                            throw new \Exception("User with same email address already exists.");
+                        }
+            }
+
             $n = $m->first_name . " " . $m->last_name;
-            if (strlen(trim($n)) > 1) {
+            if (strlen(trim($n)) > 2) {
                 $m->name = trim($n);
             }
         });
         self::updating(function ($m) {
+
+
+            $m->phone_number = Utils::prepare_phone_number($m->phone_number);
+            if (!Utils::phone_number_is_valid($m->phone_number)) {
+                throw new \Exception("Invalid phone number");
+            }
+            //check if phone number exists
+            $u = Administrator::where('phone_number', $m->phone_number)->first();
+            if ($u != null)
+                if ($u->id != $m->id) {
+                    throw new \Exception("User with same phone number already exists.");
+                }
+            $m->username = $m->phone_number;
+
+            //check if username exists
+            $u = Administrator::where('username', $m->username)->first();
+            if ($u != null)
+                if ($u->id != $m->id) {
+                    throw new \Exception("User with same username already exists.");
+                }
+
+            //if email is set, validate it
+            if ($m->email != null) {
+                $m->email = trim($m->email);
+                if (!filter_var($m->email, FILTER_VALIDATE_EMAIL)) {
+                    throw new \Exception("Invalid email address");
+                }
+                //check if email exists
+                $u = Administrator::where('email', $m->email)->first();
+                if ($u != null)
+                    if ($u->id != $m->id) {
+                        throw new \Exception("User with same email address already exists.");
+                    }
+            }
+
             $n = $m->first_name . " " . $m->last_name;
             if (strlen(trim($n)) > 1) {
                 $m->name = trim($n);
@@ -121,11 +190,6 @@ class Administrator extends Model implements AuthenticatableContract, JWTSubject
         return $p;
     }
 
-
-    public function campus()
-    {
-        return $this->belongsTo(Campus::class, 'campus_id');
-    }
 
     public function getCreatedAtTextAttribute($name)
     {

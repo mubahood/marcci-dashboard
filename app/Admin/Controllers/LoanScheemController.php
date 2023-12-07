@@ -30,9 +30,7 @@ class LoanScheemController extends AdminController
         $grid->model()->where('sacco_id', $u->sacco_id)
             ->orderBy('name', 'asc');
 
-        $grid->column('id', __('Id'))->sortable();
-        $grid->column('sacco_id', __('Sacco id'));
-        $grid->column('name', __('Name'));
+        $grid->column('name', __('Scheme Name'))->sortable();
         $grid->column('initial_interest_type', __('Initial interest type'))->hide();
         $grid->column('initial_interest_flat_amount', __('Initial interest flat amount'))->hide();
         $grid->column('initial_interest_percentage', __('Initial interest percentage'))->hide();
@@ -41,7 +39,7 @@ class LoanScheemController extends AdminController
         $grid->column('periodic_interest_type', __('Periodic interest type'))->hide();
         $grid->column('periodic_interest_percentage', __('Periodic interest percentage'))->hide();
         $grid->column('periodic_interest_flat_amount', __('Periodic interest flat amount'))->hide();
-        $grid->column('min_amount', __('Min amount'));
+        $grid->column('min_amount', __('Min amount (UGX)'))->sortable();
         $grid->column('max_amount', __('Max amount'));
         $grid->column('min_balance', __('Min balance'));
         $grid->column('description', __('Description'))->hide();

@@ -3,14 +3,11 @@
 namespace App\Admin\Controllers;
 
 use App\Models\User;
-use App\Models\Utils;
-use Carbon\Carbon;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
-use Illuminate\Support\Str;
-
 
 class MembersController extends AdminController
 {
@@ -19,7 +16,7 @@ class MembersController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Members';
+    protected $title = 'Sacco Members';
 
     /**
      * Make a grid builder.
@@ -28,94 +25,41 @@ class MembersController extends AdminController
      */
     protected function grid()
     {
-
-        Utils::checkEventRegustration();
-
         $grid = new Grid(new User());
-        $grid->disableExport();
-        $grid->disableCreateButton();
-
-        $grid->quickSearch('name')->placeholder('Search by name');
-
-        $grid->disableBatchActions();
-        $grid->disableActions();
-        $grid->model()->orderBy('id', 'desc');
-
-        $grid->column('avatar', __('Photo'))
-            ->display(function ($avatar) {
-                $img = url("storage/" . $avatar);
-                $link = admin_url('members/' . $this->id);
-                return '<a href=' . $link . ' title="View profile"><img class="img-fluid " style="border-radius: 10px;"  src="' . $img . '" ></a>';
-            })
-            ->width(80)
-            ->sortable();
-        $grid->column('name', __('Name'))
-            ->display(function ($name) {
-                $link = admin_url('members/' . $this->id);
-                return '<a class="text-dark" href=' . $link . ' title="View profile">' . Str::limit($name, 20) . '</a>';
-            })->sortable();
-        /* $grid->column('sex', __('Gender'))->filter([
-            'Male' => 'Male',
-            'Female' => 'Female',
-        ]); */
-        $grid->column('campus_id', __('Campus'))
-            ->display(function () {
-                return $this->campus->name;
-            })->sortable();
-        $grid->column('year', __('Graduated'))
-            ->display(function () {
-                $programs  = $this->programs;
-                if (empty($programs)) {
-                    return '-';
-                }
-                if (!isset($programs[0])) {
-                    return "-";
-                }
-                return $programs[0]->program_year;
-            });
-
-        $grid->column('cv', __('Cv'))->display(function ($file) {
-            if ($file == null || strlen($file) < 2) {
-                return "No CV";
+        $u = Admin::user();
+        if (!$u->isRole('admin')) {
+            $grid->model()->where('sacco_id', $u->sacco_id);
+            if (!$u->isRole('sacco')) {
+                $grid->disableCreateButton();
+                //dsable delete
+                $grid->actions(function (Grid\Displayers\Actions $actions) {
+                    $actions->disableDelete();
+                });
+                $grid->disableFilter();
             }
-            $link = url("storage/" . $file);
-            return '<a href="' . $link . '" target="_blank" ><i class="fa fa-download"></i> Download CV</a>';
-        })->sortable();
-        $grid->column('address', __('Current Address'))
-            ->display(function ($name) {
-                return Str::limit($name, 20);
-            })->sortable();
-        $grid->column('phone_number', __('Phone number'));
-        $grid->column('country', __('Country'))->sortable();
-        $grid->column('email', __('Email'))
-            ->display(function ($mail) {
-                return '<a href="mailto:' . $mail . '" title="' . $mail . '"  ><i class="fa fa-envelope"></i> Send email</a>';
-            })->sortable();
-        $grid->column('whatsapp', __('Whatsapp'))
-            ->display(function ($num) {
-                if ($num == null || strlen($num) < 2) {
-                    return "No number";
-                }
-                return $num;
-            })->sortable();
-        $grid->column('created_at', __('Joined'))
-            ->display(function ($num) {
-                return Utils::my_date($num);
-            })->sortable();
-        $grid->column('updated_at', __('Last seen'))
-            ->display(function ($num) {
-                return Carbon::parse($num)->diffForHumans();
+            $grid->model()->where('sacco_id', $u->sacco_id);
+        } else {
+        }
+        $grid->disableBatchActions();
+        $grid->quickSearch('first_name', 'last_name', 'email', 'phone_number')->placeholder('Search by name, email or phone number');
+
+        $grid->column('first_name', __('First name'))->sortable();
+        $grid->column('last_name', __('Last name'))->sortable();
+        $grid->column('email', __('Email'))->sortable();
+        $grid->column('sex', __('Gender'))->sortable();
+        $grid->column('phone_number', __('Phone Number'));
+        $grid->column('sacco_join_status', __('Status'))
+            ->label([
+                'Pending' => 'warning',
+                'Approved' => 'success',
+            ])
+            ->sortable();
+        $grid->column('address', __('Address'));
+        $grid->column('created_at', __('Date Joined'))
+            ->display(function ($date) {
+                return date('d M Y', strtotime($date));
             })->sortable();
 
-        $grid->column('actions', __('Action'))
-            ->display(function () {
-                $link = admin_url('members/' . $this->id);
-                $links = '<a  href="' . $link .'" title="View profile"><i class="fa fa-eye"> View profile</a>';
-                $links .= '<br><a  href="mailto:' . $this->email.'" title="Send email"><i class="fa fa-envelope"> Send email</a>';
-                $links .= '<br><a  href="mailto:' . $this->email.'" title="Call"><i class="fa fa-phone"> Call '.$this->first_name.'</a>';
-
-                return $links;
-            })->sortable();
 
         return $grid;
     }
@@ -128,22 +72,6 @@ class MembersController extends AdminController
      */
     protected function detail($id)
     {
-
-
-        $s = User::findOrFail($id);
-        $back_link = admin_url('members');
-        if (isset($_SERVER['HTTP_REFERER'])) {
-            if ($_SERVER['HTTP_REFERER'] != null) {
-                if (strlen($_SERVER['HTTP_REFERER']) > 10) {
-                    $back_link  = $_SERVER['HTTP_REFERER'];
-                }
-            }
-        }
-        return view('admin.user-prifile', [
-            'p' => $s,
-            'back_link' => $back_link
-        ]);
-
         $show = new Show(User::findOrFail($id));
 
         $show->field('id', __('Id'));
@@ -182,6 +110,15 @@ class MembersController extends AdminController
         $show->field('name', __('Name'));
         $show->field('campus_id', __('Campus id'));
         $show->field('complete_profile', __('Complete profile'));
+        $show->field('title', __('Title'));
+        $show->field('dob', __('Dob'));
+        $show->field('intro', __('Intro'));
+        $show->field('sacco_id', __('Sacco id'));
+        $show->field('sacco_join_status', __('Sacco join status'));
+        $show->field('id_front', __('Id front'));
+        $show->field('id_back', __('Id back'));
+        $show->field('status', __('Status'));
+        $show->field('balance', __('Balance'));
 
         return $show;
     }
@@ -194,40 +131,80 @@ class MembersController extends AdminController
     protected function form()
     {
         $form = new Form(new User());
+        $u = Admin::user();
 
-        $form->text('username', __('Username'));
-        $form->textarea('password', __('Password'));
-        $form->text('first_name', __('First name'));
-        $form->text('last_name', __('Last name'));
-        $form->text('reg_date', __('Reg date'));
-        $form->text('last_seen', __('Last seen'));
-        $form->email('email', __('Email'));
-        $form->switch('approved', __('Approved'));
-        $form->text('profile_photo', __('Profile photo'));
-        $form->text('user_type', __('User type'));
-        $form->text('sex', __('Sex'));
-        $form->text('reg_number', __('Reg number'));
-        $form->text('country', __('Country'));
-        $form->text('occupation', __('Occupation'));
-        $form->textarea('profile_photo_large', __('Profile photo large'));
-        $form->text('phone_number', __('Phone number'));
-        $form->text('location_lat', __('Location lat'));
-        $form->text('location_long', __('Location long'));
-        $form->text('facebook', __('Facebook'));
-        $form->text('twitter', __('Twitter'));
-        $form->text('whatsapp', __('Whatsapp'));
-        $form->text('linkedin', __('Linkedin'));
-        $form->text('website', __('Website'));
-        $form->text('other_link', __('Other link'));
-        $form->text('cv', __('Cv'));
-        $form->text('language', __('Language'));
-        $form->text('about', __('About'));
+        if ((!$u->isRole('admin')) && (!$u->isRole('sacco'))) {
+            if ($form->isCreating()) {
+                admin_error("You are not allowed to create new Sacco");
+                return back();
+            }
+        }
+
+        if (!$u->isRole('admin')) {
+            $form->hidden('sacco_id', __('Sacco'))->default($u->sacco_id)->readonly();
+        } else {
+            $form->select('sacco_id', __('Sacco'))->options(\App\Models\Sacco::pluck('name', 'id'))->rules('required');
+        }
+
+        $form->text('first_name', __('First name'))
+            ->rules('required');
+        $form->text('last_name', __('Last name'))
+            ->rules('required');
+        $form->text('phone_number', __('Phone number'))
+            ->rules('required');
+
+
+
+        $form->radio('sex', __('Gender'))
+            ->options([
+                'Male' => 'Male',
+                'Female' => 'Female',
+            ])
+            ->rules('required');
+
         $form->text('address', __('Address'));
-        $form->text('remember_token', __('Remember token'));
-        $form->textarea('avatar', __('Avatar'));
-        $form->text('name', __('Name'));
-        $form->number('campus_id', __('Campus id'))->default(1);
-        $form->switch('complete_profile', __('Complete profile'));
+
+
+        $form->image('avatar', __('Passport Size Photo'));
+
+
+        $form->image('profile_photo_large', __('National ID Front'));
+        $form->image('profile_photo', __('National ID Back'));
+
+
+        $form->datetime('dob', __('Date of Birth'))->default(date('Y-m-d H:i:s' . strtotime('-18 years')));
+
+
+
+        $form->image('id_front', __('Id front'));
+        $form->image('id_back', __('Id back'));
+        $form->hidden('user_type', __('Id back'))->default('Member');
+
+
+
+        $form->divider('MEMBERSHIP STATUS');
+
+
+        $form->radioCard('status', __('User Status'))
+            ->options([
+                'Pending' => 'Pending',
+                'Approved' => 'Approved',
+            ]);
+
+
+        $form->radioCard('sacco_join_status', __('Membership Status'))
+            ->options([
+                'Pending' => 'Pending',
+                'Approved' => 'Approved',
+            ]);
+
+        $form->password('password', trans('admin.password'))->rules('confirmed|required');
+        $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
+            ->default(function ($form) {
+                return $form->model()->password;
+            });
+        $form->ignore(['password_confirmation']);
+        $form->ignore(['change_password']);
 
         return $form;
     }

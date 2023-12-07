@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Models\Transaction;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
@@ -15,7 +16,7 @@ class TransactionController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Transaction';
+    protected $title = 'Transactions';
 
     /**
      * Make a grid builder.
@@ -25,28 +26,69 @@ class TransactionController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Transaction());
+        //create a filter
+        $grid->filter(function ($filter) {
+            $filter->disableIdFilter();
+            //sacco members for select
+            $sacco_members = \App\Models\User::where('sacco_id', \Encore\Admin\Facades\Admin::user()->sacco_id)->get();
+            //sacco members for select
+            $filter->equal('user_id', 'Account')->select($sacco_members->pluck('name', 'id'));
 
-        $grid->column('id', __('Id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
-        $grid->column('user_id', __('User id'));
-        $grid->column('source_user_id', __('Source user id'));
-        $grid->column('sacco_id', __('Sacco id'));
-        $grid->column('type', __('Type'));
-        $grid->column('source_type', __('Source type'));
-        $grid->column('source_mobile_money_number', __('Source mobile money number'));
-        $grid->column('source_mobile_money_transaction_id', __('Source mobile money transaction id'));
-        $grid->column('source_bank_account_number', __('Source bank account number'));
-        $grid->column('source_bank_transaction_id', __('Source bank transaction id'));
-        $grid->column('desination_type', __('Desination type'));
-        $grid->column('desination_mobile_money_number', __('Desination mobile money number'));
-        $grid->column('desination_mobile_money_transaction_id', __('Desination mobile money transaction id'));
-        $grid->column('desination_bank_account_number', __('Desination bank account number'));
-        $grid->column('desination_bank_transaction_id', __('Desination bank transaction id'));
-        $grid->column('amount', __('Amount'));
+            //amount in range
+            $filter->between('amount', 'Amount (UGX)');
+            //type in select
+            $filter->equal('type', 'Transaction')->select([
+                'Share Purchase' => 'Share Purchase',
+                'Loan Disbursement' => 'Loan Disbursement',
+                'Transfer' => 'Transfer',
+                'Send' => 'Send',
+            ]);
+            //date range
+            $filter->between('created_at', 'Created')->date();
+        });
+
+
+        $grid->column('user_id', __('Account'))
+            ->display(function ($user_id) {
+                $user = \App\Models\User::find($user_id);
+                if ($user == null) {
+                    return "Unknown";
+                }
+                return $user->name;
+            })->sortable();
+        $grid->column('source_user_id', __('Source'))
+            ->display(function ($user_id) {
+                $user = \App\Models\User::find($user_id);
+                if ($user == null) {
+                    return "Unknown";
+                }
+                return $user->name;
+            })->sortable()
+            ->hide();
+        $grid->column('type', __('Transaction'))
+            ->dot([
+                'Share Purchase' => 'success',
+                'Loan Disbursement' => 'warning',
+                'Transfer' => 'info',
+                'Send' => 'danger',
+            ])
+            ->sortable();
         $grid->column('description', __('Description'));
-        $grid->column('details', __('Details'));
+        $grid->column('amount', __('Amount (UGX)'))
+            ->display(function ($price) {
+                return number_format($price);
+            })->sortable()
+            ->totalRow(function ($amount) {
+                return "<strong>Total: " . number_format($amount) . "</strong>";
+            });
 
+        $grid->column('details', __('Details'))->hide();
+        $grid->column('created_at', __('Created'))->display(function ($date) {
+            //retrn data and time
+            return date('d M, Y - h:i:s', strtotime($date));
+        })->sortable();
+        $grid->disableActions();
+        $grid->disableBatchActions();
         return $grid;
     }
 
@@ -93,23 +135,24 @@ class TransactionController extends AdminController
     {
         $form = new Form(new Transaction());
 
-        $form->number('user_id', __('User id'));
-        $form->number('source_user_id', __('Source user id'));
-        $form->number('sacco_id', __('Sacco id'));
-        $form->text('type', __('Type'))->default('Deposit');
-        $form->text('source_type', __('Source type'))->default('Mobile Money');
-        $form->text('source_mobile_money_number', __('Source mobile money number'));
-        $form->text('source_mobile_money_transaction_id', __('Source mobile money transaction id'));
-        $form->text('source_bank_account_number', __('Source bank account number'));
-        $form->text('source_bank_transaction_id', __('Source bank transaction id'));
-        $form->text('desination_type', __('Desination type'))->default('Mobile Money');
-        $form->text('desination_mobile_money_number', __('Desination mobile money number'));
-        $form->text('desination_mobile_money_transaction_id', __('Desination mobile money transaction id'));
-        $form->text('desination_bank_account_number', __('Desination bank account number'));
-        $form->text('desination_bank_transaction_id', __('Desination bank transaction id'));
-        $form->text('amount', __('Amount'));
-        $form->textarea('description', __('Description'));
-        $form->textarea('details', __('Details'));
+        $u = Admin::user();
+        //only show sacco admin can create new transaction
+        $sacco_members = \App\Models\User::where('sacco_id', \Encore\Admin\Facades\Admin::user()->sacco_id)->get();
+
+        $form->select('user_id', __('Select Account'))->options($sacco_members->pluck('name', 'id'))
+            ->rules('required');
+        $form->hidden('source_user_id')->value($u->id);
+        $form->hidden('sacco_id')->value($u->sacco_id);
+        $form->radio('type', __('Tranasaction Type'))
+            ->options([
+                'Debit' => 'Debit (+)',
+                'Credit' => 'Credit (-)',
+            ]);
+
+        $form->decimal('amount', __('Amount'))
+            ->rules('required');
+            
+        $form->textarea('details', __('Details'))->rules('required');
 
         return $form;
     }
