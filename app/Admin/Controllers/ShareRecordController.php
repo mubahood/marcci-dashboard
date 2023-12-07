@@ -138,7 +138,7 @@ class ShareRecordController extends AdminController
         $sacco = \App\Models\Sacco::find($u->sacco_id);
 
         $sacco_members = \App\Models\User::where('sacco_id', $u->sacco_id)->get()->pluck('name', 'id');
-
+ 
 
         $active_cycle = \App\Models\Cycle::where('sacco_id', $u->sacco_id)->where('status', 'Active')->first();
         if ($active_cycle == null) {

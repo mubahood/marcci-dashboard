@@ -30,9 +30,10 @@ class Cycle extends Model
             //only if created by status is active for a sacco
             if ($m->status == 'Active') {
                 $old = Cycle::where('sacco_id', $m->sacco_id)->where('status', 'Active')->first();
-                if ($old->id != $m->id) {
-                    throw new \Exception("Sacco already has an active cycle");
-                }
+                if ($old != null)
+                    if ($old->id != $m->id) {
+                        throw new \Exception("Sacco already has an active cycle");
+                    }
             }
         });
 

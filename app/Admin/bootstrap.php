@@ -86,7 +86,7 @@ Encore\Admin\Grid::init(function (Encore\Admin\Grid $grid) {
     //get current segment
     $current_segment = request()->segment(1);
 
-    $exclude = ['saccos', 'gens', 'loan-scheems', 'loans', 'meetings', 'crops', 'crop-protocols', 'gardens', 'garden-activities', 'cycles', 'service-providers', 'groups', 'associations', 'people', 'disabilities', 'institutions', 'counselling-centres', 'jobs', 'job-applications', 'course-categories', 'courses', 'settings', 'participants', 'members', 'post-categories', 'news-posts', 'events', 'event-bookings', 'products', 'product-orders', 'transactions'];
+    $exclude = ['saccos', 'gens', 'loan-scheems', 'loans', 'meetings', 'crops', 'crop-protocols', 'gardens', 'garden-activities',  'service-providers', 'groups', 'associations', 'people', 'disabilities', 'institutions', 'counselling-centres', 'jobs', 'job-applications', 'course-categories', 'courses', 'settings', 'participants', 'members', 'post-categories', 'news-posts', 'events', 'event-bookings', 'products', 'product-orders', ];
 
     if (!$u->isRole('admin')) {
         if (!in_array($current_segment, $exclude)) {

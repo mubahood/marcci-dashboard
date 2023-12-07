@@ -95,6 +95,9 @@ balance
             return $m;
         });
 
+        self::created(function ($m) {
+            $m->processTansactions();
+        });
         self::creating(function ($m) {
 
             return $m;
