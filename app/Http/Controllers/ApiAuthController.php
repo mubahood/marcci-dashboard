@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Sacco;
 use App\Models\User;
 use App\Models\Utils;
 use App\Traits\ApiResponser;
@@ -112,6 +113,127 @@ class ApiAuthController extends Controller
 
         return $this->success($u, 'Logged in successfully.');
     }
+
+
+
+    public function update_user(Request $request)
+    {
+        $administrator_id = $request->user;
+
+        $loggedIn = Administrator::find($administrator_id);
+        if ($loggedIn == null) {
+            return $this->error('User not found.');
+        }
+        $sacco = Sacco::find($request->sacco_id);
+
+        if ($sacco == null) {
+            return $this->error('Sacco not found.');
+        }
+
+        if (!isset($request->task)) {
+            return $this->error('Task is missing.');
+        }
+
+        $task = $request->task;
+
+        if (($task != 'Edit') && ($task != 'Create')) {
+            return $this->error('Invalid task.');
+        }
+
+        $phone_number = Utils::prepare_phone_number($request->phone_number);
+        if (!Utils::phone_number_is_valid($phone_number)) {
+            return $this->error('Invalid phone number.');
+        }
+
+        $account = null;
+        if ($task == 'Edit') {
+            if ($request->id == null) {
+                return $this->error('User id is missing.');
+            }
+            $acc = Administrator::find($request->id);
+            if ($acc == null) {
+                return $this->error('User not found.');
+            }
+            $old = Administrator::where('phone_number', $phone_number)
+                ->where('id', '!=', $request->id)
+                ->first();
+            if ($old != null) {
+                return $this->error('User with same phone number already exists.');
+            }
+        } else {
+
+            $old = Administrator::where('phone_number', $phone_number)
+                ->first();
+            if ($old != null) {
+                return $this->error('User with same phone number already exists.');
+            }
+
+            $acc = new Administrator();
+            $acc->sacco_id = $sacco->id;
+        }
+
+        if (
+            $request->first_name == null ||
+            strlen($request->first_name) < 2
+        ) {
+            return $this->error('First name is missing.');
+        }
+        //validate all
+        if (
+            $request->last_name == null ||
+            strlen($request->last_name) < 2
+        ) {
+            return $this->error('Last name is missing.');
+        }
+
+        //validate all
+        if (
+            $request->sex == null ||
+            strlen($request->sex) < 2
+        ) {
+            return $this->error('Gender is missing.');
+        }
+
+        if (
+            $request->campus_id == null ||
+            strlen($request->campus_id) < 2
+        ) {
+            return $this->error('National ID is missing.');
+        }
+
+
+        $msg = "";
+        $acc->first_name = $request->first_name;
+        $acc->last_name = $request->last_name;
+        $acc->campus_id = $request->campus_id;
+        $acc->phone_number = $phone_number;
+        $acc->sex = $request->sex;
+        $acc->dob = $request->dob;
+        $acc->address = $request->address;
+
+
+        $images = [];
+        if (!empty($_FILES)) {
+            $images = Utils::upload_images_2($_FILES, false);
+        }
+        if (!empty($images)) {
+            $acc->avatar = 'images/' . $images[0];
+        }
+
+        $code = 1;
+        try {
+            $acc->save();
+            $msg = 'Account ' . $task . 'ed successfully.';
+            return $this->success($acc, $msg, $code);
+        } catch (\Throwable $th) {
+            $msg = $th->getMessage();
+            $code = 0;
+            return $this->error($msg);
+        }
+        return $this->success(null, $msg, $code);
+    }
+
+
 
 
     public function register(Request $r)
