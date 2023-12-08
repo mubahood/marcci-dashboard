@@ -21,7 +21,7 @@ class Utils extends Model
             'spname' => 'mulimisa',
             'sppass' => 'mul1m1s4',
             'numbers' => $phone,
-            'msg' => str_replace(' ', '%20', $sms),
+            'msg' => $sms,
             'type' => 'json'
         ];
         //use guzzle to make the request 
