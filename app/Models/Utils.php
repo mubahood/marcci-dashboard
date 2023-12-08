@@ -12,6 +12,16 @@ class Utils extends Model
 {
     use HasFactory;
 
+    //create a function that encodes GET string to be used in a url
+    public static function encode_get_params($params)
+    {
+        $str = "";
+        foreach ($params as $key => $value) {
+            $str .= $key . "=" . urlencode($value) . "&";
+        }
+        return $str;
+    } 
+
     public static  function send_sms($phone, $sms)
     {
         $phone = Utils::prepare_phone_number($phone);
@@ -21,7 +31,7 @@ class Utils extends Model
             'spname' => 'mulimisa',
             'sppass' => 'mul1m1s4',
             'numbers' => $phone,
-            'msg' => $sms,
+            'msg' => Utils::encode_get_params($sms),
             'type' => 'json'
         ];
         //use guzzle to make the request 
