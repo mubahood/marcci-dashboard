@@ -47,7 +47,7 @@ balance
         $saccoTransaction = new Transaction();
         $saccoTransaction->user_id = $sacco->administrator_id;
         $saccoTransaction->source_user_id = $userTransaction->user_id;
-        $saccoTransaction->sacco_id = $this->sacco_id;  
+        $saccoTransaction->sacco_id = $this->sacco_id;
         $saccoTransaction->type = 'Share Purchase';
         $saccoTransaction->source_type = 'Share Purchase';
         $saccoTransaction->source_mobile_money_number = null;
@@ -56,8 +56,8 @@ balance
         $saccoTransaction->description = "Puchase of " . $this->number_of_shares . " shares at " . $this->single_share_amount . " each for a total of " . $this->total_amount;
         $saccoTransaction->save();
         $saccoTransaction->balance = Transaction::where('user_id', $saccoTransaction->user_id)->sum('amount');
-        
-        $saccoTransaction->save(); 
+
+        $saccoTransaction->save();
     }
     /* 
     "id" => 1
@@ -97,6 +97,12 @@ balance
 
         self::created(function ($m) {
             $m->processTansactions();
+            try {
+                $user = User::find($m->user_id);
+                $msg = "Share Purchase: You have purchased " . $m->number_of_shares . " shares at " . $m->single_share_amount . " each for a total of UGX " . number_format($m->total_amount);
+                Utils::send_sms($user->phone_number, $msg);
+            } catch (\Throwable $e) {
+            }
         });
         self::creating(function ($m) {
 
