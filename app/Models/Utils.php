@@ -12,6 +12,55 @@ class Utils extends Model
 {
     use HasFactory;
 
+    public static  function send_sms($phone, $sms)
+    {
+        $phone = Utils::prepare_phone_number($phone);
+        $sms = urlencode($sms);
+        $url = "https://sms.dmarkmobile.com/v2/api/send_sms/";
+        $params = [
+            'spname' => 'mulimisa',
+            'sppass' => 'mul1m1s4',
+            'numbers' => $phone,
+            'msg' => $sms,
+            'type' => 'json'
+        ];
+        //use guzzle to make the request
+        $client = new \GuzzleHttp\Client();
+        $body = null;
+        try {
+            $response = $client->request('POST', $url, [
+                'form_params' => $params
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+        if ($response == null) {
+            return 'Failed to send request 2';
+        }
+
+        $body = $response->getBody();
+        $data = json_decode($body);
+
+        if ($data == null) {
+            return 'Failed to decode response 1';
+        }
+ 
+        if (!isset($data->Failed)) {
+            return 'Failed to get status '.$body;
+        }
+        if (!isset($data->Total)) {
+            return 'Total not set '.$body;
+        }
+
+        if (((int)$data->Failed) > 0) {
+            return 'Failed sms sent is greater than 0 4';
+        }
+        if (((int)$data->Total) < 1) {
+            return 'Total sms sent is less than 1 5';
+        }
+        return 'success';
+    }
     /* 
 /* 
 

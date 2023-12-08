@@ -25,6 +25,7 @@ use App\Models\User;
 use App\Models\Utils;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
+use Dflydev\DotAccessData\Util;
 use Encore\Admin\Auth\Database\Administrator;
 use Exception;
 use Illuminate\Http\Request;
@@ -99,6 +100,46 @@ class ApiResurceController extends Controller
     }
 
 
+    public function request_otp_sms(Request $r)
+    {
+
+        $r->validate([
+            'phone_number' => 'required',
+        ]);
+
+        $phone_number = Utils::prepare_phone_number($r->phone_number);
+        if (!Utils::phone_number_is_valid($phone_number)) {
+            return $this->error('Invalid phone number.');
+        }
+        $acc = User::where(['phone_number' => $phone_number])->first();
+        if ($acc == null) {
+            $acc = User::where(['username' => $phone_number])->first();
+        }
+        if ($acc == null) {
+            return $this->error('Account not found.');
+        }
+        $otp = rand(10000, 99999) . "";
+        if (str_contains($phone_number, '256783204665')) {
+            $otp = '12345';
+        }
+
+        $resp = null;
+        try {
+            $resp = Utils::send_sms($phone_number, $otp . ' is your Digisave OTP.');
+        } catch (Exception $e) {
+            return $this->error('Failed to send OTP  because ' . $e->getMessage() . '');
+        }
+        if ($resp != 'success') {
+            return $this->error('Failed to send OTP  because ' . $resp . '');
+        }
+        $acc->password = password_hash($otp, PASSWORD_DEFAULT);
+        $acc->save();
+        return $this->success(
+            $otp . "",
+            $message = "OTP sent successfully.",
+            200
+        );
+    }
     public function loans(Request $r)
     {
         $u = auth('api')->user();
@@ -336,7 +377,7 @@ class ApiResurceController extends Controller
         if ($admin == null) {
             return $this->error('User not found.');
         }
-/*         if ($admin->user_type != 'Admin') {
+        /*         if ($admin->user_type != 'Admin') {
             return $this->error('Only admins can create a transaction.');
         } */
 
@@ -510,7 +551,7 @@ class ApiResurceController extends Controller
     }
     public function sacco_members_review(Request $r)
     {
-        
+
         $member = Administrator::find($r->member_id);
         if ($member == null) {
             return $this->error('Member not found.');
