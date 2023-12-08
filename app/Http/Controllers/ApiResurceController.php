@@ -88,12 +88,15 @@ class ApiResurceController extends Controller
         $U = User::find($u->id);
         $U->updated_at = Carbon::now();
         $U->save();
+        $sacco = Sacco::find($u->sacco_id);
+
         return $this->success(
             json_encode([
                 'balance' => $u->balance,
                 'name' => $u->name,
                 'id' => $u->id,
                 'updated_at' => $u->updated_at,
+                'sacco' => $sacco,
             ]),
             $message = "Success",
             200
