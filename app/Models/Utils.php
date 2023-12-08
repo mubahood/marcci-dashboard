@@ -24,22 +24,23 @@ class Utils extends Model
             'msg' => str_replace(' ', '%20', $sms),
             'type' => 'json'
         ];
-        //use guzzle to make the request
-        $client = new \GuzzleHttp\Client();
+        //use guzzle to make the request 
         $body = null;
         try {
-            $response = $client->request('POST', $url, [
-                'form_params' => $params
-            ]);
+            //use use curl to make the request
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url . '?' . http_build_query($params));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $body = curl_exec($ch);
+            curl_close($ch);
         } catch (\Throwable $th) {
             throw $th;
         }
 
-        if ($response == null) {
+        if ($body == null) {
             return 'Failed to send request 2';
         }
 
-        $body = $response->getBody();
         $data = json_decode($body);
 
         if ($data == null) {
