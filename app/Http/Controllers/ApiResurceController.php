@@ -6,6 +6,7 @@ use App\Models\Association;
 use App\Models\CounsellingCentre;
 use App\Models\Crop;
 use App\Models\CropProtocol;
+use App\Models\Cycle;
 use App\Models\Event;
 use App\Models\Garden;
 use App\Models\GardenActivity;
@@ -549,6 +550,29 @@ class ApiResurceController extends Controller
             200
         );
     }
+    public function cycles_create(Request $r)
+    {
+
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $cycle = new Cycle();
+        $cycle->name = $r->name;
+        $cycle->description = $r->description;
+        $cycle->sacco_id = $u->sacco_id;
+        $cycle->created_by_id = $u->id;
+        $cycle->status = $r->status;
+        $cycle->start_date = Carbon::parse($r->start_date);
+        $cycle->end_date = Carbon::parse($r->end_date);
+        try {
+            $cycle->save();
+            return $this->success(null, $message = "Success created!", 200);
+        } catch (\Throwable $th) {
+            return $this->error('Failed to save cycle, because ' . $th->getMessage() . '');
+        }
+    }
+
     public function sacco_members_review(Request $r)
     {
 
