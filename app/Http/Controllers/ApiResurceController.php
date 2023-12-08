@@ -175,7 +175,7 @@ class ApiResurceController extends Controller
             'sacco_id' => $u->sacco_id
         ];
         return $this->success(
-            Loan::where($conds)->orderby('id', 'desc')->get(),
+            Cycle::where($conds)->orderby('id', 'desc')->get(),
             $message = "Success",
             200
         );
