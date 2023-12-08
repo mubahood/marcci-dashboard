@@ -80,7 +80,6 @@ balance
             throw new \Exception("Cannot delete Share Record");
         });
         self::creating(function ($m) {
-            $m->created_by_id = auth()->user()->id;
             $m->sacco_id = auth()->user()->sacco_id;
             $m->cycle_id = Cycle::where('sacco_id', auth()->user()->sacco_id)->where('status', 'Active')->first()->id;
             $sacco = Sacco::find(auth()->user()->sacco_id);

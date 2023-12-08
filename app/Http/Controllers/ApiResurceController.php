@@ -107,6 +107,10 @@ class ApiResurceController extends Controller
 
     public function share_record_create(Request $r)
     {
+        $admin = auth('api')->user();
+        if ($admin == null) {
+            return $this->error('User not found.');
+        }
         if ($r->user_id == null) {
             return $this->error('User not found.');
         }
@@ -125,6 +129,7 @@ class ApiResurceController extends Controller
         $share_record = new ShareRecord();
         $share_record->user_id = $u->id;
         $share_record->number_of_shares = $r->number_of_shares;
+        $share_record->created_by_id = $admin->id; 
 
         try {
             $share_record->save();
