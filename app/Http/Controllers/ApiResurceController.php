@@ -21,6 +21,7 @@ use App\Models\Person;
 use App\Models\Product;
 use App\Models\Sacco;
 use App\Models\ServiceProvider;
+use App\Models\ShareRecord;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Utils;
@@ -104,6 +105,38 @@ class ApiResurceController extends Controller
     }
 
 
+    public function share_record_create(Request $r)
+    {
+        if ($r->user_id == null) {
+            return $this->error('User not found.');
+        }
+        //check for number_of_shares
+        if ($r->number_of_shares == null) {
+            return $this->error('Number of shares not found.');
+        }
+        $u = User::find($r->user_id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $sacco = Sacco::find($u->sacco_id);
+        if ($sacco == null) {
+            return $this->error('Sacco not found.');
+        }
+        $share_record = new ShareRecord();
+        $share_record->user_id = $u->id;
+        $share_record->number_of_shares = $r->number_of_shares;
+
+        try {
+            $share_record->save();
+        } catch (\Throwable $th) {
+            return $this->error('Failed to save share record, because ' . $th->getMessage() . '');
+        }
+        return $this->success(
+            $share_record,
+            $message = "Success",
+            200
+        );
+    }
     public function request_otp_sms(Request $r)
     {
 
@@ -179,6 +212,31 @@ class ApiResurceController extends Controller
         ];
         return $this->success(
             Cycle::where($conds)->orderby('id', 'desc')->get(),
+            $message = "Success",
+            200
+        );
+    }
+
+    public function share_records(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $conds = [];
+
+        if ($u->isRole('sacco')) {
+            $conds = [
+                'sacco_id' => $u->sacco_id
+            ];
+        } else {
+            $conds = [
+                'user_id' => $u->id
+            ];
+        }
+
+        return $this->success(
+            ShareRecord::where($conds)->orderby('id', 'desc')->get(),
             $message = "Success",
             200
         );

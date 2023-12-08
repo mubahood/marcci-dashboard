@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Route;
 Route::get("manifest", [ApiResurceController::class, "manifest"]);
 Route::get("loans", [ApiResurceController::class, "loans"]);
 Route::get("cycles", [ApiResurceController::class, "cycles"]);
+Route::get("share-records", [ApiResurceController::class, "share_records"]);
+Route::post("share-records", [ApiResurceController::class, "share_record_create"]);
 Route::post("request-otp-sms", [ApiResurceController::class, "request_otp_sms"]);
 Route::get("transactions", [ApiResurceController::class, "transactions"]);
 Route::get("loan-transactions", [ApiResurceController::class, "loan_transactions"]);
