@@ -21,7 +21,7 @@ class Utils extends Model
             'spname' => 'mulimisa',
             'sppass' => 'mul1m1s4',
             'numbers' => $phone,
-            'msg' => urlencode($sms),
+            'msg' => str_replace(' ', '%20', $sms),
             'type' => 'json'
         ];
         //use guzzle to make the request
@@ -45,12 +45,12 @@ class Utils extends Model
         if ($data == null) {
             return 'Failed to decode response 1';
         }
- 
+
         if (!isset($data->Failed)) {
-            return 'Failed to get status '.$body;
+            return 'Failed to get status ' . $body;
         }
         if (!isset($data->Total)) {
-            return 'Total not set '.$body;
+            return 'Total not set ' . $body;
         }
 
         if (((int)$data->Failed) > 0) {
