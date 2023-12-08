@@ -29,19 +29,20 @@ Route::POST("transactions-create", [ApiResurceController::class, "transactions_c
 Route::POST("loans-create", [ApiResurceController::class, "loan_create"]);
 Route::POST("transactions-transfer", [ApiResurceController::class, "transactions_transfer"]);
 
-Route::middleware([EnsureTokenIsValid::class])->group(function () {
-    Route::get("sacco-members", [ApiResurceController::class, "sacco_members"]);
-    Route::post("sacco-members-review", [ApiResurceController::class, "sacco_members_review"]);
-    Route::post("members-review", [ApiResurceController::class, "sacco_members_review"]);
-    Route::get("my-sacco-membership", [ApiResurceController::class, "my_sacco_membership"]);
+//Route::middleware([EnsureTokenIsValid::class])->group(function () {
+//});
+Route::get("sacco-members", [ApiResurceController::class, "sacco_members"]);
+Route::post("sacco-members-review", [ApiResurceController::class, "sacco_members_review"]);
+Route::post("members-review", [ApiResurceController::class, "sacco_members_review"]);
+Route::get("my-sacco-membership", [ApiResurceController::class, "my_sacco_membership"]);
 
-    Route::get("gardens", [ApiResurceController::class, "gardens"]);
-    Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
-    Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
-    Route::POST("gardens", [ApiResurceController::class, "garden_create"]);
-    Route::POST("products", [ApiResurceController::class, "product_create"]);
-    Route::POST("garden-activities", [ApiResurceController::class, "activity_submit"]);
-});
+Route::get("gardens", [ApiResurceController::class, "gardens"]);
+Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
+Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
+Route::POST("gardens", [ApiResurceController::class, "garden_create"]);
+Route::POST("products", [ApiResurceController::class, "product_create"]);
+Route::POST("garden-activities", [ApiResurceController::class, "activity_submit"]);
+
 Route::get("crops", [ApiResurceController::class, "crops"]);
 
 
