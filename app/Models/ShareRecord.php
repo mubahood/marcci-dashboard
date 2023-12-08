@@ -82,9 +82,9 @@ balance
         self::creating(function ($m) {
 
             $u = User::find($m->user_id);
-            if($u == null){
+            if ($u == null) {
                 throw new \Exception("User not found");
-            } 
+            }
             $m->cycle_id = Cycle::where('sacco_id', $u->sacco_id)->where('status', 'Active')->first()->id;
             $sacco = Sacco::find($u->sacco_id);
             $m->sacco_id = $sacco->id;
