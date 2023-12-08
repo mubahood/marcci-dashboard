@@ -213,7 +213,7 @@ class ApiAuthController extends Controller
         $acc->sex = $request->sex;
         $acc->dob = $request->dob;
         $acc->address = $request->address;
-
+        $acc->sacco_join_status = 'Approved';
 
         $images = [];
         if (!empty($_FILES)) {

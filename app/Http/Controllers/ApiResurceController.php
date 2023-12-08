@@ -559,7 +559,7 @@ class ApiResurceController extends Controller
         $member->sacco_join_status = $r->sacco_join_status;
         $member->save();
         return $this->success(
-            null,
+            $member,
             $message = "Success",
             200
         );
