@@ -127,7 +127,7 @@ class ApiAuthController extends Controller
         if ($loggedIn == null) {
             return $this->error('User not found.');
         }
-        $sacco = Sacco::find($request->sacco_id);
+        $sacco = Sacco::find($loggedIn->sacco_id);
 
         if ($sacco == null) {
             return $this->error('Sacco not found.');
