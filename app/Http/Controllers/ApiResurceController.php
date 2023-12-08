@@ -164,6 +164,23 @@ class ApiResurceController extends Controller
         );
     }
 
+    public function cycles(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $conds = [];
+        $conds = [
+            'sacco_id' => $u->sacco_id
+        ];
+        return $this->success(
+            Loan::where($conds)->orderby('id', 'desc')->get(),
+            $message = "Success",
+            200
+        );
+    }
+
 
     public function transactions(Request $r)
     {
