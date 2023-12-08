@@ -118,9 +118,12 @@ class ApiAuthController extends Controller
 
     public function update_user(Request $request)
     {
-        $administrator_id = $request->user;
+        $admin = auth('api')->user();
+        if ($admin == null) {
+            return $this->error('User not found.');
+        }
 
-        $loggedIn = Administrator::find($administrator_id);
+        $loggedIn = Administrator::find($admin->id);
         if ($loggedIn == null) {
             return $this->error('User not found.');
         }
