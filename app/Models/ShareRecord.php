@@ -80,9 +80,14 @@ balance
             throw new \Exception("Cannot delete Share Record");
         });
         self::creating(function ($m) {
-            $m->sacco_id = auth()->user()->sacco_id;
-            $m->cycle_id = Cycle::where('sacco_id', auth()->user()->sacco_id)->where('status', 'Active')->first()->id;
-            $sacco = Sacco::find(auth()->user()->sacco_id);
+
+            $u = User::find($m->user_id);
+            if($u == null){
+                throw new \Exception("User not found");
+            } 
+            $m->cycle_id = Cycle::where('sacco_id', $u->sacco_id)->where('status', 'Active')->first()->id;
+            $sacco = Sacco::find($u->sacco_id);
+            $m->sacco_id = $sacco->id;
             $m->single_share_amount = $sacco->share_price;
             $m->total_amount = $m->single_share_amount * $m->number_of_shares;
             return $m;
