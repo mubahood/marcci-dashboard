@@ -8,9 +8,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use SplFileObject;
 
+define('TRANSACTION_TYPES', [
+    'SAVING' => 'SAVING',
+    'SHARE' => 'SHARE',
+    'LOAN' => 'LOAN',
+    'LOAN_REPAYMENT' => 'LOAN_REPAYMENT',
+    'LOAN_INTEREST' => 'LOAN_INTEREST',
+    'FEE' => 'FEE',
+    'FINE' => 'FINE',
+    'WITHDRAWAL' => 'WITHDRAWAL',
+    'CYCLE_PROFIT' => 'CYCLE_PROFIT',
+]);
+
 class Utils extends Model
 {
     use HasFactory;
+
+
 
     //create a function that encodes GET string to be used in a url
     public static function encode_get_params($params)
@@ -20,7 +34,7 @@ class Utils extends Model
             $str .= $key . "=" . urlencode($value) . "&";
         }
         return $str;
-    } 
+    }
 
     public static  function send_sms($phone, $sms)
     {
@@ -569,6 +583,11 @@ administrator_id
     }
     public static function system_boot()
     {
+        $d = env('types');
+        echo '<pre>';
+        print_r(TRANSACTION_TYPES);
+        die();
+        die("disabled");
         $u = Admin::user();
 
         if ($u != null) {

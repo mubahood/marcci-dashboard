@@ -17,12 +17,30 @@ class Transaction extends Model
         parent::boot();
 
         static::creating(function ($model) {
+
+            if (!in_array($model->type, TRANSACTION_TYPES)) {
+                throw new Exception("Invalid transaction type.");
+            }
+
             $user = Administrator::find($model->user_id);
             if ($user == null) {
                 throw new Exception("User not found");
             }
+            //get active cycle
+            $cycle = Cycle::where('sacco_id', $user->sacco_id)->where('status', 'Active')->first();
+            if ($cycle == null) {
+                throw new Exception("No active cycle found");
+            }
+            $model->cycle_id = $cycle->id;
             $model->sacco_id = $user->sacco_id;
             return $model;
+        });
+
+        //updating
+        static::updating(function ($model) {
+            if (!in_array($model->type, TRANSACTION_TYPES)) {
+                throw new Exception("Invalid transaction type.");
+            }
         });
 
         //creatd
