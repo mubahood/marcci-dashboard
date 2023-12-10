@@ -38,24 +38,28 @@ class Utils extends Model
 
     public static  function send_sms($phone, $sms)
     {
+
         $phone = Utils::prepare_phone_number($phone);
+        if (Utils::phone_number_is_valid($phone) == false) {
+            return 'Invalid phone number';
+        }
         $sms = urlencode($sms);
         $url = "https://sms.dmarkmobile.com/v2/api/send_sms/";
-        $params = [
-            'spname' => 'mulimisa',
-            'sppass' => 'mul1m1s4',
-            'numbers' => $phone,
-            'msg' => urlencode($sms),
-            'type' => 'json'
-        ];
+        $url .= "?spname=mulimisa";
+        $url .= "&sppass=mul1m1s4";
+        $url .= "&numbers=$phone";
+        $url .= "&msg=$sms";
+        $url .= "&type=json";
+        $url = urlencode($url);
+
         //use guzzle to make the request 
         $body = null;
         try {
             //use use curl to make the request
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url . '?' . http_build_query($params));
+            curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $body = curl_exec($ch);
+            /* $body = curl_exec($ch); */
             curl_close($ch);
         } catch (\Throwable $th) {
             throw $th;
@@ -583,7 +587,7 @@ administrator_id
     }
     public static function system_boot()
     {
-/*         $d = env('types');
+        /*         $d = env('types');
         echo '<pre>';
         print_r(TRANSACTION_TYPES);
         die();
