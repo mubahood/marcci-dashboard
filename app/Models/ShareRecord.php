@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class ShareRecord extends Model
 {
@@ -28,36 +29,43 @@ balance
 */
     public function processTansactions()
     {
-        $userTransaction = new Transaction();
-        $userTransaction->user_id = $this->user_id;
-        $userTransaction->source_user_id = $this->created_by_id;
-        $userTransaction->sacco_id = $this->sacco_id;
-        $userTransaction->type = 'Share Purchase';
-        $userTransaction->source_type = 'Share Purchase';
-        $userTransaction->source_mobile_money_number = null;
-        $userTransaction->amount = $this->total_amount;
-        //Make explanation of the transaction to be the description of the share record
-        $userTransaction->description = "Puchase of " . $this->number_of_shares . " shares at " . $this->single_share_amount . " each for a total of " . $this->total_amount;
-        $userTransaction->save();
-        $userTransaction->balance = Transaction::where('user_id', $userTransaction->user_id)->sum('amount');
-        //Add the transaction to the share record
 
-        $sacco = Sacco::find($this->sacco_id);
-        //sacco transaction
-        $saccoTransaction = new Transaction();
-        $saccoTransaction->user_id = $sacco->administrator_id;
-        $saccoTransaction->source_user_id = $userTransaction->user_id;
-        $saccoTransaction->sacco_id = $this->sacco_id;
-        $saccoTransaction->type = 'Share Purchase';
-        $saccoTransaction->source_type = 'Share Purchase';
-        $saccoTransaction->source_mobile_money_number = null;
-        $saccoTransaction->amount = $this->total_amount;
-        //Make explanation of the transaction to be the description of the share record
-        $saccoTransaction->description = "Puchase of " . $this->number_of_shares . " shares at " . $this->single_share_amount . " each for a total of " . $this->total_amount;
-        $saccoTransaction->save();
-        $saccoTransaction->balance = Transaction::where('user_id', $saccoTransaction->user_id)->sum('amount');
+        DB::beginTransaction();
+        try {
+            $userTransaction = new Transaction();
+            $userTransaction->user_id = $this->user_id;
+            $userTransaction->source_user_id = $this->created_by_id;
+            $userTransaction->sacco_id = $this->sacco_id;
+            $userTransaction->type = 'SHARE';
+            $userTransaction->source_type = 'SHARE';
+            $userTransaction->source_mobile_money_number = null;
+            $userTransaction->amount = $this->total_amount;
+            //Make explanation of the transaction to be the description of the share record
+            $userTransaction->description = "Puchase of " . $this->number_of_shares . " shares at " . $this->single_share_amount . " each for a total of " . $this->total_amount;
+            $userTransaction->save();
+            $userTransaction->balance = Transaction::where('user_id', $userTransaction->user_id)->sum('amount');
+            //Add the transaction to the share record
 
-        $saccoTransaction->save();
+            $sacco = Sacco::find($this->sacco_id);
+            //sacco transaction
+            $saccoTransaction = new Transaction();
+            $saccoTransaction->user_id = $sacco->administrator_id;
+            $saccoTransaction->source_user_id = $userTransaction->user_id;
+            $saccoTransaction->sacco_id = $this->sacco_id;
+            $saccoTransaction->type = 'SHARE';
+            $saccoTransaction->source_type = 'SHARE';
+            $saccoTransaction->source_mobile_money_number = null;
+            $saccoTransaction->amount = $this->total_amount;
+            //Make explanation of the transaction to be the description of the share record
+            $saccoTransaction->description = "Puchase of " . $this->number_of_shares . " shares at " . $this->single_share_amount . " each for a total of " . $this->total_amount;
+            $saccoTransaction->save();
+            $saccoTransaction->balance = Transaction::where('user_id', $saccoTransaction->user_id)->sum('amount');
+            $saccoTransaction->save();
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollback();
+            throw $th;
+        }
     }
     /* 
     "id" => 1
