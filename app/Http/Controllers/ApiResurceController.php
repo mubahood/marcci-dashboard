@@ -491,7 +491,58 @@ class ApiResurceController extends Controller
             throw new Exception("Invalid transaction type.");
         }
 
-        if ($r->type == 'SAVING') {
+        if ($r->type == 'FINE') {
+            $amount = abs($r->amount);
+            try {
+                DB::beginTransaction();
+                //create NEGATIVE transaction for user
+                $transaction_user = new Transaction();
+                $transaction_user->user_id = $u->id;
+                $transaction_user->source_user_id = $admin->id;
+                $transaction_user->sacco_id = $u->sacco_id;
+                $transaction_user->type = 'FINE';
+                $transaction_user->source_type = 'FINE';
+                $transaction_user->amount = -1 * $amount;
+                $transaction_user->details = $r->description;
+                $transaction_user->description = "Fine of UGX " . number_format($amount) . " from {$u->phone_number} - $u->name. Reason: {$r->description}.";
+                try {
+                    $transaction_user->save();
+                } catch (\Throwable $th) {
+                    DB::rollback();
+                    return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
+                }
+
+                //add balance to sacc account
+                $transaction_sacco = new Transaction();
+                $transaction_sacco->user_id = $admin->id;
+                $transaction_sacco->source_user_id = $u->id;
+                $transaction_sacco->sacco_id = $u->sacco_id;
+                $transaction_sacco->type = 'FINE';
+                $transaction_sacco->source_type = 'FINE';
+                $transaction_sacco->amount = $amount;
+                $transaction_user->details = $r->description;
+                $transaction_sacco->description = "Fine of UGX " . number_format($amount) . " from {$u->phone_number} - $u->name. Reason: {$r->description}.";
+                try {
+                    $transaction_sacco->save();
+                } catch (\Throwable $th) {
+                    DB::rollback();
+                    return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
+                }
+                try {
+                    $transaction_sacco->save();
+                } catch (\Throwable $th) {
+                    DB::rollback();
+                    return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
+                }
+
+                DB::commit();
+                return $this->success(null, $message = "Loan repayment of UGX " . number_format($amount) . " was successful. Your balance is now UGX " . number_format($u->balance) . ".", 200);
+            } catch (\Exception $e) {
+                DB::rollback();
+                // something went wrong
+                return $this->error('Failed to save transaction, because ' . $e->getMessage() . '');
+            }
+        } else if ($r->type == 'SAVING') {
 
             $amount = abs($r->amount);
             try {
