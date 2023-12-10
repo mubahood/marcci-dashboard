@@ -91,7 +91,7 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     //getter for CYCLE_PROFIT
-    public function getCYCLE_PROFITAttribute()
+    public function getCYCLEPROFITAttribute()
     {
         $sacco = Sacco::find($this->sacco_id);
         if ($sacco == null) {
@@ -148,7 +148,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     //getter for LOAN_INTEREST
-    public function getLOAN_INTERESTAttribute()
+    public function getLOANINTERESTAttribute()
     {
         $sacco = Sacco::find($this->sacco_id);
         if ($sacco == null) {
@@ -167,7 +167,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     //GETTER FOR LOAN_REPAYMENT
-    public function getLOAN_REPAYMENTAttribute()
+    public function getLOANREPAYMENTAttribute()
     {
         $sacco = Sacco::find($this->sacco_id);
         if ($sacco == null) {
