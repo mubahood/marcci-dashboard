@@ -485,7 +485,68 @@ class ApiResurceController extends Controller
             return $this->error('Some Information is still missing. Fill the missing information and try again.');
         }
 
-        if ($r->type == 'LOAN_REPAYMENT') {
+        include_once(app_path() . '/Models/Utils.php');
+
+        if (!in_array($r->type, TRANSACTION_TYPES)) {
+            throw new Exception("Invalid transaction type.");
+        }
+
+        if ($r->type == 'SAVING') {
+
+            $amount = abs($r->amount);
+            try {
+                DB::beginTransaction();
+                //create positive transaction for user
+                $transaction_user = new Transaction();
+                $transaction_user->user_id = $u->id;
+                $transaction_user->source_user_id = $admin->id;
+                $transaction_user->sacco_id = $u->sacco_id;
+                $transaction_user->type = 'SAVING';
+                $transaction_user->source_type = 'SAVING';
+                $transaction_user->amount = $amount;
+                $transaction_user->details = $r->description;
+                $transaction_user->description =  "Saving of UGX " . number_format($amount) . " from {$u->phone_number} - $u->name.";
+                try {
+                    $transaction_user->save();
+                } catch (\Throwable $th) {
+                    DB::rollback();
+                    return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
+                }
+
+                //add balance to sacc account
+                $transaction_sacco = new Transaction();
+                $transaction_sacco->user_id = $admin->id;
+                $transaction_sacco->source_user_id = $u->id;
+                $transaction_sacco->sacco_id = $u->sacco_id;
+                $transaction_sacco->type = 'SAVING';
+                $transaction_sacco->source_type = 'SAVING';
+                $transaction_sacco->amount = $amount;
+                $transaction_user->details = $r->description;
+                $transaction_sacco->description = "Saving of UGX " . number_format($amount) . " from {$u->phone_number} - $u->name.";
+                try {
+                    $transaction_sacco->save();
+                } catch (\Throwable $th) {
+                    DB::rollback();
+                    return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
+                }
+                try {
+                    $transaction_sacco->save();
+                } catch (\Throwable $th) {
+                    DB::rollback();
+                    return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
+                }
+
+                DB::commit();
+                return $this->success(null, $message = "Loan repayment of UGX " . number_format($amount) . " was successful. Your balance is now UGX " . number_format($u->balance) . ".", 200);
+            } catch (\Exception $e) {
+                DB::rollback();
+                // something went wrong
+                return $this->error('Failed to save transaction, because ' . $e->getMessage() . '');
+            }
+
+
+            //create positive transaction for sacco
+        } else if ($r->type == 'LOAN_REPAYMENT') {
             $loan = Loan::find($r->loan_id);
             if ($loan == null) {
                 return $this->error('Loan not found.');
