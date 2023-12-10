@@ -603,7 +603,7 @@ class ApiResurceController extends Controller
 
     public function my_sacco_membership(Request $r)
     {
-        $u = $r->user;
+        $u = auth('api')->user();
         if ($u == null) {
             return $this->error('User not found.');
         }
