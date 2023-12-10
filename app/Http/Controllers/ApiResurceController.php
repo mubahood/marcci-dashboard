@@ -129,7 +129,7 @@ class ApiResurceController extends Controller
         $share_record = new ShareRecord();
         $share_record->user_id = $u->id;
         $share_record->number_of_shares = $r->number_of_shares;
-        $share_record->created_by_id = $admin->id; 
+        $share_record->created_by_id = $admin->id;
 
         try {
             $share_record->save();
@@ -576,7 +576,7 @@ class ApiResurceController extends Controller
 
     public function garden_activities(Request $r)
     {
-        $u = $r->user;
+        $u = auth('api')->user();
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -619,7 +619,7 @@ class ApiResurceController extends Controller
     }
     public function sacco_members(Request $r)
     {
-        $u = $r->user;
+        $u = auth('api')->user();
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -674,7 +674,7 @@ class ApiResurceController extends Controller
 
     public function gardens(Request $r)
     {
-        $u = $r->user;
+        $u = auth('api')->user();
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -703,7 +703,7 @@ class ApiResurceController extends Controller
 
     public function people(Request $r)
     {
-        $u = $r->user;
+        $u = auth('api')->user();
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -719,7 +719,7 @@ class ApiResurceController extends Controller
     }
     public function jobs(Request $r)
     {
-        $u = $r->user;
+        $u = auth('api')->user();
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -736,7 +736,7 @@ class ApiResurceController extends Controller
 
     public function activity_submit(Request $r)
     {
-        $u = $r->user;
+        $u = auth('api')->user();
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -785,7 +785,7 @@ class ApiResurceController extends Controller
 
     public function garden_create(Request $r)
     {
-        $u = $r->user;
+        $u = auth('api')->user();
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -826,7 +826,7 @@ class ApiResurceController extends Controller
 
     public function product_create(Request $r)
     {
-        $u = $r->user;
+        $u = auth('api')->user();
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -874,7 +874,7 @@ class ApiResurceController extends Controller
 
     public function person_create(Request $r)
     {
-        $u = $r->user;
+        $u = auth('api')->user();
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -994,7 +994,7 @@ class ApiResurceController extends Controller
         }
         if ($is_private) {
 
-            $u = $r->user;
+            $u = auth('api')->user();
             $administrator_id = $u->id;
 
             if ($u == null) {
