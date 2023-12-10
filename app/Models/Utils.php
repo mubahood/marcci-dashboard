@@ -597,7 +597,7 @@ administrator_id
             if ($r == null) {
                 $role = new AdminRoleUser();
                 $role->user_id = $u->id;
-                $role->role_id = 2;
+                $role->role_id = 3;
                 $role->save();
             }
         }

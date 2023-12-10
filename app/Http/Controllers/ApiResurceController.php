@@ -193,15 +193,9 @@ class ApiResurceController extends Controller
             return $this->error('User not found.');
         }
         $conds = [];
-        if ($u->isRole('sacco')) {
-            $conds = [
-                'sacco_id' => $u->sacco_id
-            ];
-        } else {
-            $conds = [
-                'user_id' => $u->id
-            ];
-        }
+        $conds = [
+            'sacco_id' => $u->sacco_id
+        ];
         return $this->success(
             Loan::where($conds)->orderby('id', 'desc')->get(),
             $message = "Success",
