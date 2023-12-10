@@ -491,7 +491,62 @@ class ApiResurceController extends Controller
             throw new Exception("Invalid transaction type.");
         }
 
-        if ($r->type == 'FINE') {
+        if ($r->type == 'WITHDRAWAL') {
+            $amount = abs($r->amount);
+            if ($u->balance < $amount) {
+                return $this->error('You do not have enough money to withdraw UGX ' . number_format($amount) . '. Your balance is UGX ' . number_format($u->balance) . '.');
+            }
+            $amount = -1 * $amount;
+            try {
+                DB::beginTransaction();
+                //create positive transaction for user
+                $transaction_user = new Transaction();
+                $transaction_user->user_id = $u->id;
+                $transaction_user->source_user_id = $admin->id;
+                $transaction_user->sacco_id = $u->sacco_id;
+                $transaction_user->type = 'WITHDRAWAL';
+                $transaction_user->source_type = 'WITHDRAWAL';
+                $transaction_user->amount = $amount;
+                $transaction_user->details = $r->description;
+                $transaction_user->description = "Withdrawal of UGX " . number_format($amount) . " from {$u->phone_number} - $u->name.";
+                try {
+                    $transaction_user->save();
+                } catch (\Throwable $th) {
+                    DB::rollback();
+                    return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
+                }
+
+                //add balance to sacc account
+                $transaction_sacco = new Transaction();
+                $transaction_sacco->user_id = $admin->id;
+                $transaction_sacco->source_user_id = $u->id;
+                $transaction_sacco->sacco_id = $u->sacco_id;
+                $transaction_sacco->type = 'WITHDRAWAL';
+                $transaction_sacco->source_type = 'WITHDRAWAL';
+                $transaction_sacco->amount = $amount;
+                $transaction_user->details = $r->description;
+                $transaction_sacco->description = "Withdrawal of UGX " . number_format($amount) . " from {$u->phone_number} - $u->name.";
+                try {
+                    $transaction_sacco->save();
+                } catch (\Throwable $th) {
+                    DB::rollback();
+                    return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
+                }
+                try {
+                    $transaction_sacco->save();
+                } catch (\Throwable $th) {
+                    DB::rollback();
+                    return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
+                }
+
+                DB::commit();
+                return $this->success(null, $message = "Loan repayment of UGX " . number_format($amount) . " was successful. Your balance is now UGX " . number_format($u->balance) . ".", 200);
+            } catch (\Exception $e) {
+                DB::rollback();
+                // something went wrong
+                return $this->error('Failed to save transaction, because ' . $e->getMessage() . '');
+            }
+        } elseif ($r->type == 'FINE') {
             $amount = abs($r->amount);
             try {
                 DB::beginTransaction();
