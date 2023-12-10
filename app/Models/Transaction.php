@@ -32,6 +32,8 @@ class Transaction extends Model
             if ($cycle == null) {
                 throw new Exception("No active cycle found");
             }
+
+            
             $model->cycle_id = $cycle->id;
             $model->sacco_id = $user->sacco_id;
             return $model;
