@@ -583,11 +583,11 @@ administrator_id
     }
     public static function system_boot()
     {
-        $d = env('types');
+/*         $d = env('types');
         echo '<pre>';
         print_r(TRANSACTION_TYPES);
         die();
-        die("disabled");
+        die("disabled"); */
         $u = Admin::user();
 
         if ($u != null) {
