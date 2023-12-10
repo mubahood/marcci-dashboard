@@ -49,10 +49,10 @@ class ApiResurceController extends Controller
         return $this->success(
             LoanScheem::where(
                 [
-                    'id' => $u->sacco_id
+                    'sacco_id' => $u->sacco_id
                 ]
             )->orderby('id', 'desc')->get(),
-            $message = "Success",
+            $message = "Success.",
             200
         );
     }
@@ -192,12 +192,19 @@ class ApiResurceController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
-        $conds = [
-            'sacco_id' => $u->sacco_id
-        ];
+        $conds = [];
+        if ($u->isRole('sacco')) {
+            $conds = [
+                'sacco_id' => $u->sacco_id
+            ];
+        } else {
+            $conds = [
+                'user_id' => $u->id
+            ];
+        }
         return $this->success(
             Loan::where($conds)->orderby('id', 'desc')->get(),
-            $message = "Success.",
+            $message = "Success",
             200
         );
     }
