@@ -161,7 +161,7 @@ class ApiAuthController extends Controller
                 ->where('id', '!=', $request->id)
                 ->first();
             if ($old != null) {
-                return $this->error('User with same phone number already exists.');
+                return $this->error('User with same phone number already exists. ' . $old->id . ' ' . $old->phone_number . ' ' . $old->first_name . ' ' . $old->last_name);
             }
         } else {
 
