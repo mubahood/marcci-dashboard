@@ -480,7 +480,6 @@ class ApiResurceController extends Controller
         }
         if (
             $r->type == null ||
-            $r->source_type == null ||
             $r->amount == null
         ) {
             return $this->error('Some Information is still missing. Fill the missing information and try again.');
