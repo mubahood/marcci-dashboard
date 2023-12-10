@@ -380,7 +380,7 @@ class ApiResurceController extends Controller
         $sacco_transactions->user_id = $sacco->administrator_id;
         $sacco_transactions->source_user_id = $u->id;
         $sacco_transactions->sacco_id = $sacco->id;
-        $sacco_transactions->type = 'Loan Disbursement';
+        $sacco_transactions->type = 'LOAN';
         $sacco_transactions->source_type = 'Loan';
         $sacco_transactions->source_mobile_money_number = null;
         $sacco_transactions->source_mobile_money_transaction_id = null;
@@ -403,8 +403,8 @@ class ApiResurceController extends Controller
         $receiver_transactions = new Transaction();
         $receiver_transactions->user_id = $u->id;
         $receiver_transactions->source_user_id = $sacco->administrator_id;
-        $receiver_transactions->type = 'Loan Disbursement';
-        $receiver_transactions->source_type = 'Loan';
+        $receiver_transactions->type = 'LOAN';
+        $receiver_transactions->source_type = 'LOAN';
         $receiver_transactions->source_mobile_money_number = null;
         $receiver_transactions->source_mobile_money_transaction_id = null;
         $receiver_transactions->source_bank_account_number = null;

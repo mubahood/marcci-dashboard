@@ -17,6 +17,7 @@ class Transaction extends Model
         parent::boot();
 
         static::creating(function ($model) {
+            include_once(app_path() . '/Models/Utils.php');
 
             if (!in_array($model->type, TRANSACTION_TYPES)) {
                 throw new Exception("Invalid transaction type.");
