@@ -45,7 +45,7 @@ class Utils extends Model
             'spname' => 'mulimisa',
             'sppass' => 'mul1m1s4',
             'numbers' => $phone,
-            'msg' => Utils::encode_get_params($sms),
+            'msg' => urlencode($sms),
             'type' => 'json'
         ];
         //use guzzle to make the request 
