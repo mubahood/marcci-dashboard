@@ -107,6 +107,7 @@ class User extends Authenticatable implements JWTSubject
         ])
             ->sum('amount');
     }
+ 
 
     //getter for WITHDRAWAL
     public function getWITHDRAWALAttribute()
@@ -224,6 +225,23 @@ class User extends Authenticatable implements JWTSubject
 
     //LOAN_COUNT
     public function getLOAN_COUNTAttribute()
+    {
+        $sacco = Sacco::find($this->sacco_id);
+        if ($sacco == null) {
+            return 0;
+        }
+        if ($sacco->active_cycle == null) {
+            return 0;
+        }
+
+        return Loan::where([
+            'user_id' => $this->id,
+            'cycle_id' => $sacco->active_cycle->id
+        ])
+            ->count();
+    }
+    //LOAN_COUNT
+    public function getLOANCOUNTAttribute()
     {
         $sacco = Sacco::find($this->sacco_id);
         if ($sacco == null) {
