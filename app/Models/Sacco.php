@@ -67,6 +67,12 @@ class Sacco extends Model
         return Transaction::where('user_id', $this->administrator_id)->sum('amount');
     }
 
+    //active cycle
+    public function getActiveCycleAttribute()
+    {
+        return Cycle::where('sacco_id', $this->id)->where('status', 'Active')->first();
+    }
+
     //appends
-    protected $appends = ['balance'];
+    protected $appends = ['balance', 'active_cycle'];
 }

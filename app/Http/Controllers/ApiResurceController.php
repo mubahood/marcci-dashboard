@@ -795,7 +795,7 @@ class ApiResurceController extends Controller
         if ($sacco == null) {
             return $this->error('Sacco not found.');
         }
-        $user = Administrator::find($u->id);
+        $user = User::find($u->id);
         $user->sacco_join_status = 'Pending';
         $user->save();
         return $this->success(
@@ -857,7 +857,7 @@ class ApiResurceController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
-        $members = Administrator::where(['id' => $u->id])
+        $members = User::where(['id' => $u->id])
             ->limit(1)
             ->orderBy('id', 'desc')
             ->get();
@@ -873,7 +873,7 @@ class ApiResurceController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
-        $members = Administrator::where(['sacco_id' => $u->sacco_id])
+        $members = User::where(['sacco_id' => $u->sacco_id])
             ->limit(1000)
             ->orderBy('id', 'desc')
             ->get();
@@ -909,7 +909,7 @@ class ApiResurceController extends Controller
     public function sacco_members_review(Request $r)
     {
 
-        $member = Administrator::find($r->member_id);
+        $member = User::find($r->member_id);
         if ($member == null) {
             return $this->error('Member not found.');
         }
@@ -1279,7 +1279,7 @@ class ApiResurceController extends Controller
     public function delete(Request $r, $model)
     {
         $administrator_id = Utils::get_user_id($r);
-        $u = Administrator::find($administrator_id);
+        $u = User::find($administrator_id);
 
 
         if ($u == null) {
@@ -1332,7 +1332,7 @@ class ApiResurceController extends Controller
     public function update(Request $r, $model)
     {
         $administrator_id = Utils::get_user_id($r);
-        $u = Administrator::find($administrator_id);
+        $u = User::find($administrator_id);
 
 
         if ($u == null) {
