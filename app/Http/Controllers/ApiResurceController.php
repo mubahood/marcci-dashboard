@@ -449,7 +449,6 @@ class ApiResurceController extends Controller
         $initialInterestTransaction = new LoanTransaction();
         $initialInterestTransaction->user_id = $u->id;
         $initialInterestTransaction->loan_id = $loan->id;
-        $initialInterestTransaction->type = 'LOAN_INTEREST';
         $initialInterestTransaction->sacco_id = $sacco->id;
         $initialInterestTransaction->amount = -1 * $initialBalance;
         $initialInterestTransaction->balance = $initialBalance;
