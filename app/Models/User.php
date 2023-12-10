@@ -86,13 +86,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->first_name . ' ' . $this->last_name;
     }
 
-
-    /*  
-    '' => 'FINE',
-    '' => 'WITHDRAWAL',
-    '' => 'CYCLE_PROFIT', 
-    */
-    //appends balance
     protected $appends = [
         'balance',
         'name',

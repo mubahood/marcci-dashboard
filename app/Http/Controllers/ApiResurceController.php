@@ -92,6 +92,11 @@ class ApiResurceController extends Controller
         $U->save();
         $sacco = Sacco::find($u->sacco_id);
 
+        // //set header to json output
+        // header('Content-Type: application/json');
+        // echo json_encode($sacco);
+        // die();
+
         return $this->success(
             json_encode([
                 'balance' => $u->balance,
