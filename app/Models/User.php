@@ -42,6 +42,25 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
+    public function getAvatarAttribute($avatar)
+    {
+        if (url()->isValidUrl($avatar)) {
+            return $avatar;
+        }
+
+        $disk = config('admin.upload.disk');
+
+        if ($avatar && array_key_exists($disk, config('filesystems.disks'))) {
+            return Storage::disk(config('admin.upload.disk'))->url($avatar);
+        }
+
+        $default = config('admin.default_avatar') ?: '/assets/images/user.jpg';
+
+        return admin_asset($default);
+    }
+
+
+
 
 
     //getter for name
@@ -107,7 +126,7 @@ class User extends Authenticatable implements JWTSubject
         ])
             ->sum('amount');
     }
- 
+
 
     //getter for WITHDRAWAL
     public function getWITHDRAWALAttribute()

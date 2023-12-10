@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,6 +15,39 @@ class Loan extends Model
     {
         return LoanTransaction::where('loan_id', $this->id)->sum('amount');
     }
+
+    //boot
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            $user = User::find($model->user_id);
+            if ($user == null) {
+                throw new Exception("User not found");
+            }
+
+            //get active cycle
+            $cycle = Cycle::where('sacco_id', $user->sacco_id)->where('status', 'Active')->first();
+            if ($cycle == null) {
+                throw new Exception("No active cycle found");
+            }
+            $model->cycle_id = $cycle->id;
+            
+            $model->sacco_id = $user->sacco_id;
+            return $model;
+        });
+
+        //creatd
+        static::created(function ($model) {
+            $model->balance = LoanTransaction::where('loan_id', $model->id)->sum('amount');
+            $model->save();
+        });
+        static::updated(function ($model) {
+            $model->balance = LoanTransaction::where('loan_id', $model->id)->sum('amount');
+            $model->save();
+            return $model;
+        });
+    } 
 
 
     //append for user_text
