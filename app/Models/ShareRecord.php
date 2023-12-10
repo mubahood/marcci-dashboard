@@ -121,4 +121,17 @@ balance
             return $m;
         });
     }
+
+    //appends for user_text
+    protected $appends = ['user_text'];
+
+    //getter for user_text
+    public function getUserTextAttribute()
+    {
+        $user = User::find($this->user_id);
+        if ($user == null) {
+            return "Unknown";
+        }
+        return $user->name;
+    }
 }
