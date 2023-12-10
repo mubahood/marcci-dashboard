@@ -84,6 +84,7 @@ class Sacco extends Model
     protected $appends = [
         'balance',
         'active_cycle',
+        'cycle_text',
         'SAVING',
         'SHARE',
         'LOAN',
@@ -95,7 +96,28 @@ class Sacco extends Model
         'WITHDRAWAL',
         'FINE',
         'CYCLE_PROFIT',
+        'cycle_id',
     ];
+
+    //getter for cycle_text 
+    public function getCycleTextAttribute()
+    {
+        $cycle = Cycle::where('sacco_id', $this->id)->where('status', 'Active')->first();
+        if ($cycle == null) {
+            return "No active cycle";
+        }
+        return $cycle->name;
+    }
+
+    //getter for cycle_id
+    public function getCycleIdAttribute()
+    {
+        $cycle = Cycle::where('sacco_id', $this->id)->where('status', 'Active')->first();
+        if ($cycle == null) {
+            return null;
+        }
+        return $cycle->id;
+    }
 
     public function getCYCLEPROFITAttribute()
     {
