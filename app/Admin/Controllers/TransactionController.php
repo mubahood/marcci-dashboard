@@ -43,6 +43,8 @@ class TransactionController extends AdminController
             //date range
             $filter->between('created_at', 'Created')->date();
         });
+        $grid->column('id', __('ID'))
+            ->sortable();
         $grid->column('created_at', __('DATE'))
             ->sortable()
             ->display(function ($x) {
