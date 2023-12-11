@@ -72,12 +72,7 @@ class TransactionController extends AdminController
             })->sortable()
             ->hide();
         $grid->column('type', __('Transaction Type'))
-            ->dot([
-                'Share Purchase' => 'success',
-                'Loan Disbursement' => 'warning',
-                'Transfer' => 'info',
-                'Send' => 'danger',
-            ])
+            ->dot(TRANSACTION_TYPES)
             ->sortable();
         $grid->column('description', __('Description'));
         $grid->column('amount', __('Amount (UGX)'))
