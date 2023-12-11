@@ -38,12 +38,7 @@ class TransactionAllController extends AdminController
             //amount in range
             $filter->between('amount', 'Amount (UGX)');
             //type in select
-            $filter->equal('type', 'Transaction')->select([
-                'Share Purchase' => 'Share Purchase',
-                'Loan Disbursement' => 'Loan Disbursement',
-                'Transfer' => 'Transfer',
-                'Send' => 'Send',
-            ]);
+            $filter->equal('type', 'Transaction')->select(TRANSACTION_TYPES);
             //date range
             $filter->between('created_at', 'Created')->date();
         });
