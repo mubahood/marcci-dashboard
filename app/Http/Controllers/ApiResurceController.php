@@ -299,12 +299,12 @@ class ApiResurceController extends Controller
         }
 
         if (!isset($r->user_id)) {
-            return $this->error('User account not found.');
+            return $this->error('User account id not found.');
         }
         $u = User::find($r->user_id);
 
         if ($u == null) {
-            return $this->error('User not found.');
+            return $this->error('User account found.');
         }
 
         if (
@@ -331,7 +331,7 @@ class ApiResurceController extends Controller
 
         $oldLoans = Loan::where([
             'user_id' => $u->id,
-            'is_fully_paid' => 'no',
+            'is_fully_paid' => 'No',
         ])->get();
 
         if (count($oldLoans) > 0) {
@@ -350,6 +350,9 @@ class ApiResurceController extends Controller
         if ($sacco->balance < $r->amount) {
             return $this->error('The sacco does not have enough money to lend you UGX ' . number_format($r->amount) . '.');
         }
+
+        //success
+        return $this->success('success','my success');
 
         $amount = $r->amount;
         $amount = abs($amount);
@@ -386,7 +389,9 @@ class ApiResurceController extends Controller
                 DB::rollBack();
                 return $this->error('Failed to save loan, because ' . $th->getMessage() . '');
             }
- 
+
+
+
             $sacco_transactions = new Transaction();
             $sacco_transactions->user_id = $sacco->administrator_id;
             $sacco_transactions->source_user_id = $u->id;
@@ -478,7 +483,6 @@ class ApiResurceController extends Controller
         }
     }
 
-
     public function transactions_create(Request $r)
     {
         $admin = auth('api')->user();
@@ -530,7 +534,6 @@ class ApiResurceController extends Controller
                 $transaction_user->description = "Withdrawal of UGX " . number_format($amount) . " from {$u->phone_number} - $u->name.";
                 try {
                     $transaction_user->save();
-                    DB::commit();
                 } catch (\Throwable $th) {
                     DB::rollback();
                     return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
