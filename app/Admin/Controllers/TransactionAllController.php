@@ -10,14 +10,14 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 
-class TransactionController extends AdminController
+class TransactionAllController extends AdminController
 {
     /**
      * Title for current resource.
      *
      * @var string
      */
-    protected $title = 'Transactions';
+    protected $title = 'All Transactions';
 
     /**
      * Make a grid builder.
@@ -47,11 +47,15 @@ class TransactionController extends AdminController
             //date range
             $filter->between('created_at', 'Created')->date();
         });
+        $grid->column('id', __('ID'))
+            ->sortable();
+
         $grid->column('created_at', __('DATE'))
             ->sortable()
             ->display(function ($x) {
                 return Utils::my_date_time($x);
             });
+
 
 
         $grid->column('user_id', __('Account'))
