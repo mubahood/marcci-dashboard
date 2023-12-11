@@ -32,22 +32,11 @@ class Loan extends Model
                 throw new Exception("No active cycle found");
             }
             $model->cycle_id = $cycle->id;
-            
+
             $model->sacco_id = $user->sacco_id;
             return $model;
         });
-
-        //creatd
-        static::created(function ($model) {
-            $model->balance = LoanTransaction::where('loan_id', $model->id)->sum('amount');
-            $model->save();
-        });
-        static::updated(function ($model) {
-            $model->balance = LoanTransaction::where('loan_id', $model->id)->sum('amount');
-            $model->save();
-            return $model;
-        });
-    } 
+    }
 
 
     //append for user_text

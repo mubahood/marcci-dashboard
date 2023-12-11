@@ -335,7 +335,7 @@ class ApiResurceController extends Controller
         ])->get();
 
         if (count($oldLoans) > 0) {
-            return $this->error('You have an existing loan that is not fully paid. You cannot apply for another loan until you have fully paid the existing loan.');
+            //return $this->error('You have an existing loan that is not fully paid. You cannot apply for another loan until you have fully paid the existing loan.');
         }
 
         $sacco = Sacco::find($u->sacco_id);
@@ -351,8 +351,7 @@ class ApiResurceController extends Controller
             return $this->error('The sacco does not have enough money to lend you UGX ' . number_format($r->amount) . '.');
         }
 
-        //success
-        return $this->success('success','my success');
+
 
         $amount = $r->amount;
         $amount = abs($amount);
@@ -385,11 +384,13 @@ class ApiResurceController extends Controller
 
             try {
                 $loan->save();
+                $loan->balance = LoanTransaction::where('loan_id', $loan->id)->sum('amount');
+                $loan->save();
+                //success
             } catch (\Throwable $th) {
                 DB::rollBack();
                 return $this->error('Failed to save loan, because ' . $th->getMessage() . '');
             }
-
 
 
             $sacco_transactions = new Transaction();
@@ -407,7 +408,7 @@ class ApiResurceController extends Controller
             $sacco_transactions->desination_mobile_money_number = $u->phone_number;
             $sacco_transactions->desination_mobile_money_transaction_id = null;
             $sacco_transactions->desination_bank_transaction_id = null;
-            $sacco_transactions->amount = $amount;
+            $sacco_transactions->amount = (-1*(abs($amount)));
             $sacco_transactions->description = "Loan Disbursement of UGX " . number_format($amount) . " to {$u->phone_number} - $u->name. Loan Scheem: {$loan_scheem->name}. Reference: {$loan->id}.";
             $sacco_transactions->details = "Loan Disbursement of UGX " . number_format($amount) . " to {$u->phone_number} - $u->name. Loan Scheem: {$loan_scheem->name}. Reference: {$loan->id}.";
             try {
