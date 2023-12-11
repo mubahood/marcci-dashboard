@@ -476,7 +476,7 @@ class ApiResurceController extends Controller
             $LoanTransaction->balance = $loan->balance;
             $LoanTransaction->save();
 
-            DB::commit();
+            DB::commit(); 
             return $this->success(null, $message = "Loan applied successfully. You will receive a confirmation message shortly.", 200);
         } catch (\Throwable $th) {
             DB::rollBack();
