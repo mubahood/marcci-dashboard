@@ -38,12 +38,7 @@ class TransactionController extends AdminController
             //amount in range
             $filter->between('amount', 'Amount (UGX)');
             //type in select
-            $filter->equal('type', 'Transaction')->select([
-                'Share Purchase' => 'Share Purchase',
-                'Loan Disbursement' => 'Loan Disbursement',
-                'Transfer' => 'Transfer',
-                'Send' => 'Send',
-            ]);
+            $filter->equal('type', 'Transaction')->select(TRANSACTION_TYPES);
             //date range
             $filter->between('created_at', 'Created')->date();
         });
@@ -72,7 +67,6 @@ class TransactionController extends AdminController
             })->sortable()
             ->hide();
         $grid->column('type', __('Transaction Type'))
-            ->dot(TRANSACTION_TYPES)
             ->sortable();
         $grid->column('description', __('Description'));
         $grid->column('amount', __('Amount (UGX)'))
