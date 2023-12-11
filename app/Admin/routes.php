@@ -18,7 +18,7 @@ Route::group([
     $router->resource('loan-scheems', LoanScheemController::class);
     $router->resource('loans', LoanController::class);
     $router->resource('meetings', MeetingController::class);
-    $router->resource('loan-transactions', LoanTransactionController::class); 
+    $router->resource('loan-transactions', LoanTransactionController::class);
 
     /* ========================START OF NEW THINGS===========================*/
 

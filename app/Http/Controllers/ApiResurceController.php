@@ -293,12 +293,16 @@ class ApiResurceController extends Controller
 
     public function loan_create(Request $r)
     {
-        $u = auth('api')->user();
-        if ($u == null) {
-            return $this->error('User not found.');
+        $admin = auth('api')->user();
+        if ($admin == null) {
+            return $this->error('Admin not found.');
         }
 
-        $u = User::find($u->id);
+        if (!isset($r->user_id)) {
+            return $this->error('User account not found.');
+        }
+        $u = User::find($r->user_id);
+
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -331,7 +335,7 @@ class ApiResurceController extends Controller
         ])->get();
 
         if (count($oldLoans) > 0) {
-            //return $this->error('You have an existing loan that is not fully paid. You cannot apply for another loan until you have fully paid the existing loan.');
+            return $this->error('You have an existing loan that is not fully paid. You cannot apply for another loan until you have fully paid the existing loan.');
         }
 
         $sacco = Sacco::find($u->sacco_id);
@@ -350,121 +354,131 @@ class ApiResurceController extends Controller
         $amount = $r->amount;
         $amount = abs($amount);
         $amount = -1 * $amount;
-
-        $loan = new Loan();
-        $loan->sacco_id = $u->sacco_id;
-        $loan->user_id = $u->id;
-        $loan->loan_scheem_id = $r->loan_scheem_id;
-        $loan->amount = $amount;
-        $loan->balance = $amount;
-        $loan->is_fully_paid = 'No';
-        $loan->scheme_name = $loan_scheem->name;
-        $loan->scheme_description = $loan_scheem->description;
-        $loan->scheme_initial_interest_type = $loan_scheem->initial_interest_type;
-        $loan->scheme_initial_interest_flat_amount = $loan_scheem->initial_interest_flat_amount;
-        $loan->scheme_initial_interest_percentage = $loan_scheem->initial_interest_percentage;
-        $loan->scheme_bill_periodically = $loan_scheem->bill_periodically;
-        $loan->scheme_billing_period = $loan_scheem->billing_period;
-        $loan->scheme_periodic_interest_type = $loan_scheem->periodic_interest_type;
-        $loan->scheme_periodic_interest_percentage = $loan_scheem->periodic_interest_percentage;
-        $loan->scheme_periodic_interest_flat_amount = $loan_scheem->periodic_interest_flat_amount;
-        $loan->scheme_min_amount = $loan_scheem->min_amount;
-        $loan->scheme_max_amount = $loan_scheem->max_amount;
-        $loan->scheme_min_balance = $loan_scheem->min_balance;
-        $loan->scheme_max_balance = $loan_scheem->max_balance;
-        $loan->reason = $r->reason;
-
+        DB::beginTransaction();
         try {
-            $loan->save();
+
+            $loan = new Loan();
+            $loan->sacco_id = $u->sacco_id;
+            $loan->user_id = $u->id;
+            $loan->loan_scheem_id = $r->loan_scheem_id;
+            $loan->amount = $amount;
+            $loan->balance = $amount;
+            $loan->is_fully_paid = 'No';
+            $loan->scheme_name = $loan_scheem->name;
+            $loan->scheme_description = $loan_scheem->description;
+            $loan->scheme_initial_interest_type = $loan_scheem->initial_interest_type;
+            $loan->scheme_initial_interest_flat_amount = $loan_scheem->initial_interest_flat_amount;
+            $loan->scheme_initial_interest_percentage = $loan_scheem->initial_interest_percentage;
+            $loan->scheme_bill_periodically = $loan_scheem->bill_periodically;
+            $loan->scheme_billing_period = $loan_scheem->billing_period;
+            $loan->scheme_periodic_interest_type = $loan_scheem->periodic_interest_type;
+            $loan->scheme_periodic_interest_percentage = $loan_scheem->periodic_interest_percentage;
+            $loan->scheme_periodic_interest_flat_amount = $loan_scheem->periodic_interest_flat_amount;
+            $loan->scheme_min_amount = $loan_scheem->min_amount;
+            $loan->scheme_max_amount = $loan_scheem->max_amount;
+            $loan->scheme_min_balance = $loan_scheem->min_balance;
+            $loan->scheme_max_balance = $loan_scheem->max_balance;
+            $loan->reason = $r->reason;
+
+            try {
+                $loan->save();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                return $this->error('Failed to save loan, because ' . $th->getMessage() . '');
+            }
+ 
+            $sacco_transactions = new Transaction();
+            $sacco_transactions->user_id = $sacco->administrator_id;
+            $sacco_transactions->source_user_id = $u->id;
+            $sacco_transactions->sacco_id = $sacco->id;
+            $sacco_transactions->type = 'LOAN';
+            $sacco_transactions->source_type = 'Loan';
+            $sacco_transactions->source_mobile_money_number = null;
+            $sacco_transactions->source_mobile_money_transaction_id = null;
+            $sacco_transactions->source_bank_account_number = null;
+            $sacco_transactions->source_bank_transaction_id = null;
+            $sacco_transactions->desination_bank_account_number = null;
+            $sacco_transactions->desination_type = 'User';
+            $sacco_transactions->desination_mobile_money_number = $u->phone_number;
+            $sacco_transactions->desination_mobile_money_transaction_id = null;
+            $sacco_transactions->desination_bank_transaction_id = null;
+            $sacco_transactions->amount = $amount;
+            $sacco_transactions->description = "Loan Disbursement of UGX " . number_format($amount) . " to {$u->phone_number} - $u->name. Loan Scheem: {$loan_scheem->name}. Reference: {$loan->id}.";
+            $sacco_transactions->details = "Loan Disbursement of UGX " . number_format($amount) . " to {$u->phone_number} - $u->name. Loan Scheem: {$loan_scheem->name}. Reference: {$loan->id}.";
+            try {
+                $sacco_transactions->save();
+                DB::rollBack();
+            } catch (\Throwable $th) {
+                return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
+            }
+
+            $receiver_transactions = new Transaction();
+            $receiver_transactions->user_id = $u->id;
+            $receiver_transactions->source_user_id = $sacco->administrator_id;
+            $receiver_transactions->type = 'LOAN';
+            $receiver_transactions->source_type = 'LOAN';
+            $receiver_transactions->source_mobile_money_number = null;
+            $receiver_transactions->source_mobile_money_transaction_id = null;
+            $receiver_transactions->source_bank_account_number = null;
+            $receiver_transactions->source_bank_transaction_id = null;
+            $receiver_transactions->desination_bank_account_number = null;
+            $receiver_transactions->desination_type = 'User';
+            $receiver_transactions->desination_mobile_money_number = $u->phone_number;
+            $receiver_transactions->desination_mobile_money_transaction_id = null;
+            $receiver_transactions->desination_bank_transaction_id = null;
+            $amount = abs($amount);
+            $receiver_transactions->amount = $amount;
+            $receiver_transactions->description = "Received Loan of UGX " . number_format($amount) . " from  $sacco->name -  Sacco Loan Scheem: {$loan_scheem->name}. Reference: {$loan->id}.";
+            $receiver_transactions->details = "Received Loan of UGX " . number_format($amount) . " from  $sacco->name -  Sacco Loan Scheem: {$loan_scheem->name}. Reference: {$loan->id}.";
+
+            try {
+                $receiver_transactions->save();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
+            }
+
+
+            $LoanTransaction = new LoanTransaction();
+            $LoanTransaction->user_id = $u->id;
+            $LoanTransaction->loan_id = $loan->id;
+            $LoanTransaction->sacco_id = $sacco->id;
+            $amount = abs($amount);
+            $LoanTransaction->amount = -1 * $amount;
+            $LoanTransaction->balance = 0;
+            $LoanTransaction->description = "Borrowed UGX " . number_format($amount) . " from {$sacco->name} - {$loan_scheem->name}. Reference: {$loan->id}.";
+            $LoanTransaction->save();
+            $LoanTransaction->balance = $loan->balance;
+            $LoanTransaction->save();
+
+            $initialBalance = $loan->balance;
+            if ($loan_scheem->initial_interest_type == 'Flat') {
+                $initialBalance =  $loan->initial_interest_flat_amount;
+            } else {
+                $_amount = abs($amount);
+                $initialBalance =  (($loan_scheem->initial_interest_percentage / 100)) * $_amount;
+            }
+            $initialBalance = abs($initialBalance);
+            $initialInterestTransaction = new LoanTransaction();
+            $initialInterestTransaction->user_id = $u->id;
+            $initialInterestTransaction->loan_id = $loan->id;
+            $initialInterestTransaction->sacco_id = $sacco->id;
+            $initialInterestTransaction->amount = -1 * $initialBalance;
+            $initialInterestTransaction->balance = $initialBalance;
+            $initialInterestTransaction->description = "Initial Interest of UGX " . number_format($initialBalance) . " for {$sacco->name} - {$loan_scheem->name}. Reference: {$loan->id}.";
+            $initialInterestTransaction->save();
+            $LoanTransaction->balance = $loan->balance;
+            $LoanTransaction->save();
+
+            DB::commit();
+            return $this->success(null, $message = "Loan applied successfully. You will receive a confirmation message shortly.", 200);
         } catch (\Throwable $th) {
-            return $this->error('Failed to save loan, because ' . $th->getMessage() . '');
+            DB::rollBack();
+            return $this->error('Failed, because ' . $th->getMessage() . '');
         }
-
-
-
-        $sacco_transactions = new Transaction();
-        $sacco_transactions->user_id = $sacco->administrator_id;
-        $sacco_transactions->source_user_id = $u->id;
-        $sacco_transactions->sacco_id = $sacco->id;
-        $sacco_transactions->type = 'LOAN';
-        $sacco_transactions->source_type = 'Loan';
-        $sacco_transactions->source_mobile_money_number = null;
-        $sacco_transactions->source_mobile_money_transaction_id = null;
-        $sacco_transactions->source_bank_account_number = null;
-        $sacco_transactions->source_bank_transaction_id = null;
-        $sacco_transactions->desination_bank_account_number = null;
-        $sacco_transactions->desination_type = 'User';
-        $sacco_transactions->desination_mobile_money_number = $u->phone_number;
-        $sacco_transactions->desination_mobile_money_transaction_id = null;
-        $sacco_transactions->desination_bank_transaction_id = null;
-        $sacco_transactions->amount = $amount;
-        $sacco_transactions->description = "Loan Disbursement of UGX " . number_format($amount) . " to {$u->phone_number} - $u->name. Loan Scheem: {$loan_scheem->name}. Reference: {$loan->id}.";
-        $sacco_transactions->details = "Loan Disbursement of UGX " . number_format($amount) . " to {$u->phone_number} - $u->name. Loan Scheem: {$loan_scheem->name}. Reference: {$loan->id}.";
-        try {
-            $sacco_transactions->save();
-        } catch (\Throwable $th) {
-            return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
-        }
-
-        $receiver_transactions = new Transaction();
-        $receiver_transactions->user_id = $u->id;
-        $receiver_transactions->source_user_id = $sacco->administrator_id;
-        $receiver_transactions->type = 'LOAN';
-        $receiver_transactions->source_type = 'LOAN';
-        $receiver_transactions->source_mobile_money_number = null;
-        $receiver_transactions->source_mobile_money_transaction_id = null;
-        $receiver_transactions->source_bank_account_number = null;
-        $receiver_transactions->source_bank_transaction_id = null;
-        $receiver_transactions->desination_bank_account_number = null;
-        $receiver_transactions->desination_type = 'User';
-        $receiver_transactions->desination_mobile_money_number = $u->phone_number;
-        $receiver_transactions->desination_mobile_money_transaction_id = null;
-        $receiver_transactions->desination_bank_transaction_id = null;
-        $amount = abs($amount);
-        $receiver_transactions->amount = $amount;
-        $receiver_transactions->description = "Received Loan of UGX " . number_format($amount) . " from  $sacco->name -  Sacco Loan Scheem: {$loan_scheem->name}. Reference: {$loan->id}.";
-        $receiver_transactions->details = "Received Loan of UGX " . number_format($amount) . " from  $sacco->name -  Sacco Loan Scheem: {$loan_scheem->name}. Reference: {$loan->id}.";
-
-        try {
-            $receiver_transactions->save();
-        } catch (\Throwable $th) {
-            return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
-        }
-
-
-        $LoanTransaction = new LoanTransaction();
-        $LoanTransaction->user_id = $u->id;
-        $LoanTransaction->loan_id = $loan->id;
-        $LoanTransaction->sacco_id = $sacco->id;
-        $amount = abs($amount);
-        $LoanTransaction->amount = -1 * $amount;
-        $LoanTransaction->balance = 0;
-        $LoanTransaction->description = "Borrowed UGX " . number_format($amount) . " from {$sacco->name} - {$loan_scheem->name}. Reference: {$loan->id}.";
-        $LoanTransaction->save();
-        $LoanTransaction->balance = $loan->balance;
-        $LoanTransaction->save();
-
-        $initialBalance = $loan->balance;
-        if ($loan_scheem->initial_interest_type == 'Flat') {
-            $initialBalance =  $loan->initial_interest_flat_amount;
-        } else {
-            $_amount = abs($amount);
-            $initialBalance =  (($loan_scheem->initial_interest_percentage / 100)) * $_amount;
-        }
-        $initialBalance = abs($initialBalance);
-        $initialInterestTransaction = new LoanTransaction();
-        $initialInterestTransaction->user_id = $u->id;
-        $initialInterestTransaction->loan_id = $loan->id;
-        $initialInterestTransaction->sacco_id = $sacco->id;
-        $initialInterestTransaction->amount = -1 * $initialBalance;
-        $initialInterestTransaction->balance = $initialBalance;
-        $initialInterestTransaction->description = "Initial Interest of UGX " . number_format($initialBalance) . " for {$sacco->name} - {$loan_scheem->name}. Reference: {$loan->id}.";
-        $initialInterestTransaction->save();
-        $LoanTransaction->balance = $loan->balance;
-        $LoanTransaction->save();
-
-        return $this->success(null, $message = "Loan applied successfully. You will receive a confirmation message shortly.", 200);
     }
+
+
     public function transactions_create(Request $r)
     {
         $admin = auth('api')->user();
@@ -516,6 +530,7 @@ class ApiResurceController extends Controller
                 $transaction_user->description = "Withdrawal of UGX " . number_format($amount) . " from {$u->phone_number} - $u->name.";
                 try {
                     $transaction_user->save();
+                    DB::commit();
                 } catch (\Throwable $th) {
                     DB::rollback();
                     return $this->error('Failed to save transaction, because ' . $th->getMessage() . '');
