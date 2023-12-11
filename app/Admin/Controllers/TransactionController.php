@@ -27,6 +27,7 @@ class TransactionController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Transaction());
+        $grid->disableCreateButton();
         //create a filter
         $grid->filter(function ($filter) {
             $filter->disableIdFilter();
@@ -129,6 +130,7 @@ class TransactionController extends AdminController
     protected function form()
     {
         $form = new Form(new Transaction());
+        return $form;
 
         $u = Admin::user();
         //only show sacco admin can create new transaction
