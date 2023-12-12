@@ -28,8 +28,8 @@ class MembersController extends AdminController
         $grid = new Grid(new User());
         $u = Admin::user();
         if (!$u->isRole('admin')) {
-            $grid->model()->where('sacco_id', $u->sacco_id);
-            if (!$u->isRole('sacco')) {
+            /* $grid->model()->where('sacco_id', $u->sacco_id);
+  */           if (!$u->isRole('sacco')) {
                 $grid->disableCreateButton();
                 //dsable delete
                 $grid->actions(function (Grid\Displayers\Actions $actions) {
