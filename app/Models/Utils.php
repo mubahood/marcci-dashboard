@@ -44,14 +44,15 @@ class Utils extends Model
             return 'Invalid phone number';
         }
         $sms = urlencode($sms);
-        $url = "https://sms.dmarkmobile.com/v2/api/send_sms/";
+        $url = '';
         $url .= "?spname=mulimisa";
         $url .= "&sppass=mul1m1s4";
         $url .= "&numbers=$phone";
         $url .= "&msg=$sms";
-        $url .= "&type=json";
-        $url = urlencode($url);
+        $url .= "&type=json"; 
 
+        $url = "https://sms.dmarkmobile.com/v2/api/send_sms/".$url;
+ 
         //use guzzle to make the request 
         $body = null;
         try {
@@ -59,7 +60,7 @@ class Utils extends Model
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            /* $body = curl_exec($ch); */
+            $body = curl_exec($ch);
             curl_close($ch);
         } catch (\Throwable $th) {
             throw $th;
