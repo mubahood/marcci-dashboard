@@ -24,6 +24,30 @@ class LoanController extends AdminController
      */
     protected function grid()
     {
+       /*  $loan = Loan::find(39);
+        try {
+            Loan::deduct_funds_from_sacco_account($loan);
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+        try {
+            Loan::deposit_funds_to_applicant_account($loan);
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        
+        }
+        try {
+            Loan::create_principal_loan_transaction($loan);
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+        try {
+            Loan::create_first_interest_loan_transaction($loan);
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        } 
+        die();
+ */
         $grid = new Grid(new Loan());
 
         $grid->disableCreateButton();

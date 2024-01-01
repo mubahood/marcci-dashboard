@@ -70,7 +70,6 @@ class Sacco extends Model
         }
         return Transaction::where([
             'user_id' => $this->administrator_id,
-            'cycle_id' => $cycle->id
         ])->sum('amount');
     }
 

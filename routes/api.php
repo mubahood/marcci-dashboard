@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiResurceController;
 use App\Http\Middleware\EnsureTokenIsValid;
+use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -32,8 +33,9 @@ Route::POST("transactions-create", [ApiResurceController::class, "transactions_c
 Route::POST("loans-create", [ApiResurceController::class, "loan_create"]);
 Route::POST("transactions-transfer", [ApiResurceController::class, "transactions_transfer"]);
 
-
-Route::get("sacco-members", [ApiResurceController::class, "sacco_members"]);
+Route::middleware([JwtMiddleware::class])->group(function () {
+    Route::get("sacco-members", [ApiResurceController::class, "sacco_members"]);
+});
 Route::post("sacco-members-review", [ApiResurceController::class, "sacco_members_review"]);
 Route::post("cycles", [ApiResurceController::class, "cycles_create"]);
 Route::post("members-review", [ApiResurceController::class, "sacco_members_review"]);
@@ -47,9 +49,6 @@ Route::POST("products", [ApiResurceController::class, "product_create"]);
 Route::POST("garden-activities", [ApiResurceController::class, "activity_submit"]);
 
 Route::get("crops", [ApiResurceController::class, "crops"]);
-
-
-
 
 
 Route::POST("users/login", [ApiAuthController::class, "login"]);

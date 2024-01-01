@@ -5,6 +5,7 @@ namespace App\Models;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class LoanTransaction extends Model
 {
@@ -25,9 +26,14 @@ class LoanTransaction extends Model
 
         //creatd
         static::created(function ($model) {
-        });
-        static::updated(function ($model) {
-            return $model;
+            $loan = Loan::find($model->loan_id);
+            if ($loan == null) {
+                throw new Exception("Loan not found");
+            }
+            $loan_balance = LoanTransaction::where('loan_id', $loan->id)->sum('amount');
+            $loan->balance = $loan_balance;
+            $loan->save();
+            DB::table('loan_transactions')->where('id', $model->id)->update(['balance' => $loan_balance]);
         });
     }
 
