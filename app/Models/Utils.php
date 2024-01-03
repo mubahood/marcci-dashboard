@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use SplFileObject;
 
 define('TRANSACTION_TYPES', [
@@ -49,10 +50,10 @@ class Utils extends Model
         $url .= "&sppass=mul1m1s4";
         $url .= "&numbers=$phone";
         $url .= "&msg=$sms";
-        $url .= "&type=json"; 
+        $url .= "&type=json";
 
-        $url = "https://sms.dmarkmobile.com/v2/api/send_sms/".$url;
- 
+        $url = "https://sms.dmarkmobile.com/v2/api/send_sms/" . $url;
+
         //use guzzle to make the request 
         $body = null;
         try {
@@ -588,12 +589,15 @@ administrator_id
     }
     public static function system_boot()
     {
-        /*         $d = env('types');
+
+        self::bill_loans();
+        /*
+        d = env('types');
         echo '<pre>';
         print_r(TRANSACTION_TYPES);
         die();
         die("disabled"); */
-        $u = Admin::user();
+        $u = Auth::user();
 
         if ($u != null) {
             $r = AdminRoleUser::where([
@@ -608,6 +612,34 @@ administrator_id
         }
     }
 
+    public static function bill_loans()
+    {
+        $u = Auth::user();
+        if ($u == null) {
+            return;
+        }
+
+        //this month number without leading zero
+        $this_month = Carbon::now()->format('m');
+        $this_month = (int)$this_month;
+
+        $billed_this_month = LoanInterestBill::where([
+            'sacco_id' => $u->sacco_id,
+            'month' => $this_month,
+            'year' => Carbon::now()->format('Y'),
+        ])->get()->pluck('loan_id')->toArray();
+
+        //get all loans that are not fully paid and not billed this month
+        $loans = Loan::where([
+            'sacco_id' => $u->sacco_id,
+            'is_fully_paid' => 'No',
+            'scheme_bill_periodically' => 'Yes',
+        ])->whereNotIn('id', $billed_this_month)->get();
+
+        foreach ($loans as $key => $loan) {
+            $loan->bill_interest();
+        }
+    }
     public static function start_session()
     {
         if (session_status() === PHP_SESSION_NONE) {

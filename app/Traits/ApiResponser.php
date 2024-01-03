@@ -6,7 +6,9 @@ trait ApiResponser
 {
     protected function success($data = [], $message = "")
     {
-        return response()->json([
+        //set header to json
+        header('Content-Type: application/json');
+        return json_encode([
             'code' => 1,
             'message' => $message,
             'data' => $data
@@ -15,11 +17,11 @@ trait ApiResponser
 
     protected function error($message = "")
     {
-        return response()->json([
+        header('Content-Type: application/json');
+        return json_encode([
             'code' => 0,
             'message' => $message,
             'data' => ""
         ]);
     }
 }
- 

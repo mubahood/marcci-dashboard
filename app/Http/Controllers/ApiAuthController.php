@@ -239,6 +239,38 @@ class ApiAuthController extends Controller
 
 
 
+    public function password_change(Request $request)
+    {
+        $user = User::find($request->user_id);
+        if ($user == null) {
+            return $this->error('User not found.');
+        }
+
+        //logged in user
+        $admin = auth('api')->user();
+        if ($admin == null) {
+            return $this->error('User not found.');
+        }
+
+        if ($request->password == null) {
+            return $this->error('Password is required.');
+        } 
+
+        if (strtolower($admin->user_type) != 'admin') {
+            if (!password_verify($request->current_password, $user->password)) {
+                return $this->error('Current password is incorrect.');
+            }
+        } 
+
+        $user->password = password_hash(trim($request->password), PASSWORD_DEFAULT);
+        $user->save();
+        $msg = 'Password changed successfully.';
+        return $this->success(null, $msg);
+    }
+
+
+
+
     public function register(Request $r)
     {
         if ($r->phone_number == null) {

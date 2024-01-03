@@ -32,6 +32,7 @@ use Encore\Admin\Auth\Database\Administrator;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Throwable;
 
 class ApiResurceController extends Controller
@@ -341,7 +342,7 @@ class ApiResurceController extends Controller
         ])->get();
 
         if (count($oldLoans) > 0) {
-            //return $this->error('You have an existing loan that is not fully paid. You cannot apply for another loan until you have fully paid the existing loan.');
+            return $this->error('You have an existing loan that is not fully paid. You cannot apply for another loan until you have fully paid the existing loan.');
         }
 
         $sacco = Sacco::find($u->sacco_id);
@@ -652,6 +653,7 @@ class ApiResurceController extends Controller
                 $loan_transaction->user_id = $u->id;
                 $loan_transaction->loan_id = $loan->id;
                 $loan_transaction->sacco_id = $u->sacco_id;
+                $loan_transaction->type = 'LOAN';
                 $loan_transaction->amount = $amount;
                 $loan_transaction->description = "Loan Repayment of UGX " . number_format($amount) . " from {$u->phone_number} - $u->name. Loan Scheem: {$loan->scheme_name}. Reference: {$loan->id}.";
                 try {
@@ -815,9 +817,10 @@ class ApiResurceController extends Controller
             return $this->error('User not found.');
         }
         $members = User::where(['sacco_id' => $u->sacco_id])
-            ->limit(1000)
+            ->limit(50000)
             ->orderBy('id', 'desc')
             ->get();
+
         return $this->success(
             $members,
             $message = "Success",
@@ -1157,6 +1160,7 @@ class ApiResurceController extends Controller
     }
 
 
+
     public function index(Request $r, $model)
     {
 
@@ -1169,6 +1173,7 @@ class ApiResurceController extends Controller
         if (isset($_GET['_method'])) {
             unset($_GET['_method']);
         }
+
 
         $conditions = [];
         foreach ($_GET as $k => $v) {
@@ -1184,10 +1189,8 @@ class ApiResurceController extends Controller
             }
         }
         if ($is_private) {
-
-            $u = auth('api')->user();
+            $u = $r->user;
             $administrator_id = $u->id;
-
             if ($u == null) {
                 return $this->error('User not found.');
             }
@@ -1214,18 +1217,14 @@ class ApiResurceController extends Controller
     }
 
 
-
-
-
     public function delete(Request $r, $model)
     {
         $administrator_id = Utils::get_user_id($r);
-        $u = User::find($administrator_id);
+        $u = Administrator::find($administrator_id);
 
 
         if ($u == null) {
-            return Utils::response([
-                'status' => 0,
+            return Utils::error([
                 'message' => "User not found.",
             ]);
         }
@@ -1237,8 +1236,7 @@ class ApiResurceController extends Controller
 
 
         if ($obj == null) {
-            return Utils::response([
-                'status' => 0,
+            return Utils::error([
                 'message' => "Item already deleted.",
             ]);
         }
@@ -1255,15 +1253,12 @@ class ApiResurceController extends Controller
 
 
         if ($success) {
-            return Utils::response([
-                'status' => 1,
+            return Utils::success([
                 'data' => $obj,
                 'message' => $msg
             ]);
         } else {
-            return Utils::response([
-                'status' => 0,
-                'data' => null,
+            return Utils::error([
                 'message' => $msg
             ]);
         }
@@ -1272,46 +1267,74 @@ class ApiResurceController extends Controller
 
     public function update(Request $r, $model)
     {
-        $administrator_id = Utils::get_user_id($r);
-        $u = User::find($administrator_id);
 
-
+        $u = auth('api')->user();
         if ($u == null) {
-            return Utils::response([
-                'status' => 0,
+            return Utils::error([
                 'message' => "User not found.",
             ]);
         }
 
-
         $className = "App\Models\\" . $model;
-        $id = ((int)($r->online_id));
+        $id = ((int)($r->id));
         $obj = $className::find($id);
 
-
+        $isEdit = true;
         if ($obj == null) {
-            return Utils::response([
-                'status' => 0,
-                'message' => "Item not found.",
-            ]);
+            $obj = new $className;
+            $isEdit = false;
+        }
+        if ($isEdit) {
+            if (isset($r->my_task)) {
+                if ($r->my_task == 'delete') {
+                    $obj->delete();
+                    return Utils::error([
+                        'message' => "Deleted successfully.",
+                    ]);
+                }
+            }
         }
 
+        $table_name = $obj->getTable();
+        $cols = Schema::getColumnListing($table_name);
 
-        unset($_POST['_method']);
+
+
         if (isset($_POST['online_id'])) {
             unset($_POST['online_id']);
         }
 
+        $except = [
+            'created_at',
+            'updated_at',
+            'deleted_at',
+            'online_id',
+            'id',
+            'administrator_id',
+            'user_id',
+            'created_by',
+            'updated_by',
+        ];
+
         foreach ($_POST as $key => $value) {
+            if (in_array($key, $except)) {
+                continue;
+            }
+            if (!in_array($key, $cols)) {
+                continue;
+            }
             $obj->$key = $value;
         }
 
-
         $success = false;
         $msg = "";
+        if ($isEdit) {
+            $msg = "Updated successfully.";
+        } else {
+            $msg = "Created successfully.";
+        }
         try {
             $obj->save();
-            $msg = "Updated successfully.";
             $success = true;
         } catch (Exception $e) {
             $success = false;
@@ -1320,15 +1343,12 @@ class ApiResurceController extends Controller
 
 
         if ($success) {
-            return Utils::response([
-                'status' => 1,
+            return Utils::success([
                 'data' => $obj,
                 'message' => $msg
             ]);
         } else {
-            return Utils::response([
-                'status' => 0,
-                'data' => null,
+            return Utils::error([
                 'message' => $msg
             ]);
         }

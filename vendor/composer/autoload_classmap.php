@@ -116,6 +116,7 @@ return array(
     'App\\Models\\Job' => $baseDir . '/app/Models/Job.php',
     'App\\Models\\JobApplication' => $baseDir . '/app/Models/JobApplication.php',
     'App\\Models\\Loan' => $baseDir . '/app/Models/Loan.php',
+    'App\\Models\\LoanInterestBill' => $baseDir . '/app/Models/LoanInterestBill.php',
     'App\\Models\\LoanScheem' => $baseDir . '/app/Models/LoanScheem.php',
     'App\\Models\\LoanTransaction' => $baseDir . '/app/Models/LoanTransaction.php',
     'App\\Models\\Location' => $baseDir . '/app/Models/Location.php',

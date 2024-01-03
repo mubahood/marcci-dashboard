@@ -157,7 +157,7 @@ class Sacco extends Model
         if ($this->active_cycle == null) {
             return 0;
         }
-        return Transaction::where([
+        return LoanTransaction::where([
             'sacco_id' => $this->id,
             'type' => 'LOAN_INTEREST',
             'cycle_id' => $this->active_cycle->id
@@ -259,9 +259,8 @@ class Sacco extends Model
         if ($this->active_cycle == null) {
             return 0;
         }
-        return Transaction::where([
+        return Loan::where([
             'sacco_id' => $this->id,
-            'type' => 'LOAN',
             'cycle_id' => $this->active_cycle->id
         ])
             ->sum('amount');

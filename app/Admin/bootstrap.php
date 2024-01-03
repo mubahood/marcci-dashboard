@@ -23,6 +23,20 @@ use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Auth;
 use App\Admin\Extensions\Nav\Shortcut;
 use App\Admin\Extensions\Nav\Dropdown;
+use App\Models\User;
+use App\Models\UserModel;
+
+/* $u = User::find(116);
+
+$members = User::where(['id' => $u->id])
+            ->limit(50000)
+            ->orderBy('id', 'desc')
+            ->get();
+
+echo "<pre>";
+print_r(json_encode($members->first()));
+die(); */
+ 
 
 Utils::system_boot();
 

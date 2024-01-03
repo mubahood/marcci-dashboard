@@ -6,4 +6,4 @@ php artisan make:migration add_preperation_cols_to_loans --table=loans
  
 php artisan admin:make LoanTransactionController --model=App\\Models\\LoanTransaction 
 
-php artisan make:model LoanTransaction -m
+php artisan make:model UserModel -m

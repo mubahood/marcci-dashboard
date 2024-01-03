@@ -90,6 +90,11 @@ class LoanScheemController extends AdminController
         $form->hidden('sacco_id', __('Sacco id'))->default($u->sacco_id);
         $form->text('name', __('Loan Scheme Name'))->rules('required');
 
+        $form->decimal('min_amount', __('Minimum Loan Amount'))->rules('required');
+        $form->decimal('max_amount', __('Maximum Amount'))->rules('required');
+        
+        $form->decimal('min_balance', __('Minimum deposit/saving'))->rules('required');
+
         $form->radio('initial_interest_type', __('Initial Interest Type'))
             ->options(['Flat' => 'Flat', 'Percentage' => 'Percentage'])
             ->stacked()
@@ -125,9 +130,7 @@ class LoanScheemController extends AdminController
                     });
             });
 
-        $form->decimal('min_amount', __('Minimum Loan Amount'))->rules('required');
-        $form->decimal('max_amount', __('Maximum Amount'))->rules('required');
-        $form->decimal('min_balance', __('Minimum deposit/saving'))->rules('required');
+
         $form->textarea('description', __('Loan Scheme Details'))->rules('required');
         $form->hidden('max_balance', __('Maximum deposit/saving'))->default(0);
 

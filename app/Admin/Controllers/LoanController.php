@@ -24,7 +24,7 @@ class LoanController extends AdminController
      */
     protected function grid()
     {
-       /*  $loan = Loan::find(39);
+        /*  $loan = Loan::find(39);
         try {
             Loan::deduct_funds_from_sacco_account($loan);
         } catch (\Exception $e) {
@@ -73,7 +73,6 @@ class LoanController extends AdminController
             ->display(function ($is_fully_paid) {
                 return $is_fully_paid == 'yes' ? 'Yes' : 'No';
             })->sortable();
-
         $grid->column('scheme_description', __('Scheme description'))->hide();
         $grid->column('scheme_initial_interest_type', __('Scheme initial interest type'))->hide();
         $grid->column('scheme_initial_interest_flat_amount', __('Scheme initial interest flat amount'))->hide();
@@ -137,7 +136,7 @@ class LoanController extends AdminController
     {
         $form = new Form(new Loan());
 
-        $form->number('sacco_id', __('Sacco id'));
+        $form->date('created_at', __('Created at'))->default(date('Y-m-d H:i:s'));
         $form->number('user_id', __('User id'));
         $form->number('loan_scheem_id', __('Loan scheem id'));
         $form->number('amount', __('Amount'));

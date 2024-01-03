@@ -7,16 +7,8 @@ use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+
+
 
 Route::get("manifest", [ApiResurceController::class, "manifest"]);
 Route::get("loans", [ApiResurceController::class, "loans"]);
@@ -35,6 +27,8 @@ Route::POST("transactions-transfer", [ApiResurceController::class, "transactions
 
 Route::middleware([JwtMiddleware::class])->group(function () {
     Route::get("sacco-members", [ApiResurceController::class, "sacco_members"]);
+    Route::get('api/{model}', [ApiResurceController::class, 'index']);
+    Route::post('api/{model}', [ApiResurceController::class, 'update']);
 });
 Route::post("sacco-members-review", [ApiResurceController::class, "sacco_members_review"]);
 Route::post("cycles", [ApiResurceController::class, "cycles_create"]);
@@ -54,10 +48,10 @@ Route::get("crops", [ApiResurceController::class, "crops"]);
 Route::POST("users/login", [ApiAuthController::class, "login"]);
 Route::POST("users/register", [ApiAuthController::class, "register"]);
 Route::POST("users/update", [ApiAuthController::class, "update_user"]);
+Route::POST("password-change", [ApiAuthController::class, "password_change"]);
 Route::get("people", [ApiResurceController::class, "people"]);
 Route::POST("people", [ApiResurceController::class, "person_create"]);
 Route::get("jobs", [ApiResurceController::class, "jobs"]);
-Route::get('api/{model}', [ApiResurceController::class, 'index']);
 Route::get('groups', [ApiResurceController::class, 'groups']);
 Route::get('associations', [ApiResurceController::class, 'associations']);
 Route::get('institutions', [ApiResurceController::class, 'institutions']);

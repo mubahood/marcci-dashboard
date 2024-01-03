@@ -700,6 +700,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Models\\Job' => __DIR__ . '/../..' . '/app/Models/Job.php',
         'App\\Models\\JobApplication' => __DIR__ . '/../..' . '/app/Models/JobApplication.php',
         'App\\Models\\Loan' => __DIR__ . '/../..' . '/app/Models/Loan.php',
+        'App\\Models\\LoanInterestBill' => __DIR__ . '/../..' . '/app/Models/LoanInterestBill.php',
         'App\\Models\\LoanScheem' => __DIR__ . '/../..' . '/app/Models/LoanScheem.php',
         'App\\Models\\LoanTransaction' => __DIR__ . '/../..' . '/app/Models/LoanTransaction.php',
         'App\\Models\\Location' => __DIR__ . '/../..' . '/app/Models/Location.php',

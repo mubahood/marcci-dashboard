@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +29,8 @@ class Loan extends Model
             }
             return self::prepare_loan($model);
         });
+
+
 
         //creatd
         static::created(function ($loan) {
@@ -56,6 +59,106 @@ class Loan extends Model
                 throw new \Exception($e->getMessage());
             }
         });
+    }
+
+    //bill_interest 
+    public function bill_interest()
+    {
+        $this_month = Carbon::now()->format('m');
+        $this_month = (int)$this_month;
+        $this_year = Carbon::now()->format('Y');
+        $this_year = (int)$this_year;
+
+
+        //create loop of months between start_date and end_date
+        $start_date = Carbon::parse($this->created_at);
+        $end_date = Carbon::now();
+        $months = [];
+        while ($start_date->lte($end_date)) {
+            $months[] = $start_date->format('Y-m-d');
+            $start_date->addMonth();
+        }
+
+        $created_month = Carbon::parse($this->created_at)->format('m');
+        $created_month = (int)$created_month;
+        $created_year = Carbon::parse($this->created_at)->format('Y');
+        $created_year = (int)$created_year;
+
+        foreach ($months as $key => $month) {
+            $loop_month = Carbon::parse($month)->format('m');
+            $loop_month = (int)$loop_month;
+            $loop_year = Carbon::parse($month)->format('Y');
+            $loop_year = (int)$loop_year;
+            if ($loop_year == $created_year && $loop_month == $created_month) {
+                //skip
+                continue;
+            }
+
+            //get loan bill record for the loop month
+            $loan_bill = LoanInterestBill::where([
+                'loan_id' => $this->id,
+                'year' => $loop_year,
+                'month' => $loop_month,
+            ])->first();
+            if ($loan_bill != null) {
+                //skip
+                continue;
+            }
+
+
+            if ($this->scheme_bill_periodically != 'Yes') {
+                //skip
+                continue;
+            }
+
+            $scheme = LoanScheem::find($this->loan_scheem_id);
+
+            $interest_amount = 0;
+            if ($this->scheme_periodic_interest_type == 'Percentage') {
+                $scheme_initial_interest_percentage = (int)(abs($this->scheme_periodic_interest_percentage));
+                if ($this->amount != 0) {
+                    $interest_amount = (($scheme_initial_interest_percentage / 100)) * abs($this->amount);
+                }
+            } else {
+                $interest_amount = abs($this->scheme_periodic_interest_flat_amount);
+            }
+            $interest_amount = ((-1) * (abs($interest_amount)));
+
+            //create loan transaction
+            $loan_transaction = new LoanTransaction();
+            $loan_transaction->user_id = $this->user_id;
+            $loan_transaction->loan_id = $this->id;
+            $loan_transaction->type = 'LOAN_INTEREST';
+            $loan_transaction->sacco_id = $this->sacco_id;
+            $loan_transaction->amount = $interest_amount;
+            $loan_transaction->balance = $interest_amount;
+
+            //write month and year properly
+            $loop_month_text = Carbon::parse($month)->format('F Y');
+
+            $loan_transaction->description = "Interest of UGX " . number_format($interest_amount) . " for the month of $loop_month_text. Reference: {$this->id}.";
+
+            try {
+                $loan_transaction->save();
+                try {
+                    $loan_bill = new LoanInterestBill();
+                    $loan_bill->loan_id = $this->id;
+                    $loan_bill->sacco_id = $this->sacco_id;
+                    $loan_bill->loan_transaction_id = null;
+                    $loan_bill->year = $loop_year;
+                    $loan_bill->month = $loop_month;
+                    $loan_bill->week = ((int)(Carbon::parse($month)->format('W')));
+                    $loan_bill->day =  ((int)(Carbon::parse($month)->format('d')));
+                    $loan_bill->loan_transaction_id = $loan_transaction->id;
+                    $loan_bill->save();
+                } catch (\Throwable $th) {
+                    $loan_transaction->delete();
+                    throw new Exception('Failed to save loan bill, because ' . $th->getMessage() . '');
+                }
+            } catch (\Throwable $th) {
+                throw new Exception('Failed to create loan transaction, because ' . $th->getMessage() . '');
+            }
+        }
     }
 
     public static function prepare_loan($model)
@@ -88,7 +191,7 @@ class Loan extends Model
         ])->get();
 
         if (count($oldLoans) > 0) {
-            //throw new Exception('You have an existing loan that is not fully paid. You cannot apply for another loan until you have fully paid the existing loan.');
+            throw new Exception('You have an existing loan that is not fully paid. You cannot apply for another loan until you have fully paid the existing loan.');
         }
 
         $sacco = Sacco::find($u->sacco_id);
@@ -264,6 +367,7 @@ class Loan extends Model
             $amount = abs($amount);
             $LoanTransaction->amount = -1 * $amount;
             $LoanTransaction->balance = 0;
+            $LoanTransaction->type = 'LOAN';
             $LoanTransaction->description = "Borrowed UGX " . number_format($amount) . " from {$sacco->name} - {$loan_scheem->name}. Reference: {$loan->id}.";
             $LoanTransaction->save();
             DB::table('loans')
@@ -308,6 +412,7 @@ class Loan extends Model
             $initialInterestTransaction = new LoanTransaction();
             $initialInterestTransaction->user_id = $u->id;
             $initialInterestTransaction->loan_id = $loan->id;
+            $initialInterestTransaction->type = 'LOAN_INTEREST';
             $initialInterestTransaction->sacco_id = $sacco->id;
             $initialInterestTransaction->amount = -1 * $initialBalance;
             $initialInterestTransaction->balance = $initialBalance;

@@ -169,7 +169,7 @@ class User extends Authenticatable implements JWTSubject
             return 0;
         }
 
-        return Transaction::where([
+        return LoanTransaction::where([
             'user_id' => $this->id,
             'type' => 'LOAN_INTEREST',
             'cycle_id' => $sacco->active_cycle->id
@@ -188,11 +188,15 @@ class User extends Authenticatable implements JWTSubject
             return 0;
         }
 
-        return Transaction::where([
-            'user_id' => $this->id,
-            'type' => 'LOAN_REPAYMENT',
-            'cycle_id' => $sacco->active_cycle->id
-        ])
+        return LoanTransaction::where(
+            'user_id',
+            $this->id
+        )
+            ->where(
+                'cycle_id',
+                $sacco->active_cycle->id
+            )
+            ->where('amount', '>', 0)
             ->sum('amount');
     }
 
@@ -226,9 +230,9 @@ class User extends Authenticatable implements JWTSubject
             return 0;
         }
 
-        return Transaction::where([
+        return LoanTransaction::where([
             'user_id' => $this->id,
-            'type' => 'LOAN',
+            /*             'type' => 'LOAN', */
             'cycle_id' => $sacco->active_cycle->id
         ])
             ->sum('amount');
@@ -262,7 +266,7 @@ class User extends Authenticatable implements JWTSubject
             return 0;
         }
 
-        return Loan::where([
+        return LoanTransaction::where([
             'user_id' => $this->id,
             'cycle_id' => $sacco->active_cycle->id
         ])
