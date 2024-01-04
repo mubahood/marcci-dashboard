@@ -29,7 +29,7 @@ class JwtMiddleware extends BaseMiddleware
     ];
 
     public function handle($request, Closure $next)
-    { 
+    {
 
         if (!$request->expectsJson()) {
             return $next($request);
@@ -76,13 +76,7 @@ class JwtMiddleware extends BaseMiddleware
 
             $user = FacadesJWTAuth::parseToken()->authenticate();
         } catch (Exception $e) {
-            if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
-                return response()->json(['status' => 'Token is Invalid']);
-            } else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
-                return response()->json(['status' => 'Token is Expired']);
-            } else {
-                return Utils::error($e->getMessage());
-            }
+            return $next($request);
         }
         return $next($request);
     }
