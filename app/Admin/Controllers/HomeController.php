@@ -57,7 +57,7 @@ class HomeController extends Controller
 
         $u = Auth::user();
         $content
-            ->title('Digisave - Dashboard')
+            ->title('MobiSave - Dashboard')
             ->description('Hello ' . $u->name . "!");
         $u = Admin::user();
 

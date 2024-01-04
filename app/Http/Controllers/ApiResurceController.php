@@ -178,7 +178,7 @@ class ApiResurceController extends Controller
 
         $resp = null;
         try {
-            $resp = Utils::send_sms($phone_number, $otp . ' is your Digisave OTP.');
+            $resp = Utils::send_sms($phone_number, $otp . ' is your MobiSave OTP.');
         } catch (Exception $e) {
             return $this->error('Failed to send OTP  because ' . $e->getMessage() . '');
         }

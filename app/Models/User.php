@@ -24,7 +24,7 @@ class User extends Authenticatable implements JWTSubject
         parent::boot();
         static::created(function ($model) {
             try {
-                Utils::send_sms($model->phone_number, "Your DigiSave account has been created. Download the app from https://play.google.com/store/apps/details?id=ug.digisave");
+                Utils::send_sms($model->phone_number, "Your MobiSave account has been created. Download the app from https://play.google.com/store/apps/details?id=ug.digisave");
             } catch (\Throwable $th) {
                 //throw $th;
             }
