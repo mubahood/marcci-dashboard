@@ -601,6 +601,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Admin\\Controllers\\DisabilityController' => __DIR__ . '/../..' . '/app/Admin/Controllers/DisabilityController.php',
         'App\\Admin\\Controllers\\EventBookingController' => __DIR__ . '/../..' . '/app/Admin/Controllers/EventBookingController.php',
         'App\\Admin\\Controllers\\EventController' => __DIR__ . '/../..' . '/app/Admin/Controllers/EventController.php',
+        'App\\Admin\\Controllers\\EventModelController' => __DIR__ . '/../..' . '/app/Admin/Controllers/EventModelController.php',
         'App\\Admin\\Controllers\\ExampleController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ExampleController.php',
         'App\\Admin\\Controllers\\GardenActivityController' => __DIR__ . '/../..' . '/app/Admin/Controllers/GardenActivityController.php',
         'App\\Admin\\Controllers\\GardenController' => __DIR__ . '/../..' . '/app/Admin/Controllers/GardenController.php',

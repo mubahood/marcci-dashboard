@@ -2,7 +2,7 @@ php artisan migrate
 
 ssh -p 2211 cpaneluser@10.0.10.10
 
-php artisan make:migration add_change_some_cols_in_event_models --table=event_models 
+php artisan make:migration add_change_some_cols_in_event_details --table=event_models 
  
 php artisan admin:make EventModelController --model=App\\Models\\EventModel 
 

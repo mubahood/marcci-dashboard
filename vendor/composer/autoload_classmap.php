@@ -17,6 +17,7 @@ return array(
     'App\\Admin\\Controllers\\DisabilityController' => $baseDir . '/app/Admin/Controllers/DisabilityController.php',
     'App\\Admin\\Controllers\\EventBookingController' => $baseDir . '/app/Admin/Controllers/EventBookingController.php',
     'App\\Admin\\Controllers\\EventController' => $baseDir . '/app/Admin/Controllers/EventController.php',
+    'App\\Admin\\Controllers\\EventModelController' => $baseDir . '/app/Admin/Controllers/EventModelController.php',
     'App\\Admin\\Controllers\\ExampleController' => $baseDir . '/app/Admin/Controllers/ExampleController.php',
     'App\\Admin\\Controllers\\GardenActivityController' => $baseDir . '/app/Admin/Controllers/GardenActivityController.php',
     'App\\Admin\\Controllers\\GardenController' => $baseDir . '/app/Admin/Controllers/GardenController.php',
