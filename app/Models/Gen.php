@@ -60,7 +60,10 @@ class Gen extends Model
 
     $_data = "";
     $i = 0;
-    $done = [];
+    $done = [
+      'created_at',
+      'updated_at',
+    ];
     foreach ($tables as $v) {
       $key = trim($v);
       if (strlen($key) < 1) {
@@ -80,6 +83,9 @@ class Gen extends Model
             label: GetStringUtils("' . (str_replace('_', ' ', $_key)) . '").capitalize!,
           ),
           initialValue: item.' . $_key . ',
+          validator: FormBuilderValidators.compose([
+            FormBuilderValidators.required(),
+          ]),
           textCapitalization: TextCapitalization.words,
           name: "' . $_key . '",
           onChanged: (x) {
@@ -167,7 +173,7 @@ class Gen extends Model
   <pre>import 'package:sqflite/sqflite.dart';
  
   import 'RespondModel.dart';
-  import '../utils/Utilities.dart';
+  import '../utils/Utils.dart';
  
    
   import 'RespondModel.dart';
@@ -179,7 +185,7 @@ class Gen extends Model
     $generate_vars
   
     static fromJson(dynamic m) {
-    $this->class_name obj = new $this->class_name();
+    $this->class_name obj = $this->class_name();
       if (m == null) {
         return obj;
       }
@@ -234,7 +240,9 @@ class Gen extends Model
       List&lt;$this->class_name&gt; data = [];
 
       RespondModel resp =
-          RespondModel(await Utils.http_get('\${{$this->class_name}.end_point}', {}));
+          RespondModel(await Utils.http_get('\${{$this->class_name}.end_point}', {
+            'is_not_private': '1',
+          }));
    
       if (resp.code != 1) {
         return [];
@@ -292,7 +300,7 @@ class Gen extends Model
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
       } catch (e) {
-        Utils.toast("Failed to save student because \${e.toString()}");
+        Utils.toast("Failed to save because \${e.toString()}");
       }
     }
   
@@ -360,7 +368,7 @@ class Gen extends Model
         where: 'id = \$id'
       );
     } catch (e) {
-      Utils.toast("Failed to save student because \${e.toString()}");
+      Utils.toast("Failed to save because \${e.toString()}");
     }
   }
   
@@ -383,6 +391,7 @@ class Gen extends Model
   public function make_forms()
   {
     $tables = Schema::getColumnListing($this->table_name);
+    $table_name = $this->table_name;
     $forrm_fields = $this->makeFormFields($tables);
     $generate_vars = $this->makeVars($tables);
     $fromJson = Gen::fromJsons($tables);
@@ -395,11 +404,12 @@ class Gen extends Model
   import 'package:flutter_form_builder/flutter_form_builder.dart';
   import 'package:flutx/flutx.dart';
   import 'package:get/get.dart'; 
+  import 'package:form_builder_validators/form_builder_validators.dart';
   
   import '../../models/$this->class_name.dart';
   import '../../models/RespondModel.dart';
-  import '../../utils/CustomTheme.dart';
-  import '../../utils/Utilities.dart';
+  import '../../theme/custom_theme.dart';
+  import '../../utils/Utils.dart'; 
   
   class {$this->class_name}EditScreen extends StatefulWidget {
     Map&ltString, dynamic&gt params = {};
@@ -436,15 +446,16 @@ class Gen extends Model
   
     @override
     Widget build(BuildContext context) {
+      Utils.init_theme();  
       _keyboardVisible = MediaQuery.of(context).viewInsets.bottom != 0;
       return Scaffold(
         appBar: AppBar(
           title: FxText.titleMedium(
-            "Editing profile",
+            "\${item.id>0?'Editing' : 'Creating new'} \${{$this->class_name}.end_point}",
             fontSize: 20,
-            fontWeight: 700,
+            fontWeight: 900,
+            color: Colors.white,
           ),
-          iconTheme: const IconThemeData(color: Colors.white),
           backgroundColor: CustomTheme.primary,
           actions: [
             is_loading
@@ -458,15 +469,14 @@ class Gen extends Model
                       ),
                     ),
             )
-                : FxButton.text(
-                    onPressed: () {
-                      submit_form();
-                    },
-                    backgroundColor: Colors.white,
-                    child: FxText.bodyLarge(
-                      "SAVE",
-                      fontWeight: 800,
-                    ))
+            : IconButton(
+              onPressed: () {
+                submit_form();
+              },
+              icon: const Icon(
+                FeatherIcons.check,
+                color: Colors.white,
+              )),
           ],
         ),
         body: FutureBuilder(
@@ -523,14 +533,15 @@ class Gen extends Model
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     FxText.titleLarge(
-                                      'NEXT',
+                                      'SAVE',
                                       color: Colors.white,
+                                      fontWeight: 700,
                                     ),
                                     const SizedBox(
                                       width: 10,
                                     ),
                                     const Icon(
-                                      FeatherIcons.arrowRight,
+                                      FeatherIcons.check, 
                                       color: Colors.white,
                                     )
                                   ],
@@ -551,17 +562,26 @@ class Gen extends Model
       }
       setState(() {
         error_message = "";
-        is_loading = true;
       });
+      Utils.showLoader(true); 
   
-      Utils.toast('Updating...', color: Colors.green.shade700);
-  
-      RespondModel resp = RespondModel(
+      RespondModel resp = RespondModel({});
+      try{
+        resp = RespondModel(
           await Utils.http_post({$this->class_name}.end_point, item.toJson()));
+          await {$this->class_name}.getOnlineItems();
+      } catch (e) {
+        Utils.hideLoader();
+        error_message = e.toString();
+        Utils.toast('Failed to save form because \${e.toString()}',
+        background_color: Colors.red.shade700);
+        return;
+      }
+
   
+      Utils.hideLoader();
       setState(() {
-        error_message = "";
-        is_loading = false;
+        error_message = ""; 
       });
   
       if (resp.code != 1) {
