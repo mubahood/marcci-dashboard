@@ -1284,6 +1284,7 @@ class ApiResurceController extends Controller
             $obj = new $className;
             $isEdit = false;
         }
+        
         if ($isEdit) {
             if (isset($r->my_task)) {
                 if ($r->my_task == 'delete') {
