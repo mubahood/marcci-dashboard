@@ -1275,6 +1275,11 @@ class ApiResurceController extends Controller
             ]);
         }
 
+        //image logic
+
+
+
+
         $className = "App\Models\\" . $model;
         $id = ((int)($r->id));
         $obj = $className::find($id);
@@ -1284,7 +1289,7 @@ class ApiResurceController extends Controller
             $obj = new $className;
             $isEdit = false;
         }
-        
+
         if ($isEdit) {
             if (isset($r->my_task)) {
                 if ($r->my_task == 'delete') {
@@ -1327,6 +1332,25 @@ class ApiResurceController extends Controller
             $obj->$key = $value;
         }
 
+        if (isset($r->KEY_IMAGE) && $r->KEY_IMAGE != null && !empty($r->KEY_IMAGE)) {
+            $KEY_IMAGE = trim($r->KEY_IMAGE);
+
+            if (in_array($KEY_IMAGE, $cols)) {
+                if (!empty($_FILES)) {
+                    $image = "";
+                    try {
+                        $image = Utils::upload_images_2($_FILES, true);
+                        $image = 'images/' . $image;
+                    } catch (Throwable $t) {
+                        $image = 'no_image.jpg';
+                    }
+                    $obj->$KEY_IMAGE = $image;
+                }
+            }
+        }
+
+
+
         $success = false;
         $msg = "";
         if ($isEdit) {
@@ -1342,12 +1366,11 @@ class ApiResurceController extends Controller
             $msg = $e->getMessage();
         }
 
+        //get object
+        $obj = $className::find($obj->id);
 
         if ($success) {
-            return Utils::success([
-                'data' => $obj,
-                'message' => $msg
-            ]);
+            return Utils::success($obj,$msg);
         } else {
             return Utils::error([
                 'message' => $msg

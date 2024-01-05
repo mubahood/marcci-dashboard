@@ -495,9 +495,28 @@ administrator_id
     }
 
 
+    //create static function to check if is on local server
+    public static function is_local()
+    {
+        $server = $_SERVER['SERVER_NAME'];
+        if (
+            str_contains($server, 'localhost') ||
+            str_contains($server, '127.0.0.1')
+        ) {
+            return true;
+        }
+    }
+
 
     public static function docs_root()
     {
+
+        if(Utils::is_local()){
+            $script = $_SERVER['SCRIPT_FILENAME'];
+            $server = str_replace('/server.php', '', $script);
+            return $server."/public";
+        }
+
         $r = $_SERVER['DOCUMENT_ROOT'] . "";
 
         if (!str_contains($r, 'home/')) {

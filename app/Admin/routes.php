@@ -11,6 +11,7 @@ Route::group([
     'as'            => config('admin.route.prefix') . '.',
 ], function (Router $router) {
 
+    $router->resource('events', EventModelController::class);
 
     $router->resource('trainings', TrainingController::class);
     $router->get('/', 'HomeController@index')->name('home');
@@ -49,7 +50,7 @@ Route::group([
     $router->resource('members', MembersController::class);
     $router->resource('post-categories', PostCategoryController::class);
     $router->resource('news-posts', NewsPostController::class);
-    $router->resource('events', EventController::class);
+    //$router->resource('events', EventController::class);
     $router->resource('event-bookings', EventBookingController::class);
     $router->resource('products', ProductController::class);
     $router->resource('product-orders', ProductOrderController::class);
