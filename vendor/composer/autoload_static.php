@@ -616,7 +616,6 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Admin\\Controllers\\LoanTransactionController' => __DIR__ . '/../..' . '/app/Admin/Controllers/LoanTransactionController.php',
         'App\\Admin\\Controllers\\MeetingController' => __DIR__ . '/../..' . '/app/Admin/Controllers/MeetingController.php',
         'App\\Admin\\Controllers\\MembersController' => __DIR__ . '/../..' . '/app/Admin/Controllers/MembersController.php',
-        'App\\Admin\\Controllers\\NewsPostController' => __DIR__ . '/../..' . '/app/Admin/Controllers/NewsPostController.php',
         'App\\Admin\\Controllers\\ParticipantController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ParticipantController.php',
         'App\\Admin\\Controllers\\PersonController' => __DIR__ . '/../..' . '/app/Admin/Controllers/PersonController.php',
         'App\\Admin\\Controllers\\PostCategoryController' => __DIR__ . '/../..' . '/app/Admin/Controllers/PostCategoryController.php',

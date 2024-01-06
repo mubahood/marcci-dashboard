@@ -32,7 +32,6 @@ return array(
     'App\\Admin\\Controllers\\LoanTransactionController' => $baseDir . '/app/Admin/Controllers/LoanTransactionController.php',
     'App\\Admin\\Controllers\\MeetingController' => $baseDir . '/app/Admin/Controllers/MeetingController.php',
     'App\\Admin\\Controllers\\MembersController' => $baseDir . '/app/Admin/Controllers/MembersController.php',
-    'App\\Admin\\Controllers\\NewsPostController' => $baseDir . '/app/Admin/Controllers/NewsPostController.php',
     'App\\Admin\\Controllers\\ParticipantController' => $baseDir . '/app/Admin/Controllers/ParticipantController.php',
     'App\\Admin\\Controllers\\PersonController' => $baseDir . '/app/Admin/Controllers/PersonController.php',
     'App\\Admin\\Controllers\\PostCategoryController' => $baseDir . '/app/Admin/Controllers/PostCategoryController.php',
