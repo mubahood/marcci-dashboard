@@ -1199,7 +1199,7 @@ class ApiResurceController extends Controller
 
         $items = [];
         $msg = "";
-        $conditions['sacco_id'] = $u->sacco_id;
+
         try {
             $items = $className::where($conditions)->get();
             $msg = "Success";
