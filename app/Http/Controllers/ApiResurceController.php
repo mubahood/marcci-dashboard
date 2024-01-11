@@ -92,6 +92,95 @@ class ApiResurceController extends Controller
         $U->updated_at = Carbon::now();
         $U->save();
         $sacco = Sacco::find($u->sacco_id);
+        $members = User::where(['sacco_id' => $sacco->id])->get();
+        $sacco->member_count = count($members);
+        $sacco->members_alive = 0;
+        $sacco->members_contribution = 0;
+        $sacco->members_optional = 0;
+        $sacco->members_na = 0;
+        $sacco->members_male = 0;
+        $sacco->members_female = 0;
+        $sacco->members_educ_none = 0;
+        $sacco->members_educ_Primary = 0;
+        $sacco->members_educ_Secondary = 0;
+        $sacco->members_educ_A_Level = 0;
+        $sacco->members_educ_Certificate = 0;
+        $sacco->members_educ_Diploma = 0;
+        $sacco->members_educ_Bachelor = 0;
+        $sacco->members_educ_Masters = 0;
+        $sacco->members_educ_PhD = 0;
+
+        $sacco->members_age_0_18 = 0;
+        $sacco->members_age_19_25 = 0;
+        $sacco->members_age_26_30 = 0;
+        $sacco->members_age_31_45 = 0;
+        $sacco->members_age_46_75 = 0;
+        $sacco->members_age_76 = 0;
+
+        $now = Carbon::now();
+        foreach ($members as $key => $member) {
+            if ($member->reg_number == 'Alive') {
+                $sacco->members_alive = $sacco->members_alive + 1;
+
+                if (strlen($member->dob) > 3) {
+                    try {
+                        $dob = Carbon::parse($member->dob);
+                        $diff = $dob->diffInYears($now);
+                        $diff = abs($diff);
+
+                        if ($diff <= 18) {
+                            $sacco->members_age_0_18++;
+                        } elseif ($diff <= 25) {
+                            $sacco->members_age_19_25++;
+                        } elseif ($diff <= 30) {
+                            $sacco->members_age_26_30++;
+                        } elseif ($diff <= 45) {
+                            $sacco->members_age_26_30++;
+                        } elseif ($diff <= 75) {
+                            $sacco->members_age_46_75++;
+                        } elseif ($diff > 75) {
+                            $sacco->members_age_76++;
+                        }
+                    } catch (\Throwable $th) {
+                    }
+                }
+
+                if ($member->other_link == 'None') {
+                    $sacco->members_educ_none++;
+                } else if ($member->other_link == 'Primary') {
+                    $sacco->members_educ_Primary++;
+                } else if ($member->other_link == 'Secondary') {
+                    $sacco->members_educ_Secondary++;
+                } else if ($member->other_link == 'A-Level') {
+                    $sacco->members_educ_A_Level++;
+                } else if ($member->other_link == 'Certificate') {
+                    $sacco->members_educ_Certificate++;
+                } else if ($member->other_link == 'Diploma') {
+                    $sacco->members_educ_Diploma++;
+                } else if ($member->other_link == 'Bachelor') {
+                    $sacco->members_educ_Bachelor++;
+                } else if ($member->other_link == 'Masters') {
+                    $sacco->members_educ_Masters++;
+                } else if ($member->other_link == 'PhD') {
+                    $sacco->members_educ_PhD++;
+                }
+
+                if ($member->sex == 'Male') {
+                    $sacco->members_male++;
+                } else {
+                    $sacco->members_female++;
+                }
+
+                if ($member->language == 'Compulsory') {
+                    $sacco->members_contribution++;
+                } else if ($member->language == 'Optional') {
+                    $sacco->members_optional++;
+                } else {
+                    $sacco->members_na++;
+                }
+            }
+        }
+
 
         // //set header to json output
         // header('Content-Type: application/json');
@@ -1370,7 +1459,7 @@ class ApiResurceController extends Controller
         $obj = $className::find($obj->id);
 
         if ($success) {
-            return Utils::success($obj,$msg);
+            return Utils::success($obj, $msg);
         } else {
             return Utils::error([
                 'message' => $msg
