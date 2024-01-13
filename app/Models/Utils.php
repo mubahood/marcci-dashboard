@@ -18,6 +18,7 @@ define('TRANSACTION_TYPES', [
     'FEE' => 'FEE',
     'FINE' => 'FINE',
     'WITHDRAWAL' => 'WITHDRAWAL',
+    'CONTRIBUTION' => 'CONTRIBUTION',
     'CYCLE_PROFIT' => 'CYCLE_PROFIT',
 ]);
 

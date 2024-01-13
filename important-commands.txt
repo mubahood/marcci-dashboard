@@ -2,8 +2,8 @@ php artisan migrate
 
 ssh -p 2211 cpaneluser@10.0.10.10
 
-php artisan make:migration add_change_some_cols_in_event_details --table=event_models 
+php artisan make:migration add_contribution_id_to_transactions --table=transactions 
  
 php artisan admin:make NewsPostController --model=App\\Models\\NewsPost 
 
-php artisan make:model NewsPost -m
+php artisan make:model Contribution -m

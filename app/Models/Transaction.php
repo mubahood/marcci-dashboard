@@ -50,6 +50,12 @@ class Transaction extends Model
         static::created(function ($model) {
             $model->balance = Transaction::where('user_id', $model->user_id)->sum('amount');
             $model->save();
+            if($model->type == 'CONTRIBUTION'){
+                $contr = Contribution::find($model->source_bank_transaction_id);
+                if($contr!=null){
+                    $contr->update_self();
+                } 
+            }
             return $model;
         });
     }
