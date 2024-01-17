@@ -26,6 +26,8 @@ class RegistrationController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Registration());
+
+        $user = auth('admin')->user();
           //filter by name
        $grid->filter(function ($filter) 
        {
@@ -43,20 +45,21 @@ class RegistrationController extends AdminController
        
       
          //show the user only his records
-        if (auth('admin')->user()->inRoles(['basic-user','garden_owner'])) 
+        if ($user->inRoles(['basic-user','garden_owner'])) 
         {
           
             $grid->model()->where('user_id', auth('admin')->user()->id);
             
-            $registration= Registration::where('user_id', auth('admin')->user()->id)->first();
+            $registration= Registration::where('user_id', $user->id)->first();
             if(!$registration){
                 return $grid;
             }
 
           //if registration exits disable create button
-            if($registration){
+            if ($registration && !$user->isRole('administrator')) {
                 $grid->disableCreateButton();
             }
+            
 
             //disable delete and show action button
             $grid->actions(function ($actions) {
@@ -75,23 +78,28 @@ class RegistrationController extends AdminController
             $grid->column('category', __('Category'));
 
             if($registration->category == 'farmer'){
+            $grid->column('first_name', __('Farmer\'s Name'))->display(function ($first_name) {
+                return $first_name.' '.$this->middle_name.' '.$this->last_name;
+            });
             $grid->column('farmers_group', __('Farmers group'));
             $grid->column('farming_experience', __('Farming experience'));
             $grid->column('production_scale', __('Production scale'));
             }
 
             if($registration->category == 'seed producer'){
-            $grid->column('owner_name', __('Owner name'));
-            $grid->column('phone_number', __('Phone number'));
+            $grid->column('company_information', __('Enterprise name'));
             $grid->column('registration_number', __('Registration number'));
             $grid->column('registration_date', __('Registration date'));
-            $grid->column('physical_address', __('Physical address'));
+            $grid->column('phone_number', __('Phone number'));
+            $grid->column('district', __('District'));
             }
 
             if($registration->category == 'service provider'){
             $grid->column('service_provider_name', __('Service provider name'));
-            $grid->column('email_address', __('Email address'));
-            $grid->column('postal_address', __('Postal address'));
+            $grid->column('registration_number', __('Registration number'));
+            $grid->column('registration_date', __('Registration date'));
+            $grid->column('physical_address', __('Physical address'));
+            $grid->column('phone_number', __('Phone number'));
             $grid->column('services_offered', __('Services offered'));
             
             }
@@ -99,13 +107,12 @@ class RegistrationController extends AdminController
         }
         else
         {
-            //disable creation of new records
-            $grid->disableCreateButton();
+            
 
             //disable delete and show action button
             $grid->actions(function ($actions) {
                 $actions->disableDelete();
-                $actions->disableView();
+               
             });
 
             $grid->column('user_id', __('Applicant'))->display(function ($user_id) {
@@ -146,43 +153,62 @@ class RegistrationController extends AdminController
         $show = new Show(Registration::findOrFail($id));
         $registration = Registration::find($id);
 
-        $show->field('user_id', __('User id'))->as(function ($user_id) {
+        $show->field('user_id', __('Applicant'))->as(function ($user_id) {
             return User::find($user_id)->name;
         });
         $show->field('category', __('Category'));
         
-        if($registration->category == 'farmer'){
-        $show->field('level_of_education', __('Level of education'));
-        $show->field('marital_status', __('Marital status'));
-        $show->field('number_of_dependants', __('Number of dependants'));
-        $show->field('farmers_group', __('Farmers group'));
-        $show->field('farming_experience', __('Farming experience'));
-        $show->field('production_scale', __('Production scale'));
+        if($registration->category == 'farmer')
+        {
+            $show->field('first_name', __('Farmer\'s Name'))->as(function ($first_name) {
+                return $first_name.' '.$this->middle_name.' '.$this->last_name;
+            });
+            $show->field('date_of_birth', __('Date of birth'));
+            $show->field('level_of_education', __('Level of education'));
+            $show->field('gender', __('Gender'));
+            $show->field('sub_county', __('Sub county'));
+            $show->field('parish', __('Parish'));
+            $show->field('village', __('Village'));
+            $show->field('farmers_group', __('Farmers group'));
+            $show->field('farming_experience', __('Farming experience'));
+            $show->field('production_scale', __('Production scale'));
+            $show->field('number_of_dependants', __('Number of dependants'));
+
         }
 
-        if($registration->category == 'seed producer'){
-        $show->field('company_information', __('Company information'));
-        $show->field('owner_name', __('Owner name'));
-        $show->field('phone_number', __('Phone number'));
-        $show->field('registration_number', __('Registration number'));
-        $show->field('registration_date', __('Registration date'));
-        $show->field('physical_address', __('Physical address'));
-        $show->field('certificate_and_compliance', __('Certificate and compliance'));
+        if($registration->category == 'seed producer')
+        {
+            $show->field('company_information', __('Enterprise name'));
+            $show->field('registration_number', __('Registration number'));
+            $show->field('registration_date', __('Registration date'));
+            $show->field('phone_number', __('Phone number'));
+            $show->field('district', __('District'));
+            $show->field('parish', __('Parish'));
+            $show->field('village', __('Village'));
+            $show->field('farmers_group', __('Farmers group'));
+            $show->field('farming_experience', __('Farming experience'));
+            $show->field('production_scale', __('Production scale'));
+            $show->field('specialization', __('Specialization'));
         }
 
-        if($registration->category == 'service provider'){
-        $show->field('service_provider_name', __('Service provider name'));
-        $show->field('email_address', __('Email address'));
-        $show->field('postal_address', __('Postal address'));
-        $show->field('services_offered', __('Services offered'));
-        $show->field('district_sub_county', __('District sub county'));
-        $show->field('logo', __('Logo'));
-        $show->field('certificate_of_incorporation', __('Certificate of incorporation'));
-        $show->field('license', __('License'));
-        $show->field('created_at', __('Created at'));
-        $show->field('updated_at', __('Updated at'));
+        if($registration->category == 'service provider')
+        {
+            $show->field('service_provider_name', __('Service provider name'));
+            $show->field('registration_number', __('Registration number'));
+            $show->field('registration_date', __('Registration date'));
+            $show->field('physical_address', __('Physical address'));
+            $show->field('phone_number', __('Phone number'));
+            $show->field('email_address', __('Email address'));
+            $show->field('services_offered', __('Services offered'));
+            $show->field('service_category', __('Service category'));
+            $show->field('farming_experience', __('Farming experience'));
         }
 
+        //disbale edit and delete button
+        $show->panel()->tools(function ($tools) {
+            $tools->disableEdit();
+            $tools->disableDelete();
+        });
         return $show;
     }
 
@@ -191,123 +217,281 @@ class RegistrationController extends AdminController
      *
      * @return Form
      */
+    // protected function form()
+    // {
+    //     $form = new Form(new Registration());
+    //     $user = auth()->user();
+
+    //     //When form is creating, assign user id
+    //     if ($form->isCreating()) 
+    //     {
+    //         $form->hidden('user_id')->default($user->id);
+
+    //     }
+
+    //     //when the form is being edited
+    //     if ($form->isEditing()) 
+    //     {
+    //         if(!$user->isRole('basic-user'))
+    //         {
+    //             //get form id
+    //             $form_id =  request()->route()->parameter('registration');
+    //             $registration = Registration::find($form_id);
+
+    //             if ($registration->category == 'farmer'){
+    //                 $form->display('name', __('Name'))->default($registration->first_name.' '.$registration->middle_name.' '.$registration->last_name);
+    //                 $form->display('date_of_birth', __('Date of birth'))->required();
+    //                 $form->display('level_of_education', __('Level of education'))->required();
+    //                 $form->display('phone_number', __('Phone number'));
+    //                 $form->display('gender', __('Sex'));
+    //                 $form->display('sub_county', __('Sub county'))->required();
+    //                 $form->display('parish', __('Parish'))->required();
+    //                 $form->display('village', __('Village'))->required();
+    //                 $form->display('farmers_group', __('Farmers Association group'))->required();       
+    //                 $form->display('farming_experience', __('Farming experience'))->required(); 
+    //                 $form->display('production_scale', __('Production scale'))->required();
+    //                 $form->display('number_of_dependants', __('Number of dependants'))->required();
+             
+    //                 $form->divider();
+    //                 $form->radioButton('status', __('Status'))->options([
+    //                     0 => 'Pending',
+    //                     1 => 'Approved',
+    //                     2 => 'Rejected'
+    //                 ])->default(0);
+    //             }
+    //             if($registration->category == 'seed producer'){
+    //                 $form->display('company_information', __('Enterprise Name'))->required();
+    //                 $form->display('registration_date', __('Date of Registration'))->required();
+    //                 $form->display('registration_number', __('Registration number'))->required();
+    //                 $form->display('phone_number', __('Phone number'))->required();
+    //                 $form->display('district', __('District of Operation'))->required();
+    //                 $form->display('parish', __('Parish'))->required();
+    //                 $form->display('village', __('Village'))->required();
+    //                 $form->display('farmers_group', __('Farmers Association group'))->required();  
+    //                 $form->display('farming_experience', __('Years of experience'))->required(); 
+    //                 $form->display('production_scale', __('Production scale'))->required();  
+    //                 $form->display('specialization', __('Sector of Specialization'))->required();   
+    //                 $form->divider();
+    //                 $form->radioButton('status', __('Status'))->options([
+    //                     0 => 'Pending',
+    //                     1 => 'Approved',
+    //                     2 => 'Rejected'
+    //                 ])->default(0);
+    //             }
+    //             if($registration->category == 'service provider'){
+    //                 $form->display('service_provider_name', __('Service provider name'));
+    //                 $form->display('physical_address', __('Physical address'));
+    //                 $form->display('phone_number', __('Phone number'));
+    //                 $form->display('email_address', __('Email address'));
+    //                 $form->display('services_offered', __('Services offered'));
+    //                 $form->display('service_category', __('Service category'));
+    //                 $form->display('farming_experience', __('Years of experience')); 
+    //                 $form->display('registration_number', __('Registration number'));
+    //                 $form->display('registration_date', __('Date of Registration'));
+    //                 $form->divider();
+    //                 $form->radioButton('status', __('Status'))->options([
+    //                     0 => 'Pending',
+    //                     1 => 'Approved',
+    //                     2 => 'Rejected'
+    //                 ])->default(0);
+
+    //             }
+            
+    //         }
+    //     }
+       
+
+    //             $form->display('user_id', __('Applicant'))->default($user->name);
+    //             $form->radioCard('category', __('Category'))->options([
+    //                     'farmer' => 'Farmer',
+    //                     'seed producer' => 'Seed Producer',
+    //                     'service provider' => 'Service Provider'
+    //                     ])
+    //             ->when('farmer', function(Form $form){
+                    
+    //                 $form->text('first_name', __('First name'));
+    //                 $form->text('middle_name', __('Middle name'));
+    //                 $form->text('last_name', __('Last name'));
+    //                 $form->date('date_of_birth', __('Date of birth'))->required();
+    //                 $form->text('level_of_education', __('Level of education'))->required();
+    //                 $form->number('phone_number', __('Phone number'));
+    //                 $form->radio('gender', __('Sex'))->options([
+    //                     'female' => 'female',
+    //                     'male' => 'male'
+    //                      ]);
+    //                 $form->text('sub_county', __('Sub county'))->required();
+    //                 $form->text('parish', __('Parish'))->required();
+    //                 $form->text('village', __('Village'))->required();
+    //                 $form->text('farmers_group', __('Farmers Association group'))->required();       
+    //                 $form->text('farming_experience', __('Farming experience'))->required(); 
+    //                 $form->number('production_scale', __('Production scale'))->required();
+    //                 $form->text('number_of_dependants', __('Number of dependants'))->required();
+             
+
+    //             })
+    //             ->when('seed producer', function(Form $form){
+    //                 $form->text('company_information', __('Enterprise Name'))->required();
+    //                 $form->date('registration_date', __('Date of Registration'))->required();
+    //                 $form->text('registration_number', __('Registration number'))->required();
+    //                 $form->text('phone_number', __('Phone number'))->required();
+    //                 $form->text('district', __('District of Operation'))->required();
+    //                 $form->text('parish', __('Parish'))->required();
+    //                 $form->text('village', __('Village'))->required();
+    //                 $form->text('farmers_group', __('Farmers Association group'))->required();  
+    //                 $form->text('farming_experience', __('Years of experience'))->required(); 
+    //                 $form->number('production_scale', __('Production scale'))->required();  
+    //                 $form->text('specialization', __('Sector of Specialization'))->required();   
+                    
+
+    //             })
+    //             ->when('service provider', function(Form $form){
+    //                 $form->text('service_provider_name', __('Service provider name'))->required();
+    //                 $form->text('physical_address', __('Physical address'))->required();
+    //                 $form->text('phone_number', __('Phone number'))->required();
+    //                 $form->text('email_address', __('Email address'))->required();
+    //                 $form->text('services_offered', __('Services offered'))->required();
+    //                 $form->text('service_category', __('Service category'))->required();
+    //                 $form->text('farming_experience', __('Years of experience'))->required(); 
+    //                 $form->text('registration_number', __('Registration number'))->required();
+    //                 $form->date('registration_date', __('Date of Registration'))->required();
+
+    //             })->required();
+    
+              
+    //             $form->disableEditingCheck();
+    //             $form->disableCreatingCheck();
+    //             $form->disableViewCheck();
+
+    //             //disable delete button
+    //             $form->tools(function (Form\Tools $tools) {
+    //                 $tools->disableView();
+    //                 $tools->disableDelete();
+    //             });
+
+    //     return $form;
+    // }
+
+
     protected function form()
     {
         $form = new Form(new Registration());
         $user = auth()->user();
 
-        //When form is creating, assign user id
-        if ($form->isCreating()) 
-        {
+        if ($form->isCreating()) {
             $form->hidden('user_id')->default($user->id);
-
+            $this->displayApplicantField($form, $user);
+            $this->displayCategorySpecificFields($form);
         }
 
-        if(!$user->isRole('basic-user'))
+        if ($form->isEditing() && !$user->isRole('basic-user')) 
         {
-            //get form id
-            $form_id =  request()->route()->parameter('registration');
-            $registration = Registration::find($form_id);
-
-             if ($registration->category == 'farmer'){
-                $form->display('level_of_education', __('Level of education'));
-                $form->display('marital_status', __('Marital status'));
-                $form->display('number_of_dependants', __('Number of dependants'));
-                $form->display('farmers_group', __('Farmers group'));
-                $form->display('farming_experience', __('Farming experience'));
-                $form->display('production_scale', __('Production scale'));
-                $form->divider();
-                $form->radioButton('status', __('Status'))->options([
-                    0 => 'Pending',
-                    1 => 'Approved',
-                    2 => 'Rejected'
-                ])->default(0);
-             }
-             if($registration->category == 'seed producer'){
-                $form->display('company_information', __('Company information'));
-                $form->display('owner_name', __('Owner name'));
-                $form->display('phone_number', __('Phone number'));
-                $form->display('registration_number', __('Registration number'));
-                $form->display('registration_date', __('Registration date'));
-                $form->display('physical_address', __('Physical address'));
-                $form->display('certificate_and_compliance', __('Certificate and compliance'));
-                $form->divider();
-                $form->radioButton('status', __('Status'))->options([
-                    0 => 'Pending',
-                    1 => 'Approved',
-                    2 => 'Rejected'
-                ])->default(0);
-             }
-             if($registration->category == 'service provider'){
-                $form->display('service_provider_name', __('Service provider name'));
-                $form->display('email_address', __('Email address'));
-                $form->display('postal_address', __('Postal address'));
-                $form->display('services_offered', __('Services offered'));
-                $form->display('district_sub_county', __('District sub county'));
-                $form->display('logo', __('Logo'));
-                $form->display('certificate_of_incorporation', __('Certificate of incorporation'));
-                $form->display('license', __('License'));
-                $form->divider();
-                $form->radioButton('status', __('Status'))->options([
-                    0 => 'Pending',
-                    1 => 'Approved',
-                    2 => 'Rejected'
-                ])->default(0);
-
-             }
-          
-        }
-        else
-        {
-
-                $form->display('user_id', __('Applicant'))->default($user->name);
-                $form->radioCard('category', __('Category'))->options([
-                        'farmer' => 'Farmer',
-                        'seed producer' => 'Seed Producer',
-                        'service provider' => 'Service Provider'
-                        ])
-                        ->when('farmer', function(Form $form){
-                       
-                    $form->text('level_of_education', __('Level of education'));
-                    $form->text('marital_status', __('Marital status'));
-                    $form->text('number_of_dependants', __('Number of dependants'));
-                    $form->text('farmers_group', __('Farmers group'));
-                    $form->text('farming_experience', __('Farming experience'));
-                    $form->text('production_scale', __('Production scale'));
-
-                })
-                ->when('seed producer', function(Form $form){
-                    $form->text('company_information', __('Company information'));
-                    $form->text('owner_name', __('Owner name'));
-                    $form->text('phone_number', __('Phone number'));
-                    $form->text('registration_number', __('Registration number'));
-                    $form->text('registration_date', __('Registration date'));
-                    $form->text('physical_address', __('Physical address'));
-                    $form->text('certificate_and_compliance', __('Certificate and compliance'));
-
-                })
-                ->when('service provider', function(Form $form){
-                    $form->text('service_provider_name', __('Service provider name'));
-                    $form->text('email_address', __('Email address'));
-                    $form->text('postal_address', __('Postal address'));
-                    $form->text('services_offered', __('Services offered'));
-                    $form->text('district_sub_county', __('District sub county'));
-                    $form->text('logo', __('Logo'));
-                    $form->text('certificate_of_incorporation', __('Certificate of incorporation'));
-                    $form->text('license', __('License'));
-                })->required();
+            $registration = Registration::find(request()->route()->parameter('registration'));
+            $this-> displayCategorySpecificFields($form);
+            if($registration->user_id != $user->id)
+            {
+               $this->displayStatusField($form);
             }
-              
-                $form->disableEditingCheck();
-                $form->disableCreatingCheck();
-                $form->disableViewCheck();
+        }
 
-                //disable delete button
-                $form->tools(function (Form\Tools $tools) {
-                    $tools->disableView();
-                    $tools->disableDelete();
-                });
+        
+
+        $form->disableEditingCheck();
+        $form->disableCreatingCheck();
+        $form->disableViewCheck();
+
+        // Disable delete button
+        $form->tools(function (Form\Tools $tools) {
+            $tools->disableView();
+            $tools->disableDelete();
+        });
 
         return $form;
     }
+
+    protected function displayStatusField($form)
+    {
+        $form->divider();
+        $form->radioButton('status', __('Status'))->options([
+            0 => 'Pending',
+            1 => 'Approved',
+            2 => 'Rejected'
+        ])->default(0);
+    }
+
+    protected function displayApplicantField($form, $user)
+    {
+        $form->display('user_id', __('Applicant'))->default($user->name);
+    }
+
+
+    protected function displayCategorySpecificFields($form)
+    {
+
+    
+        $form->radioCard('category', __('Category'))->options([
+                'farmer' => 'Farmer',
+                'seed producer' => 'Seed Producer',
+                'service provider' => 'Service Provider'
+                ])
+        ->when('farmer', function(Form $form)
+        {
+            $user = auth()->user();
+            //how to check the certain conditions to make a field readonly
+            // $form->text('first_name', __('First name'))->attribute(
+            //     ($form->isEditing() && $user->isRole('administrator')) ? 'readonly' : null
+            // );
+            
+            
+            $form->text('first_name', __('First name'))->rules('required');
+            $form->text('middle_name', __('Middle name'))->rules('required');
+            $form->text('last_name', __('Last name'))->rules('required');
+            $form->date('date_of_birth', __('Date of birth'))->rules('required');
+            $form->text('level_of_education', __('Level of education'))->rules('required');
+            $form->text('phone_number', __('Phone number'))->rules(['required', 'regex:/^([0-9\s\-\+\(\)]*)$/']);
+            $form->radio('gender', __('Sex'))->options([
+                'female' => 'female',
+                'male' => 'male'
+                ])->rules('required');
+            $form->text('sub_county', __('Sub county'))->rules('required');
+            $form->text('parish', __('Parish'))->rules('required');
+            $form->text('village', __('Village'))->rules('required');
+            $form->text('farmers_group', __('Farmers Association group'))->rules('required');       
+            $form->text('farming_experience', __('Farming experience'))->rules('required'); 
+            $form->text('production_scale', __('Production scale'))->attribute('type', 'number')->rules('required');
+            $form->text('number_of_dependants', __('Number of dependants'))->rules('required');
+
+
+        })
+        ->when('seed producer', function(Form $form)
+        {
+            $form->text('company_information', __('Enterprise Name'))->rules('required');
+            $form->date('registration_date', __('Date of Registration'))->rules('required');
+            $form->text('registration_number', __('Registration number'))->rules('required');
+            $form->text('phone_number', __('Phone number'))->rules('required');
+            $form->text('district', __('District of Operation'))->rules('required');
+            $form->text('parish', __('Parish'))->rules('required');
+            $form->text('village', __('Village'))->rules('required');
+            $form->text('farmers_group', __('Farmers Association group'))->rules('required');
+            $form->text('farming_experience', __('Years of experience'))->rules('required'); 
+            $form->text('production_scale', __('Production scale'))->attribute('type', 'number')->rules('required');
+            $form->text('specialization', __('Sector of Specialization'))->rules('required'); 
+            
+
+        })
+        ->when('service provider', function(Form $form)
+        {
+            $form->text('service_provider_name', __('Service provider name'))->rules('required');
+            $form->text('physical_address', __('Physical address'))->rules('required');
+            $form->text('phone_number', __('Phone number'))->rules('required');
+            $form->text('email_address', __('Email address'))->rules('required');
+            $form->text('services_offered', __('Services offered'))->rules('required');
+            $form->text('service_category', __('Service category'))->rules('required');
+            $form->text('farming_experience', __('Years of experience'))->rules('required');
+            $form->text('registration_number', __('Registration number'))->rules('required');
+            $form->date('registration_date', __('Date of Registration'))->rules('required');
+
+        })->required();
+        
+    }
+
 }

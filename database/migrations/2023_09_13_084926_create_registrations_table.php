@@ -15,31 +15,36 @@ class CreateRegistrationsTable extends Migration
     {
         Schema::create('registrations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('category')->nullable();
+            $table->string('first_name')->nullable();
+            $table->string('middle_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->date('date_of_birth')->nullable();
             $table->string('level_of_education')->nullable();
-            $table->string('marital_status')->nullable();
-            $table->string('number_of_dependants')->nullable();
-            $table->string('farmers group')->nullable();
+            $table->string('phone_number')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('sub_county')->nullable();
+            $table->string('parish')->nullable();
+            $table->string('village')->nullable();
+            $table->string('farmers_group')->nullable();
             $table->string('farming_experience')->nullable();
             $table->string('production_scale')->nullable();
+            $table->string('number_of_dependants')->nullable();
             $table->string('company_information')->nullable();
-            $table->string('owner_name')->nullable();
-            $table->string('phone_number')->nullable();
-            $table->string('registration_number')->nullable();
-            $table->string('registration_date')->nullable();
-            $table->string('physical_address')->nullable();
-            $table->string('certificate_and_compliance')->nullable();
+            $table->date('registration_date')->nullable();
+            $table->string('registration_number')->nullable();                             ;
+            $table->string('district')->nullable();
+            $table->string('specialization')->nullable();
             $table->string('service_provider_name')->nullable();
+            $table->string('physical_address')->nullable();
             $table->string('email_address')->nullable();
-            $table->string('postal_address')->nullable();
             $table->string('services_offered')->nullable();
-            $table->string('district_sub_county')->nullable();
-            $table->string('logo')->nullable();
-            $table->string('certificate_of_incorporation')->nullable();
-            $table->string('license')->nullable();
-            
+            $table->string('service_category')->nullable();
+            $table->string('status')->default(0);
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
