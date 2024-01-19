@@ -35,7 +35,7 @@ php artisan admin:make FormSr4Controller --model=App\FormSr4
 php artisan admin:make ParticipantController --model=App\\Participant
 
 php artisan admin:controller --model=App\FormSr4
-php artisan admin:make FormSr4Controller --model=App\FormSr4
+php artisan admin:make ProductionRecordController --model=App\ProductionRecord
 php artisan admin:make CourseController --model=App\\Models\\Course
 php artisan admin:make ParticipantController --model=App\\Models\\Participant
 php artisan admin:make MembersController --model=App\Models\User

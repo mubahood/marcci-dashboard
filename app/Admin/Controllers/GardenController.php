@@ -115,7 +115,7 @@ class GardenController extends AdminController
         });
 
         $form->text('garden_name', __('Garden name'))->required();
-        $form->decimal('garden_size', __('Garden size'))->required();
+        $form->decimal('garden_size', __('Garden size(In Acres)'))->required();
         $form->text('ownership', __('Ownership of land'))->required();
         $form->date('planting_date', __('Planting date'))->required();
         $form->date('harvest_date', __('Expected harvest date'))->required();
@@ -129,7 +129,7 @@ class GardenController extends AdminController
             1, function (Form $form) {
                 $form->text('name_of_seller', __('Name of seller'))->required();
                 $form->text('seller_location', __('Seller location'))->required();
-                $form->text('seller_contact', __('Seller contact'))->required();
+                $form->text('seller_contact', __('Seller contact'))->rules('required|numeric');
                 $form->text('purpose_of_seller', __('Purpose of seller'));
             }
         )->required();

@@ -115,14 +115,16 @@ class FinancialRecordController extends AdminController
         ->options(Garden::where('user_id', $user->id)->pluck('garden_name', 'id'))
         ->required()->rules('required');
      
-        $form->text('category', __('Category'))->required();
-        $form->decimal('amount', __('Amount'))->required();
-        $form->text('payment_method', __('Payment method'))->required();
-        $form->text('recipient', __('From/to who'))->required();
-        $form->text('description', __('Description'))->required();
-        $form->file('receipt', __('Receipt'))->required();
+        $form->select('category', __('Type of Transaction'))->options([
+            'Income' => 'Income',
+            'Expenditure' => 'Expenditure',
+        ])->required();
         $form->date('date', __('Date'))->default(date('Y-m-d'))->required();
-        $form->text('remarks', __('Remarks'));
+        $form->text('description', __('Description'))->required();
+        $form->text('recipient', __('From/to who'))->required();
+        $form->decimal('amount', __('Amount'))->required();
+        $form->text('payment_method', __('Means of Payment'))->required();
+        $form->file('quantity', __('Quantity'))->required();
 
         return $form;
     }

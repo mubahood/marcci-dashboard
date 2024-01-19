@@ -26,4 +26,5 @@ Route::group([
     $router->resource('groundnut-varieties', GroundnutVarietyController::class);
     $router->resource('products', ProductController::class);
     $router->resource('registrations', RegistrationController::class);
+    $router->resource('production-records', ProductionRecordController::class);
 });

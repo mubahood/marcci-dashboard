@@ -18,8 +18,8 @@ class FinancialRecord extends Model
         'payment_method', //cash, cheque, bank transfer, mobile money
         'recipient', 
         'description',
-        'receipt', //image
-        'remarks'
+        'quantity'
+       
         
     ];
 }

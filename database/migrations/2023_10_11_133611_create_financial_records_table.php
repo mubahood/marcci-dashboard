@@ -18,13 +18,13 @@ class CreateFinancialRecordsTable extends Migration
             $table->unsignedBigInteger('garden_id');
             $table->unsignedBigInteger('user_id');
             $table->string('category')->nullable();
-            $table->decimal('amount', 8, 2)->nullable();
+            $table->string('amount')->nullable();
             $table->string('payment_method')->nullable();//cash, cheque, bank transfer, mobile money
             $table->string('recipient')->nullable();
             $table->string('description')->nullable();
             $table->string('receipt')->nullable(); //image
             $table->date('date')->nullable();
-            $table->string('remarks')->nullable();
+            $table->string('quantity')->nullable();
 
             $table->foreign('garden_id')->references('id')->on('gardens')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); 
