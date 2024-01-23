@@ -59,7 +59,7 @@ class Registration extends Model
                 $new_user->name = $registration->first_name . ' ' . $registration->last_name;
                 $new_user->username = $registration->first_name;
                 $new_user->phone_number = $registration->phone_number;
-                $new_user->email = $registration->email_address;
+                $new_user->email = $registration->email_address ? $registration->email_address : ' ';
                 $new_user->password = bcrypt('password');
                 $new_user->save();
 
