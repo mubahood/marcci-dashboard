@@ -2,7 +2,7 @@ php artisan migrate
 
 ssh -p 2211 cpaneluser@10.0.10.10
 
-php artisan make:migration add_contribution_id_to_transactions --table=transactions 
+php artisan make:migration add_payment_things_to_orders --table=orders 
  
 php artisan admin:make NewsPostController --model=App\\Models\\NewsPost 
 
