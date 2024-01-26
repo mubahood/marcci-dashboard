@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Routing\Router;
-use App\Admin\Controllers\GenController;
 
 
 Admin::routes();

@@ -1,5 +1,9 @@
 <?php
 
+/* $d = shell_exec('git pull');
+dd($d);
+die(); */
+
 /**
  * Laravel-admin - admin builder based on Laravel.
  * @author z-song <https://github.com/z-song>

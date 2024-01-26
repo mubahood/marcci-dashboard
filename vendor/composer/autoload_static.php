@@ -160,6 +160,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         array (
             'Encore\\Summernote\\' => 18,
             'Encore\\Chartjs\\' => 15,
+            'Encore\\Admin\\Helpers\\' => 21,
             'Encore\\Admin\\' => 13,
             'Egulias\\EmailValidator\\' => 23,
         ),
@@ -501,6 +502,10 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         array (
             0 => __DIR__ . '/..' . '/laravel-admin-ext/chartjs/src',
         ),
+        'Encore\\Admin\\Helpers\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/laravel-admin-ext/helpers/src',
+        ),
         'Encore\\Admin\\' => 
         array (
             0 => __DIR__ . '/..' . '/encore/laravel-admin/src',
@@ -600,6 +605,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Admin\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Admin/Controllers/HomeController.php',
         'App\\Admin\\Controllers\\PestsAndDiseaseController' => __DIR__ . '/../..' . '/app/Admin/Controllers/PestsAndDiseaseController.php',
         'App\\Admin\\Controllers\\ProductController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ProductController.php',
+        'App\\Admin\\Controllers\\ProductionRecordController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ProductionRecordController.php',
         'App\\Admin\\Controllers\\RegistrationController' => __DIR__ . '/../..' . '/app/Admin/Controllers/RegistrationController.php',
         'App\\Admin\\Controllers\\UserController' => __DIR__ . '/../..' . '/app/Admin/Controllers/UserController.php',
         'App\\Admin\\Extensions\\Column\\FloatBar' => __DIR__ . '/../..' . '/app/Admin/Extensions/Column/FloatBar.php',
@@ -1563,6 +1569,14 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'Encore\\Admin\\Grid\\Tools\\QuickSearch' => __DIR__ . '/..' . '/encore/laravel-admin/src/Grid/Tools/QuickSearch.php',
         'Encore\\Admin\\Grid\\Tools\\Selector' => __DIR__ . '/..' . '/encore/laravel-admin/src/Grid/Tools/Selector.php',
         'Encore\\Admin\\Grid\\Tools\\TotalRow' => __DIR__ . '/..' . '/encore/laravel-admin/src/Grid/Tools/TotalRow.php',
+        'Encore\\Admin\\Helpers\\Controllers\\RouteController' => __DIR__ . '/..' . '/laravel-admin-ext/helpers/src/Controllers/RouteController.php',
+        'Encore\\Admin\\Helpers\\Controllers\\ScaffoldController' => __DIR__ . '/..' . '/laravel-admin-ext/helpers/src/Controllers/ScaffoldController.php',
+        'Encore\\Admin\\Helpers\\Controllers\\TerminalController' => __DIR__ . '/..' . '/laravel-admin-ext/helpers/src/Controllers/TerminalController.php',
+        'Encore\\Admin\\Helpers\\Helpers' => __DIR__ . '/..' . '/laravel-admin-ext/helpers/src/Helpers.php',
+        'Encore\\Admin\\Helpers\\HelpersServiceProvider' => __DIR__ . '/..' . '/laravel-admin-ext/helpers/src/HelpersServiceProvider.php',
+        'Encore\\Admin\\Helpers\\Scaffold\\ControllerCreator' => __DIR__ . '/..' . '/laravel-admin-ext/helpers/src/Scaffold/ControllerCreator.php',
+        'Encore\\Admin\\Helpers\\Scaffold\\MigrationCreator' => __DIR__ . '/..' . '/laravel-admin-ext/helpers/src/Scaffold/MigrationCreator.php',
+        'Encore\\Admin\\Helpers\\Scaffold\\ModelCreator' => __DIR__ . '/..' . '/laravel-admin-ext/helpers/src/Scaffold/ModelCreator.php',
         'Encore\\Admin\\Layout\\Buildable' => __DIR__ . '/..' . '/encore/laravel-admin/src/Layout/Buildable.php',
         'Encore\\Admin\\Layout\\Column' => __DIR__ . '/..' . '/encore/laravel-admin/src/Layout/Column.php',
         'Encore\\Admin\\Layout\\Content' => __DIR__ . '/..' . '/encore/laravel-admin/src/Layout/Content.php',

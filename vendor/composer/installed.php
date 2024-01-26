@@ -3,7 +3,7 @@
         'name' => 'laravel/laravel',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '877d52ca8bc23bd0928704fcfa8251103a41d0a2',
+        'reference' => '872ec547d4fa2a81c74676a5f052ffa388f3f1c5',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -448,6 +448,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'laravel-admin-ext/helpers' => array(
+            'pretty_version' => 'v2.0.2',
+            'version' => '2.0.2.0',
+            'reference' => 'b5ee6173794797d665b5baf7cc2713b523c2dd33',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../laravel-admin-ext/helpers',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'laravel-admin-ext/summernote' => array(
             'pretty_version' => 'v1.0.3',
             'version' => '1.0.3.0',
@@ -469,7 +478,7 @@
         'laravel/laravel' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '877d52ca8bc23bd0928704fcfa8251103a41d0a2',
+            'reference' => '872ec547d4fa2a81c74676a5f052ffa388f3f1c5',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

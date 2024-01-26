@@ -82,6 +82,7 @@ return array(
     'Facade\\FlareClient\\' => array($vendorDir . '/facade/flare-client-php/src'),
     'Encore\\Summernote\\' => array($vendorDir . '/laravel-admin-ext/summernote/src'),
     'Encore\\Chartjs\\' => array($vendorDir . '/laravel-admin-ext/chartjs/src'),
+    'Encore\\Admin\\Helpers\\' => array($vendorDir . '/laravel-admin-ext/helpers/src'),
     'Encore\\Admin\\' => array($vendorDir . '/encore/laravel-admin/src'),
     'Egulias\\EmailValidator\\' => array($vendorDir . '/egulias/email-validator/src'),
     'Dotenv\\' => array($vendorDir . '/vlucas/phpdotenv/src'),
