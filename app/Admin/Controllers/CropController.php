@@ -15,7 +15,7 @@ class CropController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Supported Crops';
+    protected $title = 'Groundnut Varieties';
 
     /**
      * Make a grid builder.
@@ -71,8 +71,8 @@ class CropController extends AdminController
 
         $form->text('name', __('Name'))->required();
         $form->image('photo', __('Photo'))->required();
-        $form->textarea('details', __('Details'))->required();
-        $form->divider('Production Guides');
+        $form->quill('details', __('Details'))->required();
+        //$form->divider('Production Guides');
        
         $form->disableCreatingCheck();
         $form->disableViewCheck();

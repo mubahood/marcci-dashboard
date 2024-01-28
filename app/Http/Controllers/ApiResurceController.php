@@ -34,11 +34,6 @@ class ApiResurceController extends Controller
         $items = [];
 
         foreach (Crop::all() as $key => $crop) {
-            $protocols = CropProtocol::where([
-                'crop_id' => $crop->id
-            ])->get();
-            $crop->protocols = json_encode($protocols);
-
             $items[] = $crop;
         }
 
@@ -48,6 +43,23 @@ class ApiResurceController extends Controller
             200
         );
     }
+
+    public function my_list(Request $r, $model)
+    {
+
+        header('Content-Type: application/json');
+        http_response_code(200);
+        $model = "App\Models\\" . $model;
+        $data = $model::where([])->get();
+        echo (json_encode([
+            'code' => 1,
+            'message' => 'success',
+            'data' => $data
+        ]));
+        die();
+    }
+
+
 
     public function garden_activities(Request $r)
     {
@@ -164,7 +176,6 @@ class ApiResurceController extends Controller
             $activity->user_id = $u->id;
             $activity->crop_activity_id = 1;
             $activity->activity_name = $r->activity_name;
-    
         }
 
         $image = "";

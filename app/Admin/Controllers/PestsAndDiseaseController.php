@@ -55,10 +55,10 @@ class PestsAndDiseaseController extends AdminController
 
         $grid->column('garden_location', __('Garden location'));
         $grid->column('user_id', __('User'))->display(function($user_id) {
-            return \App\Models\User::find($user_id)->name;
+            //return \App\Models\User::find($user_id)->name;
         });
         $grid->column('variety_id', __('Variety'))->display(function($variety_id) {
-            return \App\Models\GroundnutVariety::find($variety_id)->name;
+            //return \App\Models\GroundnutVariety::find($variety_id)->name;
         });
         $grid->column('category', __('Category'));
   
@@ -143,7 +143,7 @@ class PestsAndDiseaseController extends AdminController
                 }
             });
         SCRIPT);
-        $form->select('variety_id', __('Select crop variety '))->options(GroundnutVariety::pluck('name', 'id'))->rules('required');
+/*         $form->select('variety_id', __('Select crop variety '))->options(GroundnutVariety::pluck('name', 'id'))->rules('required'); */
         $form->text('category', __('Select Inquiries category'))->options([
             'Extension'=>'Extension',
             'Query'=>'Query',
@@ -152,7 +152,7 @@ class PestsAndDiseaseController extends AdminController
         $form->file('video', __('Video'));
         $form->file('audio', __('Audio'));
 
-        $form->text('description', __('Description'));
+        $form->quill('description', __('Description'));
 
         return $form;
     }

@@ -20,32 +20,32 @@ class  CropController extends Controller
     public function store(Request $request)
     {
         $user = auth('api')->user();
-    
+
         // Extract activities data from the request
         $activities = $request->input('activities', []);
 
-    
+
         // Create the Crop model with the uploaded photo path
         $data = [
             'name' => $request->input('name'),
             'details' => $request->input('details'),
         ];
-    
+
         // Store the uploaded photo
         if ($request->has('photo')) {
             $photoData = $request->input('photo');
             list($type, $photoData) = explode(';', $photoData);
             list(, $photoData) = explode(',', $photoData);
             $photoData = base64_decode($photoData);
-        
-            $photoPath = 'images/' . uniqid() . '.jpg'; 
+
+            $photoPath = 'images/' . uniqid() . '.jpg';
             Storage::disk('admin')->put($photoPath, $photoData);
-            
+
             $data['photo'] = $photoPath;
         }
-    
+
         $crop = Crop::create($data);
-    
+
         foreach ($activities as $activity) {
             $pivotData = [
                 'crop_id' => $crop->id,
@@ -59,65 +59,65 @@ class  CropController extends Controller
                 'is_activity_required' => $activity['is_activity_required'],
                 'details' => $activity['details'],
             ];
-    
+
             // Attach activities to the crop using the pivot table
             $crop->activities()->create($pivotData);
         }
-    
+
         return Utils::success($crop, 'Crop form submitted successfully.');
     }
-    
-    
+
+
 
 
     public function show($id)
     {
         // Retrieve the crop with the specified ID along with its associated activities
         $crop = Crop::with('activities')->find($id);
-    
+
         if (!$crop) {
             return Utils::error('Crop not found.', 404);
         }
-    
+
         return Utils::success($crop, 'Crop retrieved successfully.');
     }
 
-    
+
 
     public function update(Request $request, $id)
     {
         $user = auth('api')->user();
-    
+
         $data = [
             'name' => $request->input('name'),
             'details' => $request->input('details'),
         ];
-    
 
-         // Store the uploaded photo
-         if ($request->has('photo')) {
+
+        // Store the uploaded photo
+        if ($request->has('photo')) {
             $photoData = $request->input('photo');
             list($type, $photoData) = explode(';', $photoData);
             list(, $photoData) = explode(',', $photoData);
             $photoData = base64_decode($photoData);
-        
-            $photoPath = 'images/' . uniqid() . '.jpg'; 
+
+            $photoPath = 'images/' . uniqid() . '.jpg';
             Storage::disk('admin')->put($photoPath, $photoData);
-            
+
             $data['photo'] = $photoPath;
         }
-    
-    
-            // Find the crop with the specified ID
-            $crop = Crop::find($id);
 
-            if (!$crop) {
-                return Utils::error('Crop not found.', 404);
-            }
 
-            // Update the Crop model with the updated data
-            $crop->update($data);
-    
+        // Find the crop with the specified ID
+        $crop = Crop::find($id);
+
+        if (!$crop) {
+            return Utils::error('Crop not found.', 404);
+        }
+
+        // Update the Crop model with the updated data
+        $crop->update($data);
+
         // Update the activities associated with the crop (if needed)
         $activities = $request->input('activities', []);
         $crop->activities()->delete(); // Delete existing activities
@@ -136,23 +136,19 @@ class  CropController extends Controller
             ];
             $crop->activities()->create($pivotData);
         }
-    
+
         return Utils::success($crop, 'Crop updated successfully.');
     }
-    
+
 
     public function destroy(Crop $crop)
     {
         // Delete the crop
         $crop->delete();
-    
+
         // You can also delete associated activities here if needed
         $crop->activities()->delete();
-    
+
         return Utils::success(null, 'Crop deleted successfully.');
     }
-
-
-
-    
 }
