@@ -29,6 +29,12 @@ php artisan make:migration create_product_orders_table
 php artisan make:migration create_crop_protocols_table 
 php artisan make:migration create_garden_table 
 php artisan make:migration create_garden_activities_table 
+php artisan make:migration add_gps_to_pests_and_disease_reports --table=pests_and_disease_reports 
+php artisan make:migration add_has_listened_to_intro_to_online_course_students --table=online_course_students
+php artisan make:migration add_cols_to_gardens --table=gardens
+
+
+
 
 Encore\Admin\Auth\Database\Administrator::class,
 php artisan admin:make FormSr4Controller --model=App\FormSr4
@@ -58,6 +64,8 @@ php artisan admin:make CropController --model=App\Models\Crop
 php artisan admin:make CropProtocolController --model=App\Models\CropProtocol
 php artisan admin:make GardenController --model=App\Models\Garden
 php artisan admin:make RegistrationController --model=App\Models\Registration
+php artisan admin:make DistrictController --model=App\\Models\\District
+php artisan admin:make PestsAndDiseaseReportController --model=App\\Models\\PestsAndDiseaseReport
 
  --model=app\
 
@@ -104,107 +112,8 @@ php artisan make:model ProductOrder
 php artisan make:model Crop
 php artisan make:model Garden
 php artisan make:model GardenActivity
+php artisan make:model District
+php artisan make:model PestsAndDiseaseReport -m
 
 
-
-//for future use 
-     
-// $form->saving(function (Form $form) {
-//     // Use request() to get the submitted value
-//     $audioInput = request('audioInput');
-//     error_log('audioInput: ' . $audioInput);
-
-//     if ($audioInput) {
-//         $audioExtension = pathinfo($audioInput, PATHINFO_EXTENSION);
-//         $audioName = 'audio_' . time() . '.' . $audioExtension;
-//         $audioBinary = base64_decode(str_replace('data:audio/' . $audioExtension . ';base64,', '', $audioInput));
-
-//         // Save the file to storage using UploadedFile
-//         $tempFilePath = tempnam(sys_get_temp_dir(), 'audio_temp_');
-//         file_put_contents($tempFilePath, $audioBinary);
-        
-//         $uploadedFile = new UploadedFile(
-//             $tempFilePath,
-//             $audioName,
-//             'audio/' . $audioExtension,
-//             null,
-//             true // Set to true to enable "test" mode
-//         );
-
-//         Storage::disk('public')->put($audioName, $uploadedFile->getContent());
-
-//         // Update the form field value
-//         $form->audio = $audioName;
-
-//         // Delete the temporary file
-//         unlink($tempFilePath);
-//     }
-// });
-        
-       
-
-       
-
-      
-    //     $form->html('<button type="button" id="startRecordingButton">Start Recording</button>');
-    //     $form->html('<button type="button" id="stopRecordingButton" style="display: none;">Stop Recording</button>');
-    //     $form->html('<audio id="audioPlayer" controls></audio>');
-    //     $form->html('<input type="hidden" id="audioInput" name="audioInput">');
-         $form->file('audio', __('Audio Input'));
-    //     $form->html('<script>
-    //     var startRecordingButton = document.getElementById("startRecordingButton");
-    //     var stopRecordingButton = document.getElementById("stopRecordingButton");
-    //     var audioPlayer = document.getElementById("audioPlayer");
-    //     var audioInput = document.getElementById("audioInput");
-    //     var mediaRecorder;
-    //     var audioChunks = [];
-        
-    //     startRecordingButton.addEventListener("click", startRecording);
-    //     stopRecordingButton.addEventListener("click", stopRecording);
-        
-    //     function startRecording() {
-    //         navigator.mediaDevices.getUserMedia({ audio: true })
-    //             .then(function (stream) {
-    //                 mediaRecorder = new MediaRecorder(stream);
-        
-    //                 mediaRecorder.ondataavailable = function (event) {
-    //                     if (event.data.size > 0) {
-    //                         audioChunks.push(event.data);
-    //                     }
-    //                 };
-        
-    //                 mediaRecorder.onstop = function () {
-    //                     var audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-        
-    //                     // Convert the Blob to an audio file
-    //                     const audioUrl = URL.createObjectURL(audioBlob);
-        
-    //                     // Use the audioUrl for playback or other purposes if needed
-    //                     audioPlayer.src = audioUrl;
-        
-    //                     // Create FormData and append the audioBlob
-    //                     var formData = new FormData();
-    //                     formData.append("audioInput", audioBlob, "audio.wav");
-        
-    //                     // Update the value of audioInput
-    //                     audioInput.value = "audio.wav";
-    //                 };
-        
-    //                 mediaRecorder.start();
-    //                 startRecordingButton.style.display = "none";
-    //                 stopRecordingButton.style.display = "block";
-    //             })
-    //             .catch(function (error) {
-    //                 console.error("Error accessing microphone:", error);
-    //             });
-    //     }
-        
-    //     function stopRecording() {
-    //         mediaRecorder.stop();
-    //         startRecordingButton.style.display = "block";
-    //         stopRecordingButton.style.display = "none";
-    //     }
-        
-    // </script>');
-    
 

@@ -33,7 +33,7 @@ use App\Admin\Extensions\Nav\Dropdown;
 
 Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
 
-/*     $u = Auth::user();
+    /*     $u = Auth::user();
     $navbar->left(view('admin.search-bar', [
         'u' => $u
     ]));
@@ -68,10 +68,22 @@ Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
     ], 'fa-question')->title('HELP')); */
 });
 
+//disable batch select in grid
+\Encore\Admin\Grid::init(function (\Encore\Admin\Grid $grid) {
+    $grid->disableBatchActions();
+});
 
+//disable tools in form
+\Encore\Admin\Form::init(function (\Encore\Admin\Form $form) {
+    $form->tools(function (\Encore\Admin\Form\Tools $tools) {
+        $tools->disableDelete();
+    });
+    $form->disableReset();
+    $form->disableViewCheck();
+    $form->disableViewCheck();
+});
 
 
 Encore\Admin\Form::forget(['map', 'editor']);
 Admin::css(url('/assets/css/bootstrap.css'));
 Admin::css('/assets/css/styles.css');
-

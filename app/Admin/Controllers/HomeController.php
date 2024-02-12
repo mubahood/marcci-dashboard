@@ -63,6 +63,7 @@ class HomeController extends Controller
 
     public function index(Content $content)
     {
+        return $content;
         $u = Auth::user();
         $content
             ->title('NaRO - Dashboard')

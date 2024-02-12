@@ -13,6 +13,7 @@ use App\Models\Group;
 use App\Models\Institution;
 use App\Models\Job;
 use App\Models\NewsPost;
+use App\Models\Parish;
 use App\Models\Person;
 use App\Models\Product;
 use App\Models\ServiceProvider;
@@ -87,6 +88,29 @@ class ApiResurceController extends Controller
             200
         );
     }
+
+    public function parishes()
+    {
+        $items = [];
+        foreach (Parish::all() as $key => $parish) {
+            $name = $parish->name;
+            if ($parish->subcounty != null) {
+                $name = $parish->subcounty->name . ", " . $name;
+            }
+            if ($parish->district != null) {
+                $name = $parish->district->name . ", " . $name;
+            }
+            $items[] = [
+                'id' => $parish->id,
+                'name' => $name,
+            ];
+        }
+        return $this->success(
+            $items,
+            $message = "Sussesfully",
+        );
+    }
+
 
     public function gardens(Request $r)
     {
@@ -222,30 +246,70 @@ class ApiResurceController extends Controller
         }
 
 
+
         $image = "";
         if (!empty($_FILES)) {
             try {
-                $image = Utils::upload_images_2($_FILES, true);
-                $image = 'images/' . $image;
+                //$image = Utils::upload_images_2($_FILES, true);
+                if ($r->file('file') != null) {
+                    $image = Utils::file_upload($r->file('file'));
+                }
             } catch (Throwable $t) {
                 $image = "no_image.jpg";
             }
         }
 
-        $obj = new Garden();
+        if (!isset($r->task)) {
+            return $this->error('Task is missing');
+        }
+
+        $isCreate = false;
+        if ($r->task == 'create') {
+            $obj = new Garden();
+            $isCreate = true;
+        } else {
+            $obj = Garden::find($r->id);
+            if ($obj == null) {
+                return $this->error('Garden not found');
+            }
+            $isCreate = false;
+        }
+        $parish = Parish::find($r->parish_id);
+        if ($parish == null) {
+            return $this->error('Parish not found');
+        }
+
         $obj->name = $r->name;
         $obj->user_id = $u->id;
         $obj->status = $r->status;
         $obj->production_scale = $r->production_scale;
         $obj->planting_date = Carbon::parse($r->planting_date);
-        $obj->land_occupied = $r->planting_date;
+        $obj->land_occupied = $r->land_occupied;
         $obj->crop_id = $r->crop_id;
         $obj->details = $r->details;
-        $obj->photo = $image;
+
+        $obj->parish_id = $r->parish_id;
+        $obj->district_id = $parish->district_id;
+        $obj->subcounty_id = $parish->subcounty_id;
+        $obj->gps_lati = $r->gps_lati;
+        $obj->gps_longi = $r->gps_longi;
+
+        if (!$isCreate) {
+            if ($image != 'no_image.jpg') {
+                $obj->photo = $image;
+            }
+        } else {
+            $obj->photo = $image;
+        }
+
         $obj->save();
 
+        $msg = "Garden Updated Sussesfully!";
+        if ($isCreate) {
+            $msg = "Garden Created Sussesfully!";
+        }
 
-        return $this->success(null, $message = "Sussesfully created!", 200);
+        return $this->success(null, $msg, 200);
     }
 
     public function product_create(Request $r)

@@ -33,9 +33,38 @@ class Garden extends Model
     {
         parent::boot();
         self::created(function ($m) {
-           
         });
     }
 
- 
+    //crop_text
+    public function getCropTextAttribute()
+    {
+        if ($this->crop == null) {
+            return 'No Crop';
+        }
+        return $this->crop->name;
+    }
+
+    //belongs to crop
+    public function crop()
+    {
+        return $this->belongsTo(Crop::class);
+    }
+    //belongs to parish
+    public function parish()
+    {
+        return $this->belongsTo(Parish::class);
+    }
+
+    //getter for parish_text
+    public function getParishTextAttribute()
+    {
+        if ($this->parish == null) {
+            return 'No Parish';
+        }
+        return $this->parish->name_text;
+    }
+
+    //appends crop_text
+    protected $appends = ['crop_text', 'parish_text'];
 }
