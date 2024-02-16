@@ -15,6 +15,8 @@ use App\Models\Job;
 use App\Models\NewsPost;
 use App\Models\Parish;
 use App\Models\Person;
+use App\Models\PestsAndDisease;
+use App\Models\PestsAndDiseaseReport;
 use App\Models\Product;
 use App\Models\ServiceProvider;
 use App\Models\Utils;
@@ -134,6 +136,18 @@ class ApiResurceController extends Controller
 
         return $this->success(
             $gardens,
+            $message = "Sussesfully",
+            200
+        );
+    }
+
+    public function pests_and_disease_reports(Request $r)
+    {
+        return $this->success(
+            PestsAndDiseaseReport::where([])
+                ->limit(10000)
+                ->orderBy('id', 'desc')
+                ->get(),
             $message = "Sussesfully",
             200
         );
@@ -307,6 +321,68 @@ class ApiResurceController extends Controller
         $msg = "Garden Updated Sussesfully!";
         if ($isCreate) {
             $msg = "Garden Created Sussesfully!";
+        }
+
+        return $this->success(null, $msg, 200);
+    }
+
+
+    public function pests_report(Request $r)
+    {
+        $u = $r->user;
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        if (
+            $r->garden_id == null ||
+            $r->pests_and_disease_id == null
+        ) {
+            return $this->error('Some Information is still missing. Fill the missing information and try again.');
+        }
+
+        $image = "";
+        if (!empty($_FILES)) {
+            try {
+                //$image = Utils::upload_images_2($_FILES, true);
+                if ($r->file('file') != null) {
+                    $image = Utils::file_upload($r->file('file'));
+                }
+            } catch (Throwable $t) {
+                $image = "no_image.jpg";
+            }
+        }
+        $garden = Garden::find($r->garden_id);
+        if ($garden == null) {
+            return $this->error('Garden not found');
+        }
+        $pest = PestsAndDisease::find($r->pests_and_disease_id);
+        if ($pest == null) {
+            return $this->error('Pest not found');
+        }
+
+        $crop = Crop::find($garden->crop_id);
+        if ($crop == null) {
+            return $this->error('Crop not found');
+        }
+
+        $obj = new PestsAndDiseaseReport();
+
+        $obj->pests_and_disease_id = $r->pests_and_disease_id;
+        $obj->garden_id = $r->garden_id;
+        $obj->crop_id = $garden->crop_id;
+        $obj->user_id = $u->id;
+        $obj->district_id = $garden->district_id;
+        $obj->subcounty_id = $garden->subcounty_id;
+        $obj->parish_id = $garden->parish_id;
+        $obj->photo = $image;
+        $obj->gps_lati = $garden->gps_lati;
+        $obj->gps_longi = $garden->gps_longi;
+        $obj->photo = $image;
+        $msg = "Report Created Sussesfully!";
+        try {
+            $obj->save();
+        } catch (\Throwable $t) {
+            return $this->error('Failed to save report, becase ' . $t->getMessage() . '');
         }
 
         return $this->success(null, $msg, 200);

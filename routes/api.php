@@ -26,10 +26,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
     Route::get("gardens", [ApiResurceController::class, "gardens"]);
+    Route::get("pests-and-disease-reports", [ApiResurceController::class, "pests_and_disease_reports"]);
     Route::get('parishes', [ApiResurceController::class, 'parishes']);
     Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
     Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
     Route::POST("gardens", [ApiResurceController::class, "garden_create"]);
+    Route::POST("pests-report", [ApiResurceController::class, "pests_report"]);
     Route::POST("product", [ApiResurceController::class, "product_create"]);
     Route::POST("garden-activities", [ApiResurceController::class, "activity_submit"]);
 });

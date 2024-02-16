@@ -9,6 +9,7 @@ class FinancialRecord extends Model
 {
     use HasFactory;
 
+    //fillable
     protected $fillable = [
         'garden_id',
         'user_id',
@@ -16,10 +17,8 @@ class FinancialRecord extends Model
         'date',
         'amount',
         'payment_method', //cash, cheque, bank transfer, mobile money
-        'recipient', 
+        'recipient',
         'description',
         'quantity'
-       
-        
     ];
 }

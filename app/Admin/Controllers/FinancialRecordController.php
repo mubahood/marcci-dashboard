@@ -17,7 +17,7 @@ class FinancialRecordController extends AdminController
      *
      * @var string
      */
-    protected $title = 'FinancialRecord';
+    protected $title = 'Financial Records';
 
     /**
      * Make a grid builder.
@@ -30,13 +30,13 @@ class FinancialRecordController extends AdminController
 
          //show a user only their gardens
          $user = auth()->user();
-         $grid->model()->where('user_id', $user->id);
+         //$grid->model()->where('user_id', $user->id);
  
          //filter by garden name
          $grid->filter(function($filter) use($user){
              //disable the default id filter
              $filter->disableIdFilter();
-             $filter->like('garden_id', 'Garden name')->select(Garden::where('user_id', $user->id)->pluck('garden_name', 'id'));
+/*              $filter->like('garden_id', 'Garden name')->select(Garden::where('user_id', $user->id)->pluck('garden_name', 'id')); */
          });
  
          //disable  column selector
@@ -47,7 +47,11 @@ class FinancialRecordController extends AdminController
 
   
         $grid->column('garden_id', __('Garden'))->display(function($garden_id) {
-            return \App\Models\Garden::find($garden_id)->garden_name;
+            $G =  \App\Models\Garden::find($garden_id);
+            if($G == null)
+            {
+                return "No Garden";
+            }
         });
         $grid->column('category', __('Category'));
         $grid->column('amount', __('Amount'));
