@@ -32,7 +32,8 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
     Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
     Route::POST("gardens", [ApiResurceController::class, "garden_create"]);
     Route::POST("pests-report", [ApiResurceController::class, "pests_report"]);
-    Route::POST("product", [ApiResurceController::class, "product_create"]);
+    Route::POST("financial-records", [ApiResurceController::class, "financial_records_cerate"]);
+    Route::POST("products", [ApiResurceController::class, "product_create"]);
     Route::POST("garden-activities", [ApiResurceController::class, "activity_submit"]);
 });
 Route::get("crops", [ApiResurceController::class, "crops"]);
@@ -41,8 +42,7 @@ Route::POST("users/register", [ApiAuthController::class, "register"]);
 Route::resource('registration', RegistrationController::class);
 //Route::resource('crops', CropController::class);
 //Route::resource('gardens', GardenController::class);
-Route::resource('garden_activities', GardenActivityController::class);
-Route::resource('products', ProductController::class);
+Route::resource('garden_activities', GardenActivityController::class); 
 Route::resource('questions', QuestionAnswerController::class);
 
 

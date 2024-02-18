@@ -17,6 +17,24 @@ class GardenActivity extends Model
         'date',
         'person_responsible',
         'remarks'
-        
+
     ];
+    //append for garden_text
+    protected $appends = ['garden_text'];
+    //get garden_text
+    public function getGardenTextAttribute()
+    {
+        if ($this->garden == null) {
+            return "No Garden";
+        }
+        return $this->garden->name;
+    }
+
+    //getter for 
+
+    //belongs to garden
+    public function garden()
+    {
+        return $this->belongsTo(Garden::class);
+    }
 }

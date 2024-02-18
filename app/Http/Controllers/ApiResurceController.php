@@ -7,6 +7,7 @@ use App\Models\CounsellingCentre;
 use App\Models\Crop;
 use App\Models\CropProtocol;
 use App\Models\Event;
+use App\Models\FinancialRecord;
 use App\Models\Garden;
 use App\Models\GardenActivity;
 use App\Models\Group;
@@ -202,6 +203,14 @@ class ApiResurceController extends Controller
             return $this->error('Some Information is still missing. Fill the missing information and try again.');
         }
 
+        //status
+        if (
+            $r->farmer_activity_status == null
+        ) {
+            return $this->error('Status is missing');
+        }
+
+
         $activity = GardenActivity::find($r->activity_id);
 
         if ($activity == null) {
@@ -216,23 +225,50 @@ class ApiResurceController extends Controller
             $activity->activity_name = $r->activity_name;
         }
 
+        if (isset($r->activity_date_to_be_done)) {
+            if (strlen($r->activity_date_to_be_done) > 2) {
+                $activity->activity_date_to_be_done = Carbon::parse($r->activity_date_to_be_done);
+                $activity->activity_due_date = Carbon::parse($r->activity_date_to_be_done);
+            }
+        }
+
+
         $image = "";
         if (!empty($_FILES)) {
-            try {
-                $image = Utils::upload_images_2($_FILES, true);
-                $image = 'images/' . $image;
-            } catch (Throwable $t) {
-                $image = "no_image.jpg";
+            if (!empty($_FILES)) {
+                try {
+                    //$image = Utils::upload_images_2($_FILES, true);
+                    if ($r->file('file') != null) {
+                        $image = Utils::file_upload($r->file('file'));
+                    }
+                } catch (Throwable $t) {
+                    return $this->error('Failed to upload image, becase ' . $t->getMessage() . '');
+                }
             }
         }
 
         $activity->photo = $image;
         $activity->farmer_activity_status = $r->farmer_activity_status;
         $activity->farmer_comment = $r->farmer_comment;
-        if ($r->activity_date_done != null && strlen($r->activity_date_done) > 2) {
+
+        if ($r->farmer_activity_status == 'Done') {
+            if ($r->activity_date_done == null || strlen($r->activity_date_done) < 2) {
+                return $this->error('Activity date is missing. => ' . $r->activity_date_done);
+            }
             $activity->activity_date_done = Carbon::parse($r->activity_date_done);
             $activity->farmer_submission_date = Carbon::now();
             $activity->farmer_has_submitted = 'Yes';
+        } else if ($r->farmer_activity_status == 'Pending') {
+            if ($r->activity_date_to_be_done == null || strlen($r->activity_date_to_be_done) < 2) {
+                return $this->error('Activity date is missing.');
+            }
+            $activity->activity_date_to_be_done = Carbon::parse($r->activity_date_to_be_done);
+        } else if ($r->farmer_activity_status == 'Skipped') {
+            $activity->farmer_submission_date = Carbon::now();
+            $activity->activity_date_done = Carbon::now();
+            $activity->farmer_has_submitted = 'Yes';
+        } else {
+            return $this->error('Status is not valid. => ' . $r->farmer_activity_status . '');
         }
 
 
@@ -252,13 +288,26 @@ class ApiResurceController extends Controller
             return $this->error('User not found.');
         }
         if (
-            $r->name == null ||
-            $r->planting_date == null ||
-            $r->crop_id == null
+            $r->name == null 
         ) {
-            return $this->error('Some Information is still missing. Fill the missing information and try again.');
+            return $this->error('Name is missing');
+        }
+        //planting_date == null ||
+        if(!isset($r->planting_date)){
+            return $this->error('Planting date is missing');
         }
 
+        if (
+            $r->parish_id == null
+        ) {
+            return $this->error('Parish is missing');
+        }
+
+        if (
+            $r->crop_id == null
+        ) {
+            return $this->error('Crop is missing');
+        }
 
 
         $image = "";
@@ -327,6 +376,96 @@ class ApiResurceController extends Controller
     }
 
 
+    public function financial_records_cerate(Request $r)
+    {
+        $u = $r->user;
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        if (
+            $r->garden_id == null
+        ) {
+            return $this->error('Garden not found');
+        }
+        if (
+            $r->amount == null
+        ) {
+            return $this->error('Amount is missing');
+        }
+        //category
+        if (
+            $r->category == null
+        ) {
+            return $this->error('Category is missing');
+        }
+        //date
+        if (
+            $r->date == null
+        ) {
+            return $this->error('Date is missing');
+        }
+
+        $garden = Garden::find($r->garden_id);
+        if ($garden == null) {
+            return $this->error('Garden not found');
+        }
+        $obj = new FinancialRecord();
+        $obj->garden_id = $r->garden_id;
+        $obj->user_id = $u->id;
+
+        $category = trim($r->category);
+        if ($category == 'Income') {
+            $obj->amount = abs($r->amount);
+        } else if ($category == 'Expense') {
+            $obj->amount = -1 * abs($r->amount);
+        } else {
+            return $this->error('Category is not valid');
+        }
+        $obj->category = $category;
+        $obj->description = $r->description;
+        $obj->payment_method = "Cash";
+
+        $date = Carbon::parse($r->date);
+        if ($date == null) {
+            return $this->error('Date is not valid');
+        }
+        $obj->date = $date;
+        $obj->quantity = 1;
+        $image = "";
+        if (!empty($_FILES)) {
+            try {
+                //$image = Utils::upload_images_2($_FILES, true);
+                if ($r->file('file') != null) {
+                    $image = Utils::file_upload($r->file('file'));
+                }
+            } catch (Throwable $t) {
+                $image = "no_image.jpg";
+            }
+        }
+
+        $garden->income = FinancialRecord::where(['garden_id' => $r->garden_id, 'category' => 'Income'])->sum('amount');
+        $garden->expense = FinancialRecord::where(['garden_id' => $r->garden_id, 'category' => 'Expense'])->sum('amount');
+        $garden->profit = $garden->income + $garden->expense;
+        try {
+            $garden->save();
+        } catch (\Throwable $t) {
+            return $this->error('Failed to save garden, because ' . $t->getMessage() . '');
+        }
+
+
+
+        $obj->recipient = $image;
+        try {
+            $obj->save();
+        } catch (\Throwable $t) {
+            return $this->error('Failed to save report, becase ' . $t->getMessage() . '');
+        }
+        $obj = FinancialRecord::find($obj->id);
+        return $this->success($obj, 'Success', 1);
+    }
+
+
+
     public function pests_report(Request $r)
     {
         $u = $r->user;
@@ -388,6 +527,8 @@ class ApiResurceController extends Controller
         return $this->success(null, $msg, 200);
     }
 
+
+
     public function product_create(Request $r)
     {
         $u = $r->user;
@@ -404,11 +545,15 @@ class ApiResurceController extends Controller
 
         $image = "";
         if (!empty($_FILES)) {
-            try {
-                $image = Utils::upload_images_2($_FILES, true);
-                $image = 'images/' . $image;
-            } catch (Throwable $t) {
-                $image = "no_image.jpg";
+            if (!empty($_FILES)) {
+                try {
+                    //$image = Utils::upload_images_2($_FILES, true);
+                    if ($r->file('file') != null) {
+                        $image = Utils::file_upload($r->file('file'));
+                    }
+                } catch (Throwable $t) {
+                    return $this->error('Failed to upload image, becase ' . $t->getMessage() . '');
+                }
             }
         }
 
@@ -452,11 +597,15 @@ class ApiResurceController extends Controller
 
         $image = "";
         if (!empty($_FILES)) {
-            try {
-                $image = Utils::upload_images_2($_FILES, true);
-                $image = 'images/' . $image;
-            } catch (Throwable $t) {
-                $image = "no_image.jpg";
+            if (!empty($_FILES)) {
+                try {
+                    //$image = Utils::upload_images_2($_FILES, true);
+                    if ($r->file('file') != null) {
+                        $image = Utils::file_upload($r->file('file'));
+                    }
+                } catch (Throwable $t) {
+                    return $this->error('Failed to upload image, becase ' . $t->getMessage() . '');
+                }
             }
         }
 

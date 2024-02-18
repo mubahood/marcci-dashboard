@@ -14,9 +14,9 @@ class QuestionAnswerController extends Controller
 {
     public function index()
     {
-    
+
         $questions = Question::with('answers')->get();
-       
+
         return response()->json($questions);
     }
 
@@ -27,7 +27,7 @@ class QuestionAnswerController extends Controller
         ]);
 
         $question = new Question();
-    
+
         $question->user_id = $request->user_id;
         $question->question = $request->question;
         $question->save();
@@ -38,13 +38,12 @@ class QuestionAnswerController extends Controller
             "message" => "Question posted successfully",
             "question" => $question
         ]);
-        
     }
-    
+
 
     public function show($id)
     {
-       
+
         $answers = Answer::where('question_id', $id)->get();
         $question = Question::find($id)->question;
 
@@ -53,17 +52,15 @@ class QuestionAnswerController extends Controller
             "message" => "Question and Answers retrieved successfully",
             "question" => $question,
             "answers" => $answers,
-            
+
         ]);
     }
 
     public function update(Request $request, $id)
     {
-
     }
 
     public function destroy($id)
     {
-        
     }
 }

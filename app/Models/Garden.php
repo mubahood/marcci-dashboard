@@ -13,7 +13,6 @@ class Garden extends Model
 
     protected $fillable = [
         'user_id',
-        'garden_name',
         'garden_size',
         'ownership',
         'planting_date',
@@ -28,6 +27,12 @@ class Garden extends Model
         'user_id',
         'crop_id',
     ];
+
+    //getter for garden_name
+    public function getGardenNameAttribute()
+    {
+        return $this->name;
+    }
 
     public static function boot()
     {
