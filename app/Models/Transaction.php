@@ -22,6 +22,13 @@ class Transaction extends Model
             if (!in_array($model->type, TRANSACTION_TYPES)) {
                 throw new Exception("Invalid transaction type.");
             }
+            $temp_amount = abs($model->amount);
+            if ($temp_amount > 10000000) {
+                throw new Exception("Amount too large");
+            }
+            if ($temp_amount < (-1) * 10000000) {
+                throw new Exception("Amount too small");
+            }
 
             $user = Administrator::find($model->user_id);
             if ($user == null) {
@@ -33,9 +40,10 @@ class Transaction extends Model
                 throw new Exception("No active cycle found");
             }
 
-            
+
             $model->cycle_id = $cycle->id;
             $model->sacco_id = $user->sacco_id;
+            $model->amount = (int) $model->amount;
             return $model;
         });
 
@@ -50,11 +58,11 @@ class Transaction extends Model
         static::created(function ($model) {
             $model->balance = Transaction::where('user_id', $model->user_id)->sum('amount');
             $model->save();
-            if($model->type == 'CONTRIBUTION'){
+            if ($model->type == 'CONTRIBUTION') {
                 $contr = Contribution::find($model->source_bank_transaction_id);
-                if($contr!=null){
+                if ($contr != null) {
                     $contr->update_self();
-                } 
+                }
             }
             return $model;
         });
