@@ -30,4 +30,5 @@ Route::group([
     $router->resource('subcounties', SubcountyController::class);
     $router->resource('parishes', ParishController::class);
     $router->resource('pests-and-disease-reports', PestsAndDiseaseReportController::class);
+    $router->resource('farmers', FarmerController::class);
 });

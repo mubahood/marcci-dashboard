@@ -7,6 +7,7 @@ use App\Models\CounsellingCentre;
 use App\Models\Crop;
 use App\Models\CropProtocol;
 use App\Models\Event;
+use App\Models\Farmer;
 use App\Models\FinancialRecord;
 use App\Models\Garden;
 use App\Models\GardenActivity;
@@ -288,12 +289,12 @@ class ApiResurceController extends Controller
             return $this->error('User not found.');
         }
         if (
-            $r->name == null 
+            $r->name == null
         ) {
             return $this->error('Name is missing');
         }
         //planting_date == null ||
-        if(!isset($r->planting_date)){
+        if (!isset($r->planting_date)) {
             return $this->error('Planting date is missing');
         }
 
@@ -678,6 +679,102 @@ class ApiResurceController extends Controller
         return $this->success(NewsPost::where([])->orderby('id', 'desc')->get(), 'Success');
     }
 
+    public function farmers_create(Request $r)
+    {
+        $u = Administrator::find($r->user_id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+        $f = new Farmer();
+        $f->agent_id = $u->id;
+        $f->created_by_user_id = $u->id;
+        $f->created_by_agent_id = $u->id;
+        $f->organisation_id = $u->organisation_id;
+        $f->farmer_group_id = $r->farmer_group_id;
+        $f->first_name = $r->first_name;
+        $f->last_name = $r->last_name;
+        $f->country_id = $r->country_id;
+        $f->national_id_number = $r->national_id_number;
+        $f->gender = $r->gender;
+        $f->education_level = $r->education_level;
+        $f->year_of_birth = $r->year_of_birth;
+        $f->phone = $r->phone;
+        $f->email = $r->email;
+        $f->is_your_phone = $r->is_your_phone;
+        $f->is_mm_registered = $r->is_mm_registered;
+        $f->other_economic_activity = $r->other_economic_activity;
+        $f->location_id = $r->location_id;
+        $f->address = $r->address;
+        $f->latitude = $r->latitude;
+        $f->longitude = $r->longitude;
+        $f->password = password_hash('4321', PASSWORD_DEFAULT);
+        $f->farming_scale = $r->farming_scale;
+        $f->land_holding_in_acres = $r->land_holding_in_acres;
+        $f->land_under_farming_in_acres = $r->land_under_farming_in_acres;
+        $f->ever_bought_insurance = $r->ever_bought_insurance;
+        $f->ever_received_credit = $r->ever_received_credit;
+        $f->status = 'Pending';
+        $f->poverty_level = $r->poverty_level;
+        $f->food_security_level = $r->food_security_level;
+        $f->marital_status = $r->marital_status;
+        $f->family_size = $r->family_size;
+        $f->farm_decision_role = $r->farm_decision_role;
+        $f->is_pwd = $r->is_pwd;
+        $f->is_refugee = $r->is_refugee;
+        $f->date_of_birth = Carbon::parse($r->date_of_birth);
+        $f->age_group = $r->age_group;
+        $f->language_preference = $r->language_preference;
+        $f->phone_number = $r->phone_number;
+        $f->phone_type = $r->phone_type;
+        $f->preferred_info_type = $r->preferred_info_type;
+        $f->home_gps_latitude = $r->home_gps_latitude;
+        $f->home_gps_longitude = $r->home_gps_longitude;
+        $f->village = $r->village;
+        $f->street = $r->street;
+        $f->house_number = $r->house_number;
+        $f->land_registration_numbers = $r->land_registration_numbers;
+        $f->labor_force = $r->labor_force;
+        $f->equipment_owned = $r->equipment_owned;
+        $f->livestock = $r->livestock;
+        $f->crops_grown = $r->crops_grown;
+        $f->has_bank_account = $r->has_bank_account;
+        $f->has_mobile_money_account = $r->has_mobile_money_account;
+        $f->payments_or_transfers = $r->payments_or_transfers;
+        $f->financial_service_provider = $r->financial_service_provider;
+        $f->has_credit = $r->has_credit;
+        $f->loan_size = $r->loan_size;
+        $f->loan_usage = $r->loan_usage;
+        $f->farm_business_plan = $r->farm_business_plan;
+        $f->covered_risks = $r->covered_risks;
+        $f->insurance_company_name = $r->insurance_company_name;
+        $f->insurance_cost = $r->insurance_cost;
+        $f->repaid_amount = $r->repaid_amount;
+        $f->photo = $r->photo;
+        $f->district_id = $r->district_id;
+        $f->subcounty_id = $r->subcounty_id;
+        $f->parish_id = $r->parish_id;
+        $f->bank_id = $r->bank_id;
+        $f->other_livestock_count = $r->other_livestock_count;
+        $f->poultry_count = $r->poultry_count;
+        $f->sheep_count = $r->sheep_count;
+        $f->goat_count = $r->goat_count;
+        $f->cattle_count = $r->cattle_count;
+        $f->bank_account_number = $r->bank_account_number;
+        $f->has_receive_loan = $r->has_receive_loan;
+
+        $image = "";
+        if (!empty($_FILES)) {
+            try {
+                $image = Utils::upload_images_2($_FILES, true);
+            } catch (Throwable $t) {
+                $image = "no_image.jpg";
+            }
+        }
+        $f->photo = $image;
+        $f->save();
+        return $this->success($f, "Success");
+    }
 
     public function index(Request $r, $model)
     {
