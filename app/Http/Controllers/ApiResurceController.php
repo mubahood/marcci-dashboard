@@ -93,24 +93,10 @@ class ApiResurceController extends Controller
         );
     }
 
-    public function parishes()
+    public function farmers()
     {
-        $items = [];
-        foreach (Parish::all() as $key => $parish) {
-            $name = $parish->name;
-            if ($parish->subcounty != null) {
-                $name = $parish->subcounty->name . ", " . $name;
-            }
-            if ($parish->district != null) {
-                $name = $parish->district->name . ", " . $name;
-            }
-            $items[] = [
-                'id' => $parish->id,
-                'name' => $name,
-            ];
-        }
         return $this->success(
-            $items,
+            Farmer::all(),
             $message = "Sussesfully",
         );
     }
@@ -135,6 +121,33 @@ class ApiResurceController extends Controller
                 ->orderBy('id', 'desc')
                 ->get();
         }
+
+        return $this->success(
+            $gardens,
+            $message = "Sussesfully",
+            200
+        );
+    }
+
+    public function financial_records(Request $r)
+    {
+        $u = $r->user;
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+        $gardens = [];
+        if ($u->isRole('agent')) {
+            $gardens = FinancialRecord::where([])
+                ->limit(1000)
+                ->orderBy('id', 'desc')
+                ->get();
+        } else {
+            $gardens = FinancialRecord::where(['user_id' => $u->id])
+                ->limit(1000)
+                ->orderBy('id', 'desc')
+                ->get();
+        } 
 
         return $this->success(
             $gardens,
@@ -686,7 +699,20 @@ class ApiResurceController extends Controller
             return $this->error('User not found.');
         }
 
-        $f = new Farmer();
+        $f = Farmer::where(['national_id_number' => $r->national_id_number])->first();
+
+        if ($f == null) {
+            $f = Farmer::find($f->local_id);
+        }
+
+        if ($f == null) {
+            $f = Farmer::find($f->id);
+        }
+
+        if ($f == null) {
+            $f = new Farmer();
+        }
+
         $f->agent_id = $u->id;
         $f->created_by_user_id = $u->id;
         $f->created_by_agent_id = $u->id;

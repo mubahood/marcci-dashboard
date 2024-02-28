@@ -26,8 +26,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
     Route::get("gardens", [ApiResurceController::class, "gardens"]);
+    Route::get("financial-records", [ApiResurceController::class, "financial_records"]);
     Route::get("pests-and-disease-reports", [ApiResurceController::class, "pests_and_disease_reports"]);
     Route::get('parishes', [ApiResurceController::class, 'parishes']);
+    Route::get('farmers', [ApiResurceController::class, 'farmers']);
     Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
     Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
     Route::POST("gardens", [ApiResurceController::class, "garden_create"]);
@@ -42,7 +44,7 @@ Route::POST("users/register", [ApiAuthController::class, "register"]);
 Route::resource('registration', RegistrationController::class);
 //Route::resource('crops', CropController::class);
 //Route::resource('gardens', GardenController::class);
-Route::resource('garden_activities', GardenActivityController::class); 
+Route::resource('garden_activities', GardenActivityController::class);
 Route::resource('questions', QuestionAnswerController::class);
 
 

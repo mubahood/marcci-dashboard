@@ -21,4 +21,24 @@ class FinancialRecord extends Model
         'description',
         'quantity'
     ];
+
+    //belongs to garden
+    public function garden()
+    {
+        return $this->belongsTo(Garden::class);
+    }
+
+    //appends
+    protected $appends = [
+        'garden_text',
+    ];
+
+    //getter for garden_text
+    public function getGardenTextAttribute()
+    {
+        if ($this->garden == null) {
+            return "No garden found.";
+        }
+        return $this->garden->garden_name;
+    }
 }
