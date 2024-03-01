@@ -7,6 +7,7 @@ use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use SplFileObject;
 
 define('TRANSACTION_TYPES', [
@@ -25,6 +26,31 @@ define('TRANSACTION_TYPES', [
 class Utils extends Model
 {
     use HasFactory;
+
+
+    //mail sender
+    public static function mail_sender($data)
+    {
+        try {
+            Mail::send(
+                'mails/mail-1',
+                [
+                    'body' => $data['body'],
+                    'title' => $data['subject'],
+                    'subject' => $data['subject']
+                ],
+                function ($m) use ($data) {
+                    $m->to($data['email'], $data['name'])
+                        ->subject($data['subject']);
+                    $m->from(env('MAIL_FROM_ADDRESS'), $data['subject']);
+                }
+            );
+        } catch (\Throwable $th) {
+            $msg = 'failed';
+            throw $th;
+        }
+    }
+
 
 
 
@@ -512,10 +538,10 @@ administrator_id
     public static function docs_root()
     {
 
-        if(Utils::is_local()){
+        if (Utils::is_local()) {
             $script = $_SERVER['SCRIPT_FILENAME'];
             $server = str_replace('/server.php', '', $script);
-            return $server."/public";
+            return $server . "/public";
         }
 
         $r = $_SERVER['DOCUMENT_ROOT'] . "";

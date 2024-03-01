@@ -246,18 +246,36 @@ class ApiResurceController extends Controller
             'phone_number' => 'required',
         ]);
 
-        $phone_number = Utils::prepare_phone_number($r->phone_number);
-        if (!Utils::phone_number_is_valid($phone_number)) {
-            return $this->error('Invalid phone number.');
+
+        $phone_number = $r->phone_number;
+        $isEmail = false;
+
+        //check if $phone_number is email address
+        if (filter_var($phone_number, FILTER_VALIDATE_EMAIL)) {
+            $isEmail = true;
         }
-        $acc = User::where(['phone_number' => $phone_number])->first();
-        if ($acc == null) {
-            $acc = User::where(['username' => $phone_number])->first();
+
+        if (!$isEmail) {
+            $phone_number = Utils::prepare_phone_number($r->phone_number);
+            if (!Utils::phone_number_is_valid($phone_number)) {
+                return $this->error('Invalid phone number.');
+            }
+            $acc = User::where(['phone_number' => $phone_number])->first();
+            if ($acc == null) {
+                $acc = User::where(['username' => $phone_number])->first();
+            }
+        } else {
+            $acc = User::where(['email' => $phone_number])->first();
+            if ($acc == null) {
+                $acc = User::where(['username' => $phone_number])->first();
+            }
         }
+
         if ($acc == null) {
             return $this->error('Account not found.');
         }
         $otp = rand(10000, 99999) . "";
+
         if (
             str_contains($phone_number, '256783204665') ||
             str_contains(strtolower($acc->first_name), 'test') ||
@@ -265,22 +283,40 @@ class ApiResurceController extends Controller
         ) {
             $otp = '12345';
         }
-
         $resp = null;
-        try {
-            $resp = Utils::send_sms($phone_number, $otp . ' is your MobiSave OTP.');
-        } catch (Exception $e) {
-            return $this->error('Failed to send OTP  because ' . $e->getMessage() . '');
+
+        $msg = '';
+        if (!$isEmail) {
+            try {
+                $resp = Utils::send_sms($phone_number, $otp . ' is your MobiSave OTP.');
+                $msg = 'OTP sent to ' . $phone_number . '';
+            } catch (Exception $e) {
+                return $this->error('Failed to send OTP  because ' . $e->getMessage() . '');
+            }
+        } else {
+            try {
+                $resp = Utils::mail_sender([
+                    'email' => $phone_number,
+                    'name' => $acc->name,
+                    'subject' => env('APP_NAME') . ' OTP - ' . date('Y-m-d H:i:s'),
+                    'body' => $otp . ' is your  ' . env('APP_NAME') . ' OTP.'
+                ]);
+                $msg = 'OTP sent to ' . $phone_number . '';
+            } catch (Exception $e) {
+                return $this->error('Failed to send OTP  because ' . $e . '');
+            }
         }
+
         if ($resp != 'success') {
             return $this->error('Failed to send OTP  because ' . $resp . '');
         }
-        $acc->password = password_hash($otp, PASSWORD_DEFAULT);
+
+        $acc->intro = $otp;
         $acc->save();
         return $this->success(
             $otp . "",
-            $message = "OTP sent successfully.",
-            200
+            $message = $msg,
+            1
         );
     }
     public function loans(Request $r)
