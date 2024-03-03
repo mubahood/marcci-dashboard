@@ -15,8 +15,10 @@ use App\Models\Group;
 use App\Models\Institution;
 use App\Models\Job;
 use App\Models\Loan;
+use App\Models\LoanRequest;
 use App\Models\LoanScheem;
 use App\Models\LoanTransaction;
+use App\Models\LogError;
 use App\Models\NewsPost;
 use App\Models\Person;
 use App\Models\Product;
@@ -239,6 +241,8 @@ class ApiResurceController extends Controller
             200
         );
     }
+
+
     public function request_otp_sms(Request $r)
     {
 
@@ -291,11 +295,25 @@ class ApiResurceController extends Controller
                 $resp = Utils::send_sms($phone_number, $otp . ' is your MobiSave OTP.');
                 $msg = 'OTP sent to ' . $phone_number . '';
             } catch (Exception $e) {
+                LogError::create([
+                    'message' => $e->getMessage() . '',
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'trace' => $e->getTraceAsString(),
+                    'url' => $r->url(),
+                    'method' => 'send_sms',
+                    'input' => json_encode([
+                        'GET' => $_GET,
+                        'POST' => $_POST,
+                    ]),
+                    'user_agent' => $r->header('User-Agent'),
+                    'ip' => $r->ip(),
+                ]);
                 return $this->error('Failed to send OTP  because ' . $e->getMessage() . '');
             }
         } else {
             try {
-                $resp = Utils::mail_sender([
+                Utils::mail_sender([
                     'email' => $phone_number,
                     'name' => $acc->name,
                     'subject' => env('APP_NAME') . ' OTP - ' . date('Y-m-d H:i:s'),
@@ -303,12 +321,21 @@ class ApiResurceController extends Controller
                 ]);
                 $msg = 'OTP sent to ' . $phone_number . '';
             } catch (Exception $e) {
-                return $this->error('Failed to send OTP  because ' . $e . '');
+                LogError::create([
+                    'message' => $e->getMessage() . '',
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'trace' => $e->getTraceAsString(),
+                    'url' => $r->url(),
+                    'method' => 'mail_sender',
+                    'input' => json_encode([
+                        'GET' => $_GET,
+                        'POST' => $_POST,
+                    ]),
+                    'user_agent' => $r->header('User-Agent'),
+                    'ip' => $r->ip(),
+                ]);
             }
-        }
-
-        if ($resp != 'success') {
-            return $this->error('Failed to send OTP  because ' . $resp . '');
         }
 
         $acc->intro = $otp;
@@ -319,6 +346,8 @@ class ApiResurceController extends Controller
             1
         );
     }
+
+
     public function loans(Request $r)
     {
         $u = auth('api')->user();
@@ -489,6 +518,29 @@ class ApiResurceController extends Controller
         $amount = $r->amount;
         $amount = abs($amount);
         $amount = -1 * $amount;
+
+        $request  = new LoanRequest();
+        $request->sacco_id = $u->sacco_id;
+        $request->applicant_id = $u->id;
+        $request->approved_by_id = $u->id;
+        $request->loan_scheem_id = $r->loan_scheem_id;
+        $request->cycle_id = 1;
+        $request->amount = $amount;
+        $request->reason = $r->reason;
+        $request->status = 'Pending';
+        $request->comment = '';
+        try {
+            $request->save();
+        } catch (\Throwable $th) {
+            return $this->error('Failed to save loan request, because ' . $th->getMessage() . '');
+        }
+
+        return $this->success(
+            $request,
+            $message = "Loan request sent successfully. You will receive a confirmation message shortly.",
+            200
+        );
+
         DB::beginTransaction();
         try {
             $loan = new Loan();

@@ -9,6 +9,7 @@ use App\Models\Utils;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -23,16 +24,16 @@ class ApiAuthController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    /*  public function __construct()
     {
 
-        /* $token = auth('api')->attempt([
+        $token = auth('api')->attempt([
             'username' => 'admin',
             'password' => 'admin',
         ]);
-        die($token); */
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
-    }
+        die($token);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'password-reset']]);
+    } */
 
 
     /**
@@ -46,6 +47,66 @@ class ApiAuthController extends Controller
         return $this->success($query, $message = "Profile details", 200);
     }
 
+
+    public function password_reset(Request $r)
+    {
+
+        $r->validate([
+            'phone_number' => 'required',
+        ]);
+
+
+        $phone_number = $r->phone_number;
+        $isEmail = false;
+
+        //check if $phone_number is email address
+        if (filter_var($phone_number, FILTER_VALIDATE_EMAIL)) {
+            $isEmail = true;
+        }
+
+        if (!$isEmail) {
+            $phone_number = Utils::prepare_phone_number($r->phone_number);
+            if (!Utils::phone_number_is_valid($phone_number)) {
+                return $this->error('Invalid phone number.');
+            }
+            $acc = User::where(['phone_number' => $phone_number])->first();
+            if ($acc == null) {
+                $acc = User::where(['username' => $phone_number])->first();
+            }
+        } else {
+            $acc = User::where(['email' => $phone_number])->first();
+            if ($acc == null) {
+                $acc = User::where(['username' => $phone_number])->first();
+            }
+        }
+
+        if ($acc == null) {
+            return $this->error('Account not found.');
+        }
+
+        $code = $r->code;
+        if ($code != $acc->intro) {
+            return $this->error('Invalid OTP.');
+        }
+        $password = trim($r->password);
+        if (strlen($password) < 4) {
+            return $this->error('Password must be at least 4 characters.');
+        }
+        $acc->password = password_hash($password, PASSWORD_DEFAULT);
+        $msg = '';
+        try {
+            $acc->save();
+            $msg = 'Password reset successful. You can now use your new password to login.';
+        } catch (Exception $e) {
+            return $this->error('Failed to save password because ' . $e->getMessage() . '');
+        }
+
+        return $this->success(
+            $acc,
+            $message = $msg,
+            200
+        );
+    }
 
 
 
@@ -123,7 +184,7 @@ class ApiAuthController extends Controller
             return $this->error('User not found.');
         }
 
-        $loggedIn = Administrator::find($admin->id);
+        $loggedIn = User::find($admin->id);
         if ($loggedIn == null) {
             return $this->error('User not found.');
         }
@@ -153,11 +214,11 @@ class ApiAuthController extends Controller
             if ($request->id == null) {
                 return $this->error('User id is missing.');
             }
-            $acc = Administrator::find($request->id);
+            $acc = User::find($request->id);
             if ($acc == null) {
                 return $this->error('User not found.');
             }
-            $old = Administrator::where('phone_number', $phone_number)
+            $old = User::where('phone_number', $phone_number)
                 ->where('id', '!=', $request->id)
                 ->first();
             if ($old != null) {
@@ -165,7 +226,7 @@ class ApiAuthController extends Controller
             }
         } else {
 
-            $old = Administrator::where('phone_number', $phone_number)
+            $old = User::where('phone_number', $phone_number)
                 ->first();
             if ($old != null) {
                 return $this->error('User with same phone number already exists.');
@@ -202,6 +263,12 @@ class ApiAuthController extends Controller
             strlen($request->campus_id) < 2
         ) {
             return $this->error('National ID is missing.');
+        }
+        if (
+            $request->email != null &&
+            strlen($request->email) > 2
+        ) {
+            $acc->email = $request->email;
         }
 
 
@@ -254,13 +321,13 @@ class ApiAuthController extends Controller
 
         if ($request->password == null) {
             return $this->error('Password is required.');
-        } 
+        }
 
         if (strtolower($admin->user_type) != 'admin') {
             if (!password_verify($request->current_password, $user->password)) {
                 return $this->error('Current password is incorrect.');
             }
-        } 
+        }
 
         $user->password = password_hash(trim($request->password), PASSWORD_DEFAULT);
         $user->save();
@@ -273,67 +340,104 @@ class ApiAuthController extends Controller
 
     public function register(Request $r)
     {
+        if ($r->has_sacco != 'Yes') {
+            return $this->error('Download latest app from google playstore to proceed.');
+        }
+
         if ($r->phone_number == null) {
             return $this->error('Phone number is required.');
         }
 
-        $phone_number = Utils::prepare_phone_number(trim($r->phone_number));
+
+        $r->validate([
+            'phone_number' => 'required',
+        ]);
 
 
-        if (!Utils::phone_number_is_valid($phone_number)) {
-            return $this->error('Invalid phone number. ' . $phone_number);
+        $phone_number = $r->phone_number;
+        $isEmail = false;
+
+        //check if $phone_number is email address
+        if (filter_var($phone_number, FILTER_VALIDATE_EMAIL)) {
+            $isEmail = true;
+        }
+
+        if (!$isEmail) {
+            $phone_number = Utils::prepare_phone_number($r->phone_number);
+            if (!Utils::phone_number_is_valid($phone_number)) {
+                return $this->error('Invalid phone number.');
+            }
+            $acc = User::where(['phone_number' => $phone_number])->first();
+            if ($acc == null) {
+                $acc = User::where(['username' => $phone_number])->first();
+            }
+        } else {
+            $acc = User::where(['email' => $phone_number])->first();
+            if ($acc == null) {
+                $acc = User::where(['username' => $phone_number])->first();
+            }
+        }
+
+        if ($acc != null) {
+            // $acc->delete();
+            return $this->error('Account with same phone number or email already exist.');
         }
 
         if ($r->password == null) {
             return $this->error('Password is required.');
         }
 
-        if ($r->name == null) {
-            return $this->error('Name is required.');
-        }
 
-
-
-
-
-        $u = Administrator::where('phone_number', $phone_number)->first();
+        $u = User::where('phone_number', $phone_number)->first();
         if ($u != null) {
             return $this->error('User with same phone number already exists.');
         }
 
-        $u = Administrator::where('username', $phone_number)->first();
+        $u = User::where('username', $phone_number)->first();
         if ($u != null) {
             return $this->error('User with same phone number already exists. (username)');
         }
 
-        $u = Administrator::where('email', $phone_number)->first();
+        $u = User::where('email', $phone_number)->first();
         if ($u != null) {
             return $this->error('User with same phone number already exists (email).');
         }
 
-        $u = Administrator::where('reg_number', $phone_number)->first();
+        $u = User::where('reg_number', $phone_number)->first();
         if ($u != null) {
             return $this->error('User with same phone number already exists (reg_number).');
         }
+
 
         $user = new Administrator();
 
         $name = $r->name;
 
-        $x = explode(' ', $name);
-
-        if (
-            isset($x[0]) &&
-            isset($x[1])
-        ) {
-            $user->first_name = $x[0];
-            $user->last_name = $x[1];
-        } else {
-            $user->first_name = $name;
+        if (isset($r->name) && strlen($r->name) > 4) {
+            $x = explode(' ', $name);
+            if (
+                isset($x[0]) &&
+                isset($x[1])
+            ) {
+                $user->first_name = $x[0];
+                $user->last_name = $x[1];
+            } else {
+                $user->first_name = $name;
+            }
         }
+
+        if (isset($r->first_name) && strlen($r->first_name) > 3) {
+            $user->first_name = $r->first_name;
+            $user->last_name = $r->last_name;
+            $user->name = $user->first_name . ' ' . $r->last_name;
+        }
+
+
+
 
         $user->phone_number = $phone_number;
         $user->username = $phone_number;
+        $user->email = $phone_number;
         $user->reg_number = $phone_number;
         $user->country = $phone_number;
         $user->occupation = $phone_number;
@@ -351,14 +455,35 @@ class ApiAuthController extends Controller
         $user->address = '';
         $user->name = $name;
         $user->password = password_hash(trim($r->password), PASSWORD_DEFAULT);
-        if (!$user->save()) {
-            return $this->error('Failed to create account. Please try again.');
+        try {
+            $user->save();
+        } catch (\Throwable $th) {
+            return $this->error('Failed because ' . $th->getMessage() . '');
         }
 
-        $new_user = Administrator::find($user->id);
+
+        $new_user = User::find($user->id);
         if ($new_user == null) {
-            return $this->error('Account created successfully but failed to log you in.');
+            return $this->error('Account created but not found.');
         }
+        $sacc = new Sacco();
+        $sacc->administrator_id = $new_user->id;
+        $sacc->name = $new_user->sacco_name;
+        $sacc->phone_number = $new_user->phone_number;
+        $sacc->email_address = $new_user->email;
+        $sacc->about = $new_user->about;
+
+
+        try {
+            $sacc->save();
+            $new_user->sacco_id = 1;
+            $new_user->save();
+        } catch (\Throwable $th) {
+            $new_user->delete();
+            return $this->error('Account created but failed to create sacco account because ' . $th->getMessage() . '');
+        }
+
+
         Config::set('jwt.ttl', 60 * 24 * 30 * 365);
 
         $token = auth('api')->attempt([

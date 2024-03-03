@@ -24,6 +24,7 @@ class JwtMiddleware extends BaseMiddleware
     protected $except = [
         'login',
         'register',
+        'password-reset',
         'api/otp-verify',
         'min/login',
     ];
@@ -40,6 +41,7 @@ class JwtMiddleware extends BaseMiddleware
             Str::contains($_SERVER['REQUEST_URI'], 'login') ||
             Str::contains($_SERVER['REQUEST_URI'], 'otp') ||
             Str::contains($_SERVER['REQUEST_URI'], 'otp-verify') ||
+            Str::contains($_SERVER['REQUEST_URI'], 'password-reset') ||
             Str::contains($_SERVER['REQUEST_URI'], 'register')
         ) {
             return $next($request);

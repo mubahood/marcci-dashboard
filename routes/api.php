@@ -45,6 +45,7 @@ Route::get("crops", [ApiResurceController::class, "crops"]);
 
 
 Route::POST("users/login", [ApiAuthController::class, "login"]);
+Route::post("password-reset", [ApiAuthController::class, "password_reset"]);
 Route::POST("users/register", [ApiAuthController::class, "register"]);
 Route::POST("users/update", [ApiAuthController::class, "update_user"]);
 Route::POST("password-change", [ApiAuthController::class, "password_change"]);

@@ -26,8 +26,43 @@ class User extends Authenticatable implements JWTSubject
             try {
                 Utils::send_sms($model->phone_number, "Your MobiSave account has been created. Download the app from https://play.google.com/store/apps/details?id=ug.digisave");
             } catch (\Throwable $th) {
-                //throw $th;
+                //save error
+                LogError::create([
+                    'message' => $th->getMessage(),
+                    'file' => $th->getFile(),
+                    'line' => $th->getLine(),
+                    'trace' => $th->getTraceAsString(),
+                    'url' => request()->url(),
+                    'method' => request()->method(),
+                    'input' => json_encode(request()->all()),
+                    'user_agent' => request()->header('User-Agent'),
+                    'ip' => request()->ip()
+                ]);
             }
+        });
+        //updating
+        static::updating(function ($model) {
+            //get another user with the same email
+            $user = User::where('email', $model->email)
+                ->where('id', '!=', $model->id)
+                ->first();
+            if ($user != null) {
+                throw new \Exception("Email already exists");
+            }
+            //check if phone number exists
+            $user = User::where('phone_number', $model->phone_number)
+                ->where('id', '!=', $model->id)
+                ->first();
+            if ($user != null) {
+                throw new \Exception("Phone number already exists");
+            }
+            //check usting username as email
+            $user = User::where('username', $model->email)
+                ->where('id', '!=', $model->id)
+                ->first();
+            if ($user != null) {
+                throw new \Exception("Username already exists");
+            } 
         });
     }
 

@@ -6,4 +6,4 @@ php artisan make:migration add_payment_things_to_orders --table=orders
  
 php artisan admin:make NewsPostController --model=App\\Models\\NewsPost 
 
-php artisan make:model Contribution -m
+php artisan make:model LogError -m
