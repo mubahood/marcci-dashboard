@@ -27,12 +27,35 @@ use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class ApiResurceController extends Controller
 {
 
     use ApiResponser;
+
+    public function parishes_2()
+    {
+        $select = "parish.id, parish.name as p_name, subcounty.name as s_name, district.name as d_name, parish.lat as lat, parish.lng as lng
+        ";
+        $sql = "SELECT $select
+         FROM `parish`, `subcounty`, `district` WHERE `parish`.`subcounty_id` = `subcounty`.`id` AND `subcounty`.`district_id` = `district`.`id`";
+        $temp_data = DB::select($sql);
+
+        $data = [];
+        foreach ($temp_data as $key => $value) {
+            $d = [];
+            $d['id'] = $value->id;
+            $d['lng'] = $value->lng;
+            $d['lat'] = $value->lat;
+            $d['name'] = $value->d_name . ", " . $value->s_name . ", " . $value->p_name;
+            $data[] = $d;
+        }
+
+        return $this->success($data, "Success");
+    }
+
 
     public function crops(Request $r)
     {
@@ -147,7 +170,7 @@ class ApiResurceController extends Controller
                 ->limit(1000)
                 ->orderBy('id', 'desc')
                 ->get();
-        } 
+        }
 
         return $this->success(
             $gardens,
