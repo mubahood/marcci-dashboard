@@ -6,12 +6,22 @@ use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Models\Gen;
 use Encore\Admin\Facades\Admin;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('policy', function(){
-    return view('policy'); 
+Route::get('report-print', function () {
+    $report = \App\Models\Report::find($_GET['id']);
+    $pdf = App::make('dompdf.wrapper');
+    $pdf->loadHTML(view('reports.finance', [
+        'r' => $report
+    ]));
+    return $pdf->stream();
+});
+
+Route::get('policy', function () {
+    return view('policy');
 });
 
 Route::get('/gen-form', function () {

@@ -35,8 +35,12 @@ class ReportController extends AdminController
         $r->save();
         die(); */
 
-
-        $grid->column('id', __('Id'));
+        //print report
+        $grid->column('id', __('Id'))
+            ->display(function ($id) {
+                $print_link = url('report-print?id=' . $id );
+                return "<a href='$print_link' target='_blank' class='btn btn-sm btn-primary'>PRINT</a>";
+            });
         $grid->column('created_at', __('Created at'));
         $grid->column('updated_at', __('Updated at'));
         $grid->column('created_by_user_id', __('Created by user id'));

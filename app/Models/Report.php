@@ -160,4 +160,10 @@ class Report extends Model
 */
         return $data;
     }
+
+    //belongs to sacco
+    public function sacco()
+    {
+        return $this->belongsTo(Sacco::class, 'sacco_id');
+    }
 }
