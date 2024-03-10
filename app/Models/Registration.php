@@ -60,6 +60,7 @@ class Registration extends Model
                 $new_user->username = $registration->first_name;
                 $new_user->phone_number = $registration->phone_number;
                 $new_user->email = $registration->email_address ? $registration->email_address : ' ';
+                
                 $new_user->password = bcrypt('password');
                 $new_user->save();
 
@@ -67,9 +68,14 @@ class Registration extends Model
                 $new_role = new AdminRoleUser();
                 $new_role->user_id = $new_user->id;
                 $new_role->role_id = 4;
-                $new_role->save();
+                //$new_role->save();
 
             }
+            //$new_user->email not valid em
+            if(filter_var($new_user->email_address, FILTER_VALIDATE_EMAIL))
+            {
+                $new_user->email_address = rand(10, 100) . $new_user->email_address;
+            } 
           
         }          
         );

@@ -28,7 +28,6 @@ class HomeController extends Controller
             $row->column(12, function (Column $column) {
                 $column->append(QuestionController::get_questions());
             });
-            
         });
         return $content;
     }
@@ -55,7 +54,6 @@ class HomeController extends Controller
             $row->column(12, function (Column $column) {
                 $column->append(PestAndDiseaseController::index());
             });
-            
         });
         return $content;
     }
@@ -63,7 +61,7 @@ class HomeController extends Controller
 
     public function index(Content $content)
     {
-        return $content;
+        //return $content;
         $u = Auth::user();
         $content
             ->title('NaRO - Dashboard')
@@ -84,7 +82,7 @@ class HomeController extends Controller
                     'link' => 'javascript:;'
                 ]));
             });
-            
+
             $row->column(3, function (Column $column) {
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
@@ -117,8 +115,8 @@ class HomeController extends Controller
 
 
             $row->column(6, function (Column $column) {
-                $sorghum_count = Garden::where('variety_id', 2)->count();
-                $cow_peas = Garden::where('variety_id', 1)->count();
+                $sorghum_count = Garden::where([])->count();
+                $cow_peas = Garden::where([])->count();
 
                 $column->append(view('widgets.by-categories', compact('sorghum_count', 'cow_peas')));
             });
@@ -134,20 +132,15 @@ class HomeController extends Controller
             $row->column(6, function (Column $column) {
                 $column->append(view('widgets.products-services', []));
             });
-           
         });
 
         $content->row(function (Row $row) {
             $row->column(12, function (Column $column) {
                 $column->append(view('widgets.weather', []));
             });
-          
-           
         });
 
 
         return $content;
-
-      
     }
 }
