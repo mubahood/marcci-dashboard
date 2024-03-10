@@ -13,6 +13,7 @@ Route::post('api/{model}', [ApiResurceController::class, 'update']);
 
 Route::get("manifest", [ApiResurceController::class, "manifest"]);
 Route::get("loans", [ApiResurceController::class, "loans"]);
+Route::get("loan-requests", [ApiResurceController::class, "loan_requests"]);
 Route::get("cycles", [ApiResurceController::class, "cycles"]);
 Route::get("share-records", [ApiResurceController::class, "share_records"]);
 Route::post("share-records", [ApiResurceController::class, "share_record_create"]);
@@ -24,6 +25,7 @@ Route::get("loan-schemes", [ApiResurceController::class, "loan_schemes"]);
 Route::post("sacco-join-request", [ApiResurceController::class, "sacco_join_request"]);
 Route::POST("transactions-create", [ApiResurceController::class, "transactions_create"]);
 Route::POST("loans-create", [ApiResurceController::class, "loan_create"]);
+Route::POST("loans-review", [ApiResurceController::class, "loans_review"]);
 Route::POST("transactions-transfer", [ApiResurceController::class, "transactions_transfer"]);
 
 Route::middleware([JwtMiddleware::class])->group(function () {

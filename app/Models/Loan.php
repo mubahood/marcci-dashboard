@@ -187,11 +187,12 @@ class Loan extends Model
 
         $oldLoans = Loan::where([
             'user_id' => $u->id,
-            'is_fully_paid' => 'No',
         ])->get();
 
-        if (count($oldLoans) > 0) {
-            throw new Exception('You have an existing loan that is not fully paid. You cannot apply for another loan until you have fully paid the existing loan.');
+        foreach ($oldLoans as $key => $value) {
+            if ($value->balance < 0) {
+                throw new Exception('You have an existing loan that is not fully paid. You cannot apply for another loan until you have fully paid the existing loan.');
+            }
         }
 
         $sacco = Sacco::find($u->sacco_id);

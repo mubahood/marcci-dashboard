@@ -62,7 +62,7 @@ class User extends Authenticatable implements JWTSubject
                 ->first();
             if ($user != null) {
                 throw new \Exception("Username already exists");
-            } 
+            }
         });
     }
 
@@ -325,5 +325,20 @@ class User extends Authenticatable implements JWTSubject
             'cycle_id' => $sacco->active_cycle->id
         ])
             ->sum('amount');
+    }
+
+    public function isAdmin()
+    {
+        $sacco = Sacco::find($this->sacco_id);
+        if ($sacco == null) {
+            throw new \Exception("Sacco for user not found.");
+        }
+        if (
+            $sacco->administrator_id == $this->id
+        ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

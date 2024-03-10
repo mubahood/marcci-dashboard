@@ -79,6 +79,12 @@ class Sacco extends Model
         return Cycle::where('sacco_id', $this->id)->where('status', 'Active')->first();
     }
 
+    //active cycle
+    public function getAdmin()
+    {
+        return User::where('id', $this->administrator_id)->first();
+    }
+
     //appends
     protected $appends = [
         'balance',

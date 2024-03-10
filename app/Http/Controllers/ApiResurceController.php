@@ -348,6 +348,31 @@ class ApiResurceController extends Controller
     }
 
 
+    public function loan_requests(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $u = User::find($u->id);
+
+        $conds = [];
+        if ($u->isAdmin()) {
+            $conds = [
+                'sacco_id' => $u->sacco_id
+            ];
+        } else {
+            $conds = [
+                'applicant_id' => $u->id
+            ];
+        }
+        return $this->success(
+            LoanRequest::where($conds)->orderby('id', 'desc')->get(),
+            $message = "Success",
+            200
+        );
+    }
+
     public function loans(Request $r)
     {
         $u = auth('api')->user();
@@ -455,9 +480,9 @@ class ApiResurceController extends Controller
             return $this->error('Admin not found.');
         }
 
-        if (!password_verify($r->password, $admin->password)) {
+        /* if (!password_verify($r->password, $admin->password)) {
             return $this->error('Invalid password.');
-        }
+        } */
 
         if (!isset($r->user_id)) {
             return $this->error('User account id not found.');
@@ -493,11 +518,17 @@ class ApiResurceController extends Controller
 
         $oldLoans = Loan::where([
             'user_id' => $u->id,
-            'is_fully_paid' => 'No',
         ])->get();
+        $notPaidLoan = null;
+        foreach ($oldLoans as $key => $val) {
+            if ($val->balance < 0) {
+                $notPaidLoan = $val;
+                break;
+            }
+        }
 
-        if (count($oldLoans) > 0) {
-            return $this->error('You have an existing loan that is not fully paid. You cannot apply for another loan until you have fully paid the existing loan.');
+        if ($notPaidLoan != null) {
+            return $this->error('You have an existing loan that is not fully paid. You cannot apply for another loan until you have fully paid the existing loan. LOAN ID #' . $notPaidLoan->id . ", BALANCE: " . $notPaidLoan->balance);
         }
 
         $sacco = Sacco::find($u->sacco_id);
@@ -509,7 +540,7 @@ class ApiResurceController extends Controller
             return $this->error('You cannot apply for a loan of more than UGX ' . number_format($loan_scheem->max_amount) . '.');
         }
 
-        if ($sacco->balance < $r->amount) {
+        if (((int)($sacco->balance)) < ((int)($r->amount))) {
             return $this->error('The sacco does not have enough money to lend you UGX ' . number_format($r->amount) . '.');
         }
 
@@ -567,6 +598,113 @@ class ApiResurceController extends Controller
             $loan->reason = $r->reason;
             try {
                 $loan->save();
+                //success
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                return $this->error('Failed to save loan, because ' . $th->getMessage() . '');
+            }
+            DB::commit();
+            return $this->success(null, $message = "Loan applied successfully. You will receive a confirmation message shortly.", 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return $this->error('Failed, because ' . $th->getMessage() . '');
+        }
+    }
+
+
+    public function loans_review(Request $request)
+    {
+
+        $admin = auth('api')->user();
+        if ($admin == null) {
+            return $this->error('Admin not found.');
+        }
+        $sacco = Sacco::find($admin->sacco_id);
+        if ($sacco == null) {
+            return $this->error('Sacco not found.');
+        }
+        $admin = User::find($sacco->administrator_id);
+        if ($admin == null) {
+            return $this->error('Sacco admin not found.');
+        }
+
+        //check if is admin
+        if (!$admin->isRole('sacco')) {
+            return $this->error('Only sacco admins can review loan requests.');
+        }
+
+        //loan_request
+        $loan_request = LoanRequest::find($request->loan_request_id);
+        if ($loan_request == null) {
+            return $this->error('Loan request not found.');
+        }
+
+        //check if is pending
+        if (strtolower($loan_request->status) != 'pending') {
+            return $this->error('Loan request is not pending. It has already been reviewed as ' . $loan_request->status . '.');
+        }
+
+        $status = $request->status;
+        if ($status != 'APPROVED' && $status != 'DECLINED') {
+            return $this->error('Invalid status.');
+        }
+        if ($status == 'DECLINED') {
+            $loan_request->status = 'Declined';
+            $loan_request->comment = $loan_request->status;
+            $loan_request->approved_by_id = $admin->id;
+            $loan_request->save();
+            return $this->success(
+                $loan_request,
+                $message = "Loan request declined successfully.",
+                200
+            );
+        }
+
+
+
+        $loan_scheem = LoanScheem::find($loan_request->loan_scheem_id);
+        if ($loan_scheem == null) {
+            return $this->error('Loan scheem not found.');
+        }
+        $u = User::find($loan_request->applicant_id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+        $amount = $loan_request->amount;
+        $amount = abs($amount);
+
+
+        DB::beginTransaction();
+        try {
+            $loan = new Loan();
+            $loan->sacco_id = $u->sacco_id;
+            $loan->user_id = $u->id;
+            $loan->loan_scheem_id = $loan_request->loan_scheem_id;
+            $loan->amount = $amount;
+            $loan->balance = $amount;
+            $loan->is_fully_paid = 'No';
+            $loan->scheme_name = $loan_scheem->name;
+            $loan->scheme_description = $loan_scheem->description;
+            $loan->scheme_initial_interest_type = $loan_scheem->initial_interest_type;
+            $loan->scheme_initial_interest_flat_amount = $loan_scheem->initial_interest_flat_amount;
+            $loan->scheme_initial_interest_percentage = $loan_scheem->initial_interest_percentage;
+            $loan->scheme_bill_periodically = $loan_scheem->bill_periodically;
+            $loan->scheme_billing_period = $loan_scheem->billing_period;
+            $loan->scheme_periodic_interest_type = $loan_scheem->periodic_interest_type;
+            $loan->scheme_periodic_interest_percentage = $loan_scheem->periodic_interest_percentage;
+            $loan->scheme_periodic_interest_flat_amount = $loan_scheem->periodic_interest_flat_amount;
+            $loan->scheme_min_amount = $loan_scheem->min_amount;
+            $loan->scheme_max_amount = $loan_scheem->max_amount;
+            $loan->scheme_min_balance = $loan_scheem->min_balance;
+            $loan->scheme_max_balance = $loan_scheem->max_balance;
+            $loan->reason = $loan_request->reason;
+            try {
+                $loan->save();
+                $loan_request->status = 'Approved';
+                $loan_request->comment = $loan_request->status;
+                $loan_request->approved_by_id = $admin->id;
+                $loan_request->save();
                 //success
             } catch (\Throwable $th) {
                 DB::rollBack();
@@ -909,6 +1047,22 @@ class ApiResurceController extends Controller
             if (((int)($amount)) > ((abs($loan->balance)))) {
                 return $this->error('You cannot pay more than the loan balance.');
             }
+
+            $u = User::find($loan->user_id);
+            if ($u == null) {
+                return $this->error("Loan payer not found.");
+            }
+
+            $sacco = Sacco::find($u->sacco_id);
+            if ($sacco == null) {
+                return $this->error("Sacco not found.");
+            }
+
+            $admin = User::find($sacco->administrator_id);
+            if ($admin == null) {
+                return $this->error("Sacco admin not found.");
+            }
+
             $record = new LoanTransaction();
             $record->user_id = $u->id;
             $acc_balance = $u->balance;
@@ -944,7 +1098,7 @@ class ApiResurceController extends Controller
                 $transaction_sacco->sacco_id = $u->sacco_id;
                 $transaction_sacco->type = 'LOAN_REPAYMENT';
                 $transaction_sacco->source_type = 'LOAN_REPAYMENT';
-                $transaction_sacco->amount = $amount;
+                $transaction_sacco->amount = abs($amount);
                 $transaction_sacco->description = "Loan Repayment of UGX " . number_format($amount) . " from {$u->phone_number} - $u->name. Loan Scheem: {$loan->scheme_name}. Reference: {$loan->id}.";
                 $transaction_sacco->details = "Loan Repayment of UGX " . number_format($amount) . " from {$u->phone_number} - $u->name. Loan Scheem: {$loan->scheme_name}. Reference: {$loan->id}.";
                 try {
@@ -959,7 +1113,7 @@ class ApiResurceController extends Controller
                 $loan_transaction->user_id = $u->id;
                 $loan_transaction->loan_id = $loan->id;
                 $loan_transaction->sacco_id = $u->sacco_id;
-                $loan_transaction->type = 'LOAN';
+                $loan_transaction->type = 'LOAN_REPAYMENT';
                 $loan_transaction->amount = $amount;
                 $loan_transaction->description = "Loan Repayment of UGX " . number_format($amount) . " from {$u->phone_number} - $u->name. Loan Scheem: {$loan->scheme_name}. Reference: {$loan->id}.";
                 try {

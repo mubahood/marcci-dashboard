@@ -19,8 +19,8 @@ class LoanRequest extends Model
             $pending_loan = LoanRequest::where('applicant_id', $model->applicant_id)
                 ->where('status', 'Pending')
                 ->first();
-            if ($pending_loan != null) {
-                throw new \Exception("You have a pending loan request. Please wait for it to be approved or rejected.");
+            if ($pending_loan != null) { 
+;                throw new \Exception("You have a pending loan request. Please wait for it to be approved or rejected.");
             }
         });
 
@@ -28,9 +28,16 @@ class LoanRequest extends Model
         static::created(function ($model) {
             //create loan transaction
             //sacco admin
-            $sacco_admin = User::where('sacco_id', $model->sacco_id)
-                ->where('role', 'Sacco Admin')
-                ->first();
+            $sacco = Sacco::find($model->sacco_id);
+            $admin = null;
+            if ($sacco != null) {
+                $admin = $sacco->getAdmin();
+            }
+            if ($admin == null) {
+                throw new \Exception("Sacco admin account not found.");
+            }
+            $sacco_admin = $admin;
+
             if ($sacco_admin != null) {
                 //send email to sacco admin
                 //title include money, amount, applicant name and application id
