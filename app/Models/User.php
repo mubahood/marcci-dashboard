@@ -341,4 +341,15 @@ class User extends Authenticatable implements JWTSubject
             return false;
         }
     }
+
+    //get dropdowndata
+    public static function getDropdownData($conds)
+    {
+        $data = User::where($conds)->get();
+        $result = [];
+        foreach ($data as $item) {
+            $result[$item->id] = $item->name . " " . $item->phone_number;
+        }
+        return $result;
+    }
 }

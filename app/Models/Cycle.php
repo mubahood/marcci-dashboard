@@ -42,4 +42,15 @@ class Cycle extends Model
             return $m;
         });
     }
+
+    //get drop down data
+    public static function getDropdownData($conds)
+    {
+        $data = Cycle::where($conds)->get();
+        $result = [];
+        foreach ($data as $item) {
+            $result[$item->id] = $item->name;
+        }
+        return $result;
+    }
 }
