@@ -1,9 +1,11 @@
 @php
+    use App\Models\Utils;
     $isPrint = false;
     if (Str::contains($_SERVER['REQUEST_URI'], 'reports-finance-print')) {
         $isPrint = true;
     }
     $sacco = $r->sacco;
+    $isPrint = true;
 @endphp
 @if ($isPrint)
     <!DOCTYPE html>
@@ -17,59 +19,51 @@
     <body>
 @endif
 
-
-<p class="bg-danger">
-    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Deserunt tenetur et quisquam. Sint omnis nulla aliquam
-    blanditiis aut facilis ipsa atque libero a, iusto ab, soluta quisquam, eligendi minus reprehenderit.
-</p>
 <table class="w-100">
     <tr>
         <td style="width: 16%">
-            <img style="width: 100%; " src="{{ public_path('storage/' . $sacco->logo) }}">
         </td>
         <td>
             <div class="text-center">
-                <p>
-                    <img style="width: 35%; " src="{{ public_path('assets/bismillah.png') }}">
-                </p>
-                <p class="fs-26 text-center fw-700 mt-2 text-uppercase  " style="color: {{ $sacco->color }};">
+                <p class="fs-18 text-center fw-700 mt-2 text-uppercase  " style="color: black;">
                     {{ $sacco->name }}</p>
-                <p><i>"{{ $sacco->motto }}"</i></p>
-                <p class="fs-14 lh-6 mt-0">TEL: {{ $sacco->phone_number }},&nbsp;{{ $sacco->phone_number_2 }}</p>
-                <p class="fs-14 lh-6 mt-0">EMAIL: {{ $sacco->email }}, WEBSITE: {{ $sacco->website }}</p>
-                <p class="fs-14 mt-0">{{ $sacco->p_o_box }}, &nbsp; {{ $sacco->address }}</p>
+                <p class="fs-14 lh-6 mt-1">TEL: {{ $sacco->phone_number }},&nbsp;{{ $sacco->chairperson_phone_number }}
+                </p>
+                <p class="fs-14 lh-6 mt-1">EMAIL: {{ $sacco->email_address }}</p>
+                <p class="fs-14 mt-1">{{ $sacco->physical_address }}</p>
             </div>
         </td>
         <td style="width: 16%">
+            <img style="width: 80%; " src="{{ public_path('storage/' . $sacco->logo) }}">
         </td>
     </tr>
 </table>
 
-<hr style="height: 5px; background-color:  {{ $sacco->color }};" class=" my-2 mb-4">
-<p class="fs-24 text-center fw-200 mt-2 text-uppercase black mb-4"><u>
-        Termly Financial Report for the TERM {{ $r->name }}</u></p>
-<p class="text-right mb-4"> <small><u>DATE: {{ $r->date }}</u></small></p>
+<hr style="height: 3px; background-color:  black;" class=" mt-3 mb-0">
+<hr style="height: .3px; background-color:  black;" class=" mt-1 mb-4">
+<p class="fs-18 text-center mt-2 text-uppercase black mb-4 fw-700"><u>
+        {{ $r->title }}</u></p>
+<p class="text-right mb-4"> <small><u>DATE: {{ Utils::my_date($r->created_at) }}</u></small></p>
 
-{{-- 
+
 <table style="width: 100%">
     <thead>
         <tr>
             <td style="width: 30%;">
                 <div class="my-card mr-1">
-                    <p class="black fs-14 fw-700">Expected Tution Fees</p>
+                    <p class="black fs-14 fw-700">Balance</p>
                     <p class="py-3"><span>UGX</span><span
-                            class="fs-26 fw-800">{{ number_format($r->total_expected_tuition) }}</span>
+                            class="fs-26 fw-800">{{ number_format($r->balance) }}</span>
                     </p>
-                    <p class="fw-400 fs-14 text-dark">Total sum of tution fees of term from all active students.</p>
+                    <p class="fw-400 fs-14 text-dark">Total amount of money available on the account.</p>
                 </div>
             </td>
             <td style="width: 30%;">
                 <div class="my-card mx-1">
-                    <p class="black fs-14 fw-700">Expected Services Fees</p>
+                    <p class="black fs-14 fw-700">Total Savings</p>
                     <p class="py-3"><span>UGX</span><span
-                            class="fs-26 fw-800">{{ number_format($r->total_expected_service_fees) }}</span></p>
-                    <p class="fw-400 fs-14 text-dark">
-                        Total sum of service subscription fees of this term</p>
+                            class="fs-26 fw-800">{{ number_format($r->TOTAL_SAVING) }}</span></p>
+                    <p class="fw-400 fs-14 text-dark">Total savings made in a selected period .</p>
                 </div>
             </td>
             <td style="width: 30%;">
@@ -140,7 +134,7 @@
         </tr>
     </thead>
 </table>
-
+{{-- 
 <p class="black fs-18 fw-700 mt-3">Expected and Balance School Fees by Classes</p>
 <hr class="black bg-dark my-1">
 <table class="mt-2 w-100">

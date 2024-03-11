@@ -303,4 +303,15 @@ class Sacco extends Model
         ])
             ->count();
     }
+
+    //getter for logo
+    public function getLogoAttribute($val)
+    {
+
+        $path = public_path('storage/' . $val);
+        if (file_exists($path)) {
+            return $val;
+        }
+        return 'images/logo.png';
+    }
 }
