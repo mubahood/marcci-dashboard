@@ -31,4 +31,7 @@ Route::group([
     $router->resource('parishes', ParishController::class);
     $router->resource('pests-and-disease-reports', PestsAndDiseaseReportController::class);
     $router->resource('farmers', FarmerController::class);
+    $router->resource('users', MemberController::class);
+
+
 });
