@@ -151,7 +151,7 @@ class ApiAuthController extends Controller
             isset($x[1])
         ) {
             $user->first_name = $x[0];
-            $user->last_name = $x[0];
+            $user->last_name = $x[1];
         } else {
             $user->first_name = $name;
         }
