@@ -32,6 +32,7 @@ Route::group([
     $router->resource('pests-and-disease-reports', PestsAndDiseaseReportController::class);
     $router->resource('farmers', FarmerController::class);
     $router->resource('users', MemberController::class);
-
+    $router->resource('service-providers', ServiceProviderController::class);
+    
 
 });

@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
+    Route::get("service-providers", [ApiResurceController::class, "service_providers"]);
     Route::get("gardens", [ApiResurceController::class, "gardens"]);
     Route::get("financial-records", [ApiResurceController::class, "financial_records"]);
     Route::get("pests-and-disease-reports", [ApiResurceController::class, "pests_and_disease_reports"]);

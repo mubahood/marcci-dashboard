@@ -33,7 +33,7 @@ use Throwable;
 class ApiResurceController extends Controller
 {
 
-    use ApiResponser; 
+    use ApiResponser;
 
     public function parishes_2()
     {
