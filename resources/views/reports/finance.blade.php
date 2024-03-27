@@ -55,52 +55,53 @@
                     <p class="py-3"><span>UGX</span><span
                             class="fs-26 fw-800">{{ number_format($r->balance) }}</span>
                     </p>
-                    <p class="fw-400 fs-14 text-dark">Total amount of money available on the account.</p>
+                    <p class="fw-400 fs-14 text-dark">{{ $r->Balance_DESCRIPTION }}</p>
                 </div>
             </td>
             <td style="width: 30%;">
                 <div class="my-card mx-1">
-                    <p class="black fs-14 fw-700">Total Savings</p>
+                    <p class="black fs-14 fw-700">Profits</p>
                     <p class="py-3"><span>UGX</span><span
-                            class="fs-26 fw-800">{{ number_format($r->TOTAL_SAVING) }}</span></p>
-                    <p class="fw-400 fs-14 text-dark">Total savings made in a selected period .</p>
+                            class="fs-26 fw-800">{{ number_format($r->CYCLE_PROFIT) }}</span></p>
+                    <p class="fw-400 fs-14 text-dark">{{ $r->CYCLE_PROFIT_DESCRIPTION }}</p>
                 </div>
             </td>
             <td style="width: 30%;">
                 <div class="my-card ml-1">
-                    <p class="black fs-14 fw-700">Total Expected Income</p>
+                    <p class="black fs-14 fw-700">Total Savings</p>
                     <p class="py-3"><span>UGX</span><span
-                            class="fs-26 fw-800">{{ number_format($r->total_expected_service_fees + $r->total_expected_tuition) }}</span>
+                            class="fs-26 fw-800">{{ number_format($r->TOTAL_SAVING) }}</span>
                     </p>
-                    <p class="fw-400 fs-14 text-dark">Sum of tution fees and services subscriptions fees.</p>
+                    <p class="fw-400 fs-14 text-dark">{{ $r->TOTAL_SAVING_DESCRIPTION }}</p>
                 </div>
             </td>
         </tr>
         <tr>
             <td style="width: 30%;" class="pt-2">
                 <div class="my-card mr-1">
-                    <p class="black fs-14 fw-700">Total Income</p>
+                    <p class="black fs-14 fw-700">Total Withdraw</p>
                     <p class="py-3"><span>UGX</span><span
-                            class="fs-26 fw-800">{{ number_format($r->total_payment_total) }}</span>
+                            class="fs-26 fw-800">{{ number_format($r->WITHDRAWAL) }}</span>
                     </p>
-                    <p class="fw-400 fs-14 text-dark">SCHOOLPAY: {{ number_format($r->total_payment_school_pay) }},
-                        CASH: {{ number_format($r->total_payment_manual_pay + $r->total_payment_mobile_app) }}</p>
+                    <p class="fw-400 fs-14 text-dark">{{ $r->WITHDRAWAL_DESCRIPTION }}</p>
                 </div>
             </td>
             <td style="width: 30%;">
                 <div class="my-card ml-1">
-                    <p class="black fs-14 fw-700">Total Bursaries Offered</p>
-                    <p class="py-3"><span>UGX</span><span
-                            class="fs-26 fw-800">{{ number_format($r->total_bursaries_funds) }}</span></p>
-                    <p class="fw-400 fs-14 text-dark">Total Sum of bursary funds offered this term.</p>
+                    <p class="black fs-14 fw-700">Shares</p>
+                    <p class="py-3"><span>UGX</span><span class="fs-26 fw-800">{{ number_format($r->SHARE) }}</span>
+                    </p>
+                    <p class="fw-400 fs-14 text-dark">{{ $r->SHARE_DESCRIPTION }}.
+                        ({{ number_format($r->SHARE_COUNT) }} Shares)</p>
                 </div>
             </td>
             <td style="width: 30%;">
                 <div class="my-card mx-1">
-                    <p class="black fs-14 fw-700">School Fees Balance</p>
+                    <p class="black fs-14 fw-700">Total Loan</p>
                     <p class="py-3"><span>UGX</span><span
-                            class="fs-26 fw-800">{{ number_format($r->total_school_fees_balance) }}</span></p>
-                    <p class="fw-400 fs-14 text-dark">Total school fees balance of all active students.</p>
+                            class="fs-26 fw-800">{{ number_format($r->LOAN_TOTAL_AMOUNT) }}</span></p>
+                    <p class="fw-400 fs-14 text-dark">{{ $r->LOAN_TOTAL_AMOUNT_DESCRIPTION }}.
+                        ({{ number_format($r->LOAN_COUNT) }} Loans).</p>
                 </div>
             </td>
         </tr>
@@ -108,27 +109,27 @@
         <tr>
             <td style="width: 30%;" class="pt-2">
                 <div class="my-card mr-1">
-                    <p class="black fs-14 fw-700">Total Budget</p>
+                    <p class="black fs-14 fw-700">Loan Payments</p>
                     <p class="py-3"><span>UGX</span><span
-                            class="fs-26 fw-800">{{ number_format($r->total_budget) }}</span>
+                            class="fs-26 fw-800">{{ number_format($r->LOAN_REPAYMENT) }}</span>
                     </p>
-                    <p class="fw-400 fs-14 text-dark">Total amount of money planned to be spent this term.</p>
+                    <p class="fw-400 fs-14 text-dark">{{ $r->LOAN_REPAYMENT_DESCRIPTION }}</p>
                 </div>
             </td>
             <td style="width: 30%;">
                 <div class="my-card ml-1">
-                    <p class="black fs-14 fw-700">Total Expenditure</p>
+                    <p class="black fs-14 fw-700">Unpaid Loan Balance</p>
                     <p class="py-3"><span>UGX</span><span
-                            class="fs-26 fw-800">{{ number_format($r->total_expense) }}</span></p>
-                    <p class="fw-400 fs-14 text-dark">Total amount of money spent this term.</p>
+                            class="fs-26 fw-800">{{ number_format($r->LOAN_BALANCE) }}</span></p>
+                    <p class="fw-400 fs-14 text-dark">{{ $r->LOAN_BALANCE_DESCRIPTION }}</p>
                 </div>
             </td>
             <td style="width: 30%;">
                 <div class="my-card mx-1">
-                    <p class="black fs-14 fw-700">Stock Value</p>
+                    <p class="black fs-14 fw-700">Loan Interest</p>
                     <p class="py-3"><span>UGX</span><span
-                            class="fs-26 fw-800">{{ number_format($r->total_stock_value) }}</span></p>
-                    <p class="fw-400 fs-14 text-dark">Current total stock value in stores.</p>
+                            class="fs-26 fw-800">{{ number_format($r->LOAN_INTEREST) }}</span></p>
+                    <p class="fw-400 fs-14 text-dark">{{ $r->LOAN_INTEREST_DESCRIPTION }}</p>
                 </div>
             </td>
         </tr>

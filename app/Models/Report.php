@@ -166,4 +166,83 @@ class Report extends Model
     {
         return $this->belongsTo(Sacco::class, 'sacco_id');
     }
+
+    protected $appends = [
+        'TOTAL_SAVING_DESCRIPTION',
+        'Balance_DESCRIPTION',
+        'CYCLE_PROFIT_DESCRIPTION',
+        'WITHDRAWAL_DESCRIPTION',
+        'SHARE_DESCRIPTION',
+        'LOAN_TOTAL_AMOUNT_DESCRIPTION',
+        'LOAN_REPAYMENT_DESCRIPTION',
+        'LOAN_BALANCE_DESCRIPTION',
+        'LOAN_INTEREST_DESCRIPTION',
+    ];
+
+    //get total saving description
+    public function getTOTALSAVINGDESCRIPTIONAttribute()
+    {
+        //short description for total saving
+        $description = 'Total saving in the period';
+        return $description;
+    }
+    //getter for Balance_DESCRIPTION
+    public function getBalanceDESCRIPTIONAttribute()
+    {
+        //short description for balance
+        $description = 'Total balance in the period';
+        return $description;
+    }
+    //getter for CYCLE_PROFIT_DESCRIPTION
+    public function getCYCLEPROFITDESCRIPTIONAttribute()
+    {
+        //short description for cycle profit
+        $description = 'Total profit in the period';
+        return $description;
+    }
+
+    //getter for WITHDRAWAL_DESCRIPTION
+    public function getWITHDRAWALDESCRIPTIONAttribute()
+    {
+        //short description for withdrawal
+        $description = 'Total withdrawal in the period';
+        return $description;
+    } 
+    //getter for SHARE_DESCRIPTION
+    public function getSHAREDESCRIPTIONAttribute()
+    {
+        //short description for share
+        $description = 'Total share in the period';
+        return $description;
+    }
+    //getter for LOAN_TOTAL_AMOUNT_DESCRIPTION
+    public function getLOANTOTALAMOUNTDESCRIPTIONAttribute()
+    {
+        //short description for loan total amount
+        $description = 'Total loan amount in the period';
+        return $description;
+    } 
+    //getter for LOAN_REPAYMENT_DESCRIPTION
+    public function getLOANREPAYMENTDESCRIPTIONAttribute()
+    {
+        //short description for loan repayment
+        $description = 'Total loan repayment in the period';
+        return $description;
+    } 
+
+    //getter for LOAN_BALANCE_DESCRIPTION
+    public function getLOANBALANCEDESCRIPTIONAttribute()
+    {
+        //short description for loan balance
+        $description = 'Total loan balance in the period';
+        return $description;
+    } 
+
+    //getter for LOAN_INTEREST_DESCRIPTION
+    public function getLOANINTERESTDESCRIPTIONAttribute()
+    {
+        //short description for loan interest
+        $description = 'Total loan interest in the period';
+        return $description;
+    } 
 }
