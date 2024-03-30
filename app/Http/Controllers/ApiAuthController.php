@@ -476,7 +476,7 @@ class ApiAuthController extends Controller
 
         try {
             $sacc->save();
-            $new_user->sacco_id = 1;
+            $new_user->sacco_id = $sacc->id;
             $new_user->save();
         } catch (\Throwable $th) {
             $new_user->delete();

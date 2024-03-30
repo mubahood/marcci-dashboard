@@ -22,6 +22,12 @@ class User extends Authenticatable implements JWTSubject
     protected static function boot()
     {
         parent::boot();
+
+        //creating
+        static::creating(function ($model) {
+            $model->name = $model->first_name . ' ' . $model->last_name;
+        });
+
         static::created(function ($model) {
             try {
                 Utils::send_sms($model->phone_number, "Your MobiSave account has been created. Download the app from https://play.google.com/store/apps/details?id=ug.digisave");
@@ -56,6 +62,7 @@ class User extends Authenticatable implements JWTSubject
             if ($user != null) {
                 throw new \Exception("Phone number already exists");
             }
+            $model->name = $model->first_name . ' ' . $model->last_name;
             //check usting username as email
             $user = User::where('username', $model->email)
                 ->where('id', '!=', $model->id)
