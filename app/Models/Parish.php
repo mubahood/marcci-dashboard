@@ -62,4 +62,15 @@ class Parish extends Model
         }
         return $name;
     }
+
+    //get dropdown list
+    public static function getDropDownList()
+    {
+        $parishes = Parish::all();
+        $list = [];
+        foreach ($parishes as $parish) {
+            $list[$parish->id] = $parish->name_text;
+        }
+        return $list;
+    } 
 }

@@ -195,6 +195,7 @@ class FarmerController extends AdminController
     {
         $form = new Form(new Farmer());
 
+        return $form;
         $u = Auth::user();
 
 
