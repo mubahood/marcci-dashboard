@@ -3,7 +3,7 @@
 /*
  * This file is part of Psy Shell.
  *
- * (c) 2012-2022 Justin Hileman
+ * (c) 2012-2023 Justin Hileman
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -79,7 +79,7 @@ class EditCommand extends Command implements ContextAware
      * @throws \InvalidArgumentException when both exec and no-exec flags are given or if a given variable is not found in the current context
      * @throws \UnexpectedValueException if file_get_contents on the edited file returns false instead of a string
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if ($input->getOption('exec') &&
             $input->getOption('no-exec')) {
@@ -114,10 +114,8 @@ class EditCommand extends Command implements ContextAware
      * @param bool        $execOption
      * @param bool        $noExecOption
      * @param string|null $filePath
-     *
-     * @return bool
      */
-    private function shouldExecuteFile(bool $execOption, bool $noExecOption, string $filePath = null): bool
+    private function shouldExecuteFile(bool $execOption, bool $noExecOption, ?string $filePath = null): bool
     {
         if ($execOption) {
             return true;
@@ -138,7 +136,7 @@ class EditCommand extends Command implements ContextAware
      *
      * @throws \InvalidArgumentException If the variable is not found in the current context
      */
-    private function extractFilePath(string $fileArgument = null)
+    private function extractFilePath(?string $fileArgument = null)
     {
         // If the file argument was a variable, get it from the context
         if ($fileArgument !== null &&
@@ -153,8 +151,6 @@ class EditCommand extends Command implements ContextAware
     /**
      * @param string $filePath
      * @param bool   $shouldRemoveFile
-     *
-     * @return string
      *
      * @throws \UnexpectedValueException if file_get_contents on $filePath returns false instead of a string
      */
