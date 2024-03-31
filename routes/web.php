@@ -11,8 +11,12 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\PestAndDiseaseController;
 use Illuminate\Support\Facades\Auth;
 
-Route::get('policy', function(){
-    return view('policy'); 
+Route::get('policy', function () {
+    return view('policy');
+});
+Route::get('app', function () {
+    //redirec to url('naro-v3.apk');
+    return redirect(url('naro-v3.apk'));
 });
 
 //api generation
@@ -22,7 +26,7 @@ Route::get('/gen', function () {
 })->name("register");
 Route::get('/gen-form', function () {
     die(Gen::find($_GET['id'])->make_forms());
-})->name("gen-form"); 
+})->name("gen-form");
 
 //farmers forum
 Route::get('chat', [ChatController::class, 'index']);
