@@ -2,7 +2,7 @@
     <!--begin::Header-->
     <div class="d-flex justify-content-between px-3 pt-2 px-md-4 border-bottom">
         <h4 style="line-height: 1; margrin: 0; " class="fs-22 fw-800">
-            FAQs
+            Recently reported pest & diseases
         </h4>
     </div>
     <div class="card-body py-2 py-md-3">

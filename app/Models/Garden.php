@@ -70,6 +70,12 @@ class Garden extends Model
         return $this->parish->name_text;
     }
 
+    //belongs to variety_id
+    public function variety()
+    {
+        return $this->belongsTo(Crop::class,'crop_id');
+    }
+
     //appends crop_text
     protected $appends = ['crop_text', 'parish_text'];
 }
