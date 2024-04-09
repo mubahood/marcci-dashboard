@@ -96,12 +96,12 @@ class ContributionProgramController extends AdminController
      */
     protected function form()
     {
-        /* $rec = ContributionProgram::find(1);
+    /*     $rec = ContributionProgram::find(4);
         $rec->prepared = 'No';
         //ContributionProgram::validate($rec);
         ContributionProgram::prepare($rec);
-        die('done');
- */
+        die('done'); */
+
         $form = new Form(new ContributionProgram());
         $u = Admin::user();
         $users = User::where([

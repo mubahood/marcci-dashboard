@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class ContributionProgram extends Model
 {
@@ -15,6 +16,7 @@ class ContributionProgram extends Model
     {
         parent::boot();
         static::creating(function ($m) {
+            $m->prepared = "No";
             $m = self::validate($m);
             return true;
         });
@@ -25,9 +27,7 @@ class ContributionProgram extends Model
         });
 
         static::created(function ($m) {
-            self::prepare($m);
-        });
-        static::updated(function ($m) {
+            $m->prepared = "No";
             self::prepare($m);
         });
     }
@@ -129,6 +129,7 @@ class ContributionProgram extends Model
         if ($model->prepared == 'Yes') {
             return;
         }
+
         $created_at = Carbon::parse($model->created_at);
         $sacco = Sacco::find($model->sacco_id);
         if ($sacco == null) {
@@ -161,6 +162,7 @@ class ContributionProgram extends Model
                 $month_name = $from->monthName;
                 $y = $from->year;
                 $conds['year'] = $y;
+                $conds['contribution_program_id'] = $model->id;
                 if ($model->periodic_type == "Weekly") {
                     $conds['week_number'] = $w;
                     $start_date->addWeek();
@@ -172,12 +174,8 @@ class ContributionProgram extends Model
                     break;
                 }
                 $to = $start_date->copy();
-
-
-
-                foreach ($model->members as $member_id) {
-                    $member = User::find($member_id);
-                    if ($member == null) {
+                foreach (User::where('sacco_id', $sacco->id)->get() as $member) {
+                    if ($sacco->administrator_id == $member->id) {
                         continue;
                     }
                     $conds['member_id'] = $member->id;
@@ -206,28 +204,35 @@ class ContributionProgram extends Model
                 }
             } while ($start_date->lt($end_date));
         }
+        $table_name = $model->getTable();
+        $sql = "UPDATE $table_name SET prepared = 'Yes' WHERE id = $model->id";
+        DB::update($sql);
+        $model->update_balances();
+    }
 
-        /* 
- 
+    public function update_balances()
+    {
+        if (($this->contribution_type == 'Periodic')) {
+            $this->total_expected = ContributionProgramRecord::where([
+                'contribution_program_id' => $this->id
+            ])->sum('amount');
+        }
 
-total_expected
-total_collected
-total_balance
+        $this->total_collected = ContributionProgramRecord::where([
+            'contribution_program_id' => $this->id,
+            'is_paid' => 'Yes'
+        ])->sum('amount');
+        $this->total_balance = $this->total_expected - $this->total_collected;
+        $this->save();
+    }
 
 
-
-
-new_members_billing_type
-details
-status
-public_type
-membership_type
-members
-treasurers
-start_date
-end_date
-prepared
-
-        */
+    public static function update_pending_programs()
+    {
+        foreach (ContributionProgram::where([
+            'prepared' => 'No'
+        ])->get() as $key => $value) {
+            ContributionProgram::prepare($value);
+        }
     }
 }

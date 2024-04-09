@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('api/{model}', [ApiResurceController::class, 'index']);
 Route::post('api/{model}', [ApiResurceController::class, 'update']);
+Route::post('contribution-program', [ApiResurceController::class, 'contribution_program_create']);
+Route::get('contribution-program-records', [ApiResurceController::class, 'contribution_program_records']);
 
 
 Route::get("manifest", [ApiResurceController::class, "manifest"]);

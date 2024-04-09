@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Association;
 use App\Models\Contribution;
+use App\Models\ContributionProgram;
+use App\Models\ContributionProgramRecord;
 use App\Models\CounsellingCentre;
 use App\Models\Crop;
 use App\Models\CropProtocol;
@@ -1621,6 +1623,15 @@ class ApiResurceController extends Controller
 
 
 
+    public function contribution_program_records(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $recs = ContributionProgramRecord::where('sacco_id',$u->sacco_id)->get();
+        return $this->success($recs, 'Success');
+    }
     public function index(Request $r, $model)
     {
 
@@ -1722,6 +1733,108 @@ class ApiResurceController extends Controller
                 'message' => $msg
             ]);
         }
+    }
+
+
+    public function contribution_program_create(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return Utils::error([
+                'message' => "User not found.",
+            ]);
+        }
+        $sacco = Sacco::find($u->sacco_id);
+        if ($sacco == null) {
+            return Utils::error([
+                'message' => "Sacco not found.",
+            ]);
+        }
+
+        ContributionProgram::update_pending_programs();
+
+        $id = (int)$r->id;
+        $item = null;
+        $isNew = false;
+        if ($id > 0) {
+            $item = ContributionProgram::find($id);
+        }
+        if ($item == null) {
+            $item = new ContributionProgram();
+            $isNew = true;
+        }
+
+        if ($isNew) {
+            $item->sacco_id = $sacco->id;
+            $item->total_expected = $r->total_expected;
+            $item->amount_per_member_type = $r->amount_per_member_type;
+            $item->amount_per_member_value = $r->amount_per_member_value;
+            $item->periodic_type = $r->periodic_type;
+            $item->contribution_type = $r->contribution_type;
+            $item->membership_type = 'All';
+        }
+        $members = [];
+        $item->treasurers = [];
+        /*  foreach (User::where('sacco_id', $sacco->id)->get() as $key => $v) {
+            $item->members[] = $v->id;
+        } */
+
+
+        if (isset($r->name) && strlen($r->name) > 2) {
+            $item->name = $r->name;
+        }
+        if (isset($r->new_members_billing_type) && strlen($r->new_members_billing_type) > 2) {
+            $item->new_members_billing_type = $r->new_members_billing_type;
+        }
+        if (isset($r->details) && strlen($r->details) > 2) {
+            $item->details = $r->details;
+        }
+        if (isset($r->status) && strlen($r->status) > 2) {
+            $item->status = $r->status;
+        }
+        if (isset($r->public_type) && strlen($r->public_type) > 2) {
+            $item->public_type = $r->public_type;
+        }
+        if (isset($r->status) && strlen($r->status) > 2) {
+            $item->status = $r->status;
+        }
+        if (isset($r->start_date) && strlen($r->start_date) > 2) {
+            $item->start_date = $r->start_date;
+        }
+        if (isset($r->end_date) && strlen($r->end_date) > 2) {
+            $item->end_date = $r->end_date;
+        }
+        if (isset($r->prepared) && strlen($r->prepared) > 2) {
+            $item->prepared = $r->prepared;
+        }
+        if (isset($r->details) && strlen($r->details) > 2) {
+            $item->details = $r->details;
+        }
+
+        try {
+            $item->save();
+        } catch (\Throwable $th) {
+            return Utils::error([
+                'message' => $th->getMessage()
+            ]);
+        }
+
+        $item = ContributionProgram::find($item->id);
+        if ($item == null) {
+            return Utils::error([
+                'message' => 'Record not found.'
+            ]);
+        }
+
+        $action = 'Cretaed';
+        if (!$isNew) {
+            $action = "Updated";
+        }
+
+        return Utils::success($item, 'Successfully ' . $action . ".");
+        /* 
+        total_collected	total_balance
+        */
     }
 
 
