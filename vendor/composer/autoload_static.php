@@ -622,6 +622,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
     public static $classMap = array (
         'App\\Admin\\Controllers\\AssociationController' => __DIR__ . '/../..' . '/app/Admin/Controllers/AssociationController.php',
         'App\\Admin\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Admin/Controllers/AuthController.php',
+        'App\\Admin\\Controllers\\ContributionProgramController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ContributionProgramController.php',
         'App\\Admin\\Controllers\\CounsellingCentreController' => __DIR__ . '/../..' . '/app/Admin/Controllers/CounsellingCentreController.php',
         'App\\Admin\\Controllers\\CourseCategoryController' => __DIR__ . '/../..' . '/app/Admin/Controllers/CourseCategoryController.php',
         'App\\Admin\\Controllers\\CourseController' => __DIR__ . '/../..' . '/app/Admin/Controllers/CourseController.php',
@@ -712,6 +713,8 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Models\\Association' => __DIR__ . '/../..' . '/app/Models/Association.php',
         'App\\Models\\Campus' => __DIR__ . '/../..' . '/app/Models/Campus.php',
         'App\\Models\\Contribution' => __DIR__ . '/../..' . '/app/Models/Contribution.php',
+        'App\\Models\\ContributionProgram' => __DIR__ . '/../..' . '/app/Models/ContributionProgram.php',
+        'App\\Models\\ContributionProgramRecord' => __DIR__ . '/../..' . '/app/Models/ContributionProgramRecord.php',
         'App\\Models\\CounsellingCentre' => __DIR__ . '/../..' . '/app/Models/CounsellingCentre.php',
         'App\\Models\\Course' => __DIR__ . '/../..' . '/app/Models/Course.php',
         'App\\Models\\CourseCategory' => __DIR__ . '/../..' . '/app/Models/CourseCategory.php',

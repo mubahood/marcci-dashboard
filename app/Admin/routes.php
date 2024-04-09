@@ -22,6 +22,8 @@ Route::group([
     $router->resource('meetings', MeetingController::class);
     $router->resource('loan-transactions', LoanTransactionController::class);
     $router->resource('reports', ReportController::class);
+    $router->resource('contributions', ContributionProgramController::class);
+    $router->resource('contribution-program-records', ContributionProgramRecordController::class);
 
     /* ========================START OF NEW THINGS===========================*/
 

@@ -2,8 +2,8 @@ php artisan migrate
 
 ssh -p 2211 cpaneluser@10.0.10.10
 
-php artisan make:migration add_user_id_reports --table=reports 
+php artisan make:migration add_prepared_to_contribution_programs --table=contribution_programs 
  
-php artisan admin:make ReportController --model=App\\Models\\Report 
+php artisan admin:make ContributionProgramRecordController --model=App\\Models\\ContributionProgramRecord 
 
-php artisan make:model Report -m
+php artisan make:model ContributionProgramRecord -m

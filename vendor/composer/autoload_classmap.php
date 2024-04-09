@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'App\\Admin\\Controllers\\AssociationController' => $baseDir . '/app/Admin/Controllers/AssociationController.php',
     'App\\Admin\\Controllers\\AuthController' => $baseDir . '/app/Admin/Controllers/AuthController.php',
+    'App\\Admin\\Controllers\\ContributionProgramController' => $baseDir . '/app/Admin/Controllers/ContributionProgramController.php',
     'App\\Admin\\Controllers\\CounsellingCentreController' => $baseDir . '/app/Admin/Controllers/CounsellingCentreController.php',
     'App\\Admin\\Controllers\\CourseCategoryController' => $baseDir . '/app/Admin/Controllers/CourseCategoryController.php',
     'App\\Admin\\Controllers\\CourseController' => $baseDir . '/app/Admin/Controllers/CourseController.php',
@@ -98,6 +99,8 @@ return array(
     'App\\Models\\Association' => $baseDir . '/app/Models/Association.php',
     'App\\Models\\Campus' => $baseDir . '/app/Models/Campus.php',
     'App\\Models\\Contribution' => $baseDir . '/app/Models/Contribution.php',
+    'App\\Models\\ContributionProgram' => $baseDir . '/app/Models/ContributionProgram.php',
+    'App\\Models\\ContributionProgramRecord' => $baseDir . '/app/Models/ContributionProgramRecord.php',
     'App\\Models\\CounsellingCentre' => $baseDir . '/app/Models/CounsellingCentre.php',
     'App\\Models\\Course' => $baseDir . '/app/Models/Course.php',
     'App\\Models\\CourseCategory' => $baseDir . '/app/Models/CourseCategory.php',
