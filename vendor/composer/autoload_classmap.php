@@ -9,6 +9,7 @@ return array(
     'App\\Admin\\Controllers\\AssociationController' => $baseDir . '/app/Admin/Controllers/AssociationController.php',
     'App\\Admin\\Controllers\\AuthController' => $baseDir . '/app/Admin/Controllers/AuthController.php',
     'App\\Admin\\Controllers\\ContributionProgramController' => $baseDir . '/app/Admin/Controllers/ContributionProgramController.php',
+    'App\\Admin\\Controllers\\ContributionProgramRecordController' => $baseDir . '/app/Admin/Controllers/ContributionProgramRecordController.php',
     'App\\Admin\\Controllers\\CounsellingCentreController' => $baseDir . '/app/Admin/Controllers/CounsellingCentreController.php',
     'App\\Admin\\Controllers\\CourseCategoryController' => $baseDir . '/app/Admin/Controllers/CourseCategoryController.php',
     'App\\Admin\\Controllers\\CourseController' => $baseDir . '/app/Admin/Controllers/CourseController.php',

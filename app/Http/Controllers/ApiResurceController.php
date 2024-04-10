@@ -1629,7 +1629,7 @@ class ApiResurceController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
-        $recs = ContributionProgramRecord::where('sacco_id',$u->sacco_id)->get();
+        $recs = ContributionProgramRecord::where('sacco_id', $u->sacco_id)->get();
         return $this->success($recs, 'Success');
     }
     public function index(Request $r, $model)
@@ -1733,6 +1733,103 @@ class ApiResurceController extends Controller
                 'message' => $msg
             ]);
         }
+    }
+
+
+    public function contribution_program_records_create(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return Utils::error([
+                'message' => "User not found.",
+            ]);
+        }
+        $sacco = Sacco::find($u->sacco_id);
+        if ($sacco == null) {
+            return Utils::error([
+                'message' => "Sacco not found.",
+            ]);
+        }
+        $contribution_program = ContributionProgram::find($r->contribution_program_id);
+        if ($contribution_program == null) {
+            return Utils::error([
+                'message' => "Program not found.",
+            ]);
+        }
+
+        ContributionProgram::update_pending_programs();
+
+        $id = (int)$r->id;
+        $item = null;
+        $isNew = false;
+        if ($id > 0) {
+            $item = ContributionProgramRecord::find($id);
+        }
+        if ($item == null) {
+            $item = new ContributionProgramRecord();
+            $isNew = true;
+        }
+
+        $member = User::find($r->member_id);
+        if ($member == null) {
+            return Utils::error([
+                'message' => "Member account not found."
+            ]);
+        }
+
+
+        if ($isNew) {
+            $item->sacco_id = $sacco->id;
+            $item->contribution_program_id = $r->contribution_program_id;
+        }
+        $item->member_id = $r->member_id;
+        $item->teasurer_id = $r->teasurer_id;
+        $now = Carbon::now();
+        $item->year = $now->year;
+        $item->week_number = $now->week();
+        $item->month_number = $now->month;
+        $item->month_name = $now->monthName;
+        if (isset($r->is_paid) && strlen($r->is_paid) > 2) {
+            $item->is_paid = $r->is_paid;
+        }
+
+        if ($item->is_paid == 'Yes') {
+            $teasurer = User::find($r->teasurer_id);
+            if ($teasurer == null) {
+                return Utils::error([
+                    'message' => "Teasurer account not found."
+                ]);
+            }
+            $item->teasurer_id = $teasurer->id;
+        } else {
+            $item->teasurer_id = $sacco->administrator_id;
+        }
+
+        if (isset($r->payment_date) && strlen($r->payment_date) > 2) {
+            $item->payment_date = $r->payment_date;
+        }
+        $item->amount = abs((int)$r->amount);
+        $item->type = $contribution_program->periodic_type;
+        $item->description = $r->description;
+        $item->details = $r->details;
+
+        try {
+            $item->save();
+        } catch (\Throwable $th) {
+            return Utils::error([
+                'message' => $th->getMessage()
+            ]);
+        }
+
+        $action = 'Cretaed';
+        if (!$isNew) {
+            $action = "Updated";
+        }
+
+        return Utils::success($item, 'Successfully ' . $action . ".");
+        /* 
+        total_collected	total_balance
+        */
     }
 
 
@@ -1867,9 +1964,7 @@ class ApiResurceController extends Controller
             if (isset($r->my_task)) {
                 if ($r->my_task == 'delete') {
                     $obj->delete();
-                    return Utils::error([
-                        'message' => "Deleted successfully.",
-                    ]);
+                    return Utils::success(null, "Deleted successfully.");
                 }
             }
         }

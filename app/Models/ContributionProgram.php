@@ -30,6 +30,11 @@ class ContributionProgram extends Model
             $m->prepared = "No";
             self::prepare($m);
         });
+        static::deleting(function ($m) {
+            ContributionProgramRecord::where([
+                'contribution_program_id' => $m->id
+            ])->delete();
+        });
     }
 
     public function setMembersAttribute($value)
@@ -167,7 +172,7 @@ class ContributionProgram extends Model
                     $conds['week_number'] = $w;
                     $start_date->addWeek();
                 } else {
-                    $conds['month_number'] = $w;
+                    $conds['month_number'] = $m;
                     $start_date->addMonth();
                 }
                 if (($start_date->gt($end_date))) {

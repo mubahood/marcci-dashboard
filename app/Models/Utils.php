@@ -491,6 +491,7 @@ administrator_id
 
     public static function phone_number_is_valid($phone_number)
     {
+        return true;
         $phone_number = Utils::prepare_phone_number($phone_number);
         if (substr($phone_number, 0, 4) != "+256") {
             return false;
@@ -504,6 +505,7 @@ administrator_id
     }
     public static function prepare_phone_number($phone_number)
     {
+        return $phone_number;
         $original = $phone_number;
         //$phone_number = '+256783204665';
         //0783204665

@@ -623,6 +623,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Admin\\Controllers\\AssociationController' => __DIR__ . '/../..' . '/app/Admin/Controllers/AssociationController.php',
         'App\\Admin\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Admin/Controllers/AuthController.php',
         'App\\Admin\\Controllers\\ContributionProgramController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ContributionProgramController.php',
+        'App\\Admin\\Controllers\\ContributionProgramRecordController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ContributionProgramRecordController.php',
         'App\\Admin\\Controllers\\CounsellingCentreController' => __DIR__ . '/../..' . '/app/Admin/Controllers/CounsellingCentreController.php',
         'App\\Admin\\Controllers\\CourseCategoryController' => __DIR__ . '/../..' . '/app/Admin/Controllers/CourseCategoryController.php',
         'App\\Admin\\Controllers\\CourseController' => __DIR__ . '/../..' . '/app/Admin/Controllers/CourseController.php',
