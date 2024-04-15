@@ -83,19 +83,21 @@ class ContributionProgram extends Model
         ])) {
             throw new \Exception("Invalid contribution type", 1);
         }
-        if (!in_array($model->periodic_type, [
-            'Weekly',
-            'Monthly'
-        ])) {
-            throw new \Exception("Invalid periodic type", 1);
-        }
 
-        if (!in_array($model->new_members_billing_type, [
-            'MemberRegisterDate',
-            'ContributionStartDate',
-            'SpecificDate'
-        ])) {
-            throw new \Exception("Invalid new members billing type", 1);
+        if ($model->contribution_type == 'Periodic') {
+            if (!in_array($model->periodic_type, [
+                'Weekly',
+                'Monthly'
+            ])) {
+                throw new \Exception("Invalid periodic type", 1);
+            }
+            if (!in_array($model->new_members_billing_type, [
+                'MemberRegisterDate',
+                'ContributionStartDate',
+                'SpecificDate'
+            ])) {
+                throw new \Exception("Invalid new members billing type", 1);
+            }
         }
         if (!in_array($model->status, [
             'Active',
@@ -123,9 +125,10 @@ class ContributionProgram extends Model
 
         if ($model->amount_per_member_type == 'Specific') {
             $model->amount_per_member_value = abs((int)$model->amount_per_member_value);
-        }
-        if ($model->amount_per_member_value < 1) {
-            throw new \Exception("Enter valid amount per member value", 1);
+
+            if ($model->amount_per_member_value < 1) {
+                throw new \Exception("Enter valid amount per member value", 1);
+            }
         }
     }
 
@@ -144,11 +147,14 @@ class ContributionProgram extends Model
         if ($model->amount_per_member_type == 'Specific') {
             $amount_per_member_value = abs((int)$model->amount_per_member_value);
         }
-        if ($amount_per_member_value < 1) {
-            throw new \Exception("Enter valid amount per member value", 1);
-        }
+
 
         if (($model->contribution_type == 'Periodic')) {
+
+            if ($amount_per_member_value < 1) {
+                throw new \Exception("Enter valid amount per member value", 1);
+            }
+
             $start_date = Carbon::parse($model->start_date);
             $end_date = Carbon::parse($model->end_date);
 
