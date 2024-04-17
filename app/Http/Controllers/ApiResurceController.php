@@ -630,10 +630,10 @@ class ApiResurceController extends Controller
             return $this->error('Sacco admin not found.');
         }
 
-        //check if is admin
-        if (!$admin->isRole('sacco')) {
-            return $this->error('Only sacco admins can review loan requests.');
-        }
+        // //check if is admin
+        // if (!$admin->isRole('sacco')) {
+        //     return $this->error('Only sacco admins can review loan requests.');
+        // }
 
         //loan_request
         $loan_request = LoanRequest::find($request->loan_request_id);

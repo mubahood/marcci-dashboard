@@ -49,11 +49,16 @@ class User extends Authenticatable implements JWTSubject
         //updating
         static::updating(function ($model) {
             //get another user with the same email
-            $user = User::where('email', $model->email)
-                ->where('id', '!=', $model->id)
-                ->first();
-            if ($user != null) {
-                throw new \Exception("Email already exists");
+            if (
+                ($model->email != null) &&
+                strlen($model->email) > 5
+            ) {
+                $user = User::where('email', $model->email)
+                    ->where('id', '!=', $model->id)
+                    ->first();
+                if ($user != null) {
+                    throw new \Exception("Email already exists " . $model->email);
+                }
             }
             //check if phone number exists
             $user = User::where('phone_number', $model->phone_number)
@@ -64,11 +69,18 @@ class User extends Authenticatable implements JWTSubject
             }
             $model->name = $model->first_name . ' ' . $model->last_name;
             //check usting username as email
-            $user = User::where('username', $model->email)
-                ->where('id', '!=', $model->id)
-                ->first();
-            if ($user != null) {
-                throw new \Exception("Username already exists");
+
+
+            if (
+                ($model->email != null) &&
+                strlen($model->email) > 5
+            ) {
+                $user = User::where('username', $model->email)
+                    ->where('id', '!=', $model->id)
+                    ->first();
+                if ($user != null) {
+                    throw new \Exception("Username already exists");
+                }
             }
         });
     }

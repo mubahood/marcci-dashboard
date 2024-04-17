@@ -262,7 +262,7 @@ class ApiAuthController extends Controller
             $request->campus_id == null ||
             strlen($request->campus_id) < 2
         ) {
-            return $this->error('National ID is missing.');
+            //return $this->error('National ID is missing.');
         }
         if (
             $request->email != null &&
