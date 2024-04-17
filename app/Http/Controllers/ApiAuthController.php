@@ -290,6 +290,15 @@ class ApiAuthController extends Controller
             $acc->avatar = 'images/' . $images[0];
         }
 
+        if (
+            $request->change_password == 'Yes' &&
+            $request->password_1 != null &&
+            strlen($request->password_1) > 2
+        ) {
+            $acc->password = password_hash($request->password_1, PASSWORD_DEFAULT);
+        }
+
+
         $code = 1;
         try {
             $acc->save();
