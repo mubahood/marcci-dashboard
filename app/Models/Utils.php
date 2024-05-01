@@ -530,6 +530,7 @@ administrator_id
         $server = $_SERVER['SERVER_NAME'];
         if (
             str_contains($server, 'localhost') ||
+            str_contains($server, '10.0.2.2') ||
             str_contains($server, '127.0.0.1')
         ) {
             return true;

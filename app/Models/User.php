@@ -101,6 +101,19 @@ class User extends Authenticatable implements JWTSubject
             return $avatar;
         }
 
+        //check if is null or empty
+        if ($avatar == null || strlen($avatar) < 1) {
+            return Storage::disk(config('admin.upload.disk'))->url($avatar); 
+        } 
+
+        //check if $avatar has word image in it
+        if (strpos($avatar, 'image') !== false) {
+            //add image to the url
+
+        }else{
+            $avatar = 'images/' . $avatar; 
+        }
+        return url('storage/'. $avatar);
         $disk = config('admin.upload.disk');
 
         if ($avatar && array_key_exists($disk, config('filesystems.disks'))) {

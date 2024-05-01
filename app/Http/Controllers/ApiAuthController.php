@@ -179,6 +179,7 @@ class ApiAuthController extends Controller
 
     public function update_user(Request $request)
     {
+
         $admin = auth('api')->user();
         if ($admin == null) {
             return $this->error('User not found.');
@@ -286,6 +287,7 @@ class ApiAuthController extends Controller
         if (!empty($_FILES)) {
             $images = Utils::upload_images_2($_FILES, false);
         }
+ 
         if (!empty($images)) {
             $acc->avatar = 'images/' . $images[0];
         }
