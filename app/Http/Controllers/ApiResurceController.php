@@ -1745,15 +1745,15 @@ class ApiResurceController extends Controller
         $u->save();
 
         //change transactions to sacco_id to 1
-        Transaction::where('user_id', $u->id)->update(['sacco_id' => 1]); 
+        Transaction::where('user_id', $u->id)->update(['sacco_id' => 0]); 
 
         //change loan transaction sacco_id
-        LoanTransaction::where('user_id', $u->id)->update(['sacco_id' => 1]); 
+        LoanTransaction::where('user_id', $u->id)->update(['sacco_id' => 0]); 
         //share_records
-        ShareRecord::where('user_id', $u->id)->update(['sacco_id' => 1]); 
+        ShareRecord::where('user_id', $u->id)->update(['sacco_id' => 0]); 
 
         //loans
-        Loan::where('user_id', $u->id)->update(['sacco_id' => 1]);  
+        Loan::where('user_id', $u->id)->update(['sacco_id' => 0]);  
 
         return Utils::success(null, 'User removed from sacco.');
     }
