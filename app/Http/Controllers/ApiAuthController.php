@@ -131,6 +131,10 @@ class ApiAuthController extends Controller
         if ($u == null) {
             $u = User::where('email', $r->username)->first();
         }
+        
+        if ($u == null) {
+            $u = User::where('campus_id', $r->username)->first();
+        }
 
 
         if ($u == null) {
