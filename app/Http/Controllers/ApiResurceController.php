@@ -1736,6 +1736,27 @@ class ApiResurceController extends Controller
     }
 
 
+    public function sacco_members_delete(Request $r){
+        $u = User::find($r->member_id);
+        if ($u == null) {
+            return $this->error('Member not found.');
+        }
+        $u->sacco_id = 1;
+        $u->save();
+
+        //change transactions to sacco_id to 1
+        Transaction::where('user_id', $u->id)->update(['sacco_id' => 1]); 
+
+        //change loan transaction sacco_id
+        LoanTransaction::where('user_id', $u->id)->update(['sacco_id' => 1]); 
+        //share_records
+        ShareRecord::where('user_id', $u->id)->update(['sacco_id' => 1]); 
+
+        //loans
+        Loan::where('user_id', $u->id)->update(['sacco_id' => 1]);  
+
+        return Utils::success(null, 'User removed from sacco.');
+    }
     public function contribution_program_records_create(Request $r)
     {
         $u = auth('api')->user();
