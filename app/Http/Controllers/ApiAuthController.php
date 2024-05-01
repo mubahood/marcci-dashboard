@@ -276,7 +276,19 @@ class ApiAuthController extends Controller
         $msg = "";
         $acc->first_name = $request->first_name;
         $acc->last_name = $request->last_name;
-        $acc->campus_id = $request->campus_id;
+
+        if ($request->campus_id != null && strlen($request->campus_id) > 2) {
+            $acc->campus_id = $request->campus_id;
+            //get another user with same campus id
+            $old = User::where('campus_id', $request->campus_id)
+                ->where('id', '!=', $acc->id)
+                ->first();
+            if ($old != null) {
+                return $this->error('User with same reg number already exists. ' . $old->id . ' ' . $old->campus_id . ' ' . $old->first_name . ' ' . $old->last_name);
+            }
+        }
+
+
         $acc->phone_number = $phone_number;
         $acc->sex = $request->sex;
         $acc->dob = $request->dob;
@@ -287,7 +299,7 @@ class ApiAuthController extends Controller
         if (!empty($_FILES)) {
             $images = Utils::upload_images_2($_FILES, false);
         }
- 
+
         if (!empty($images)) {
             $acc->avatar = 'images/' . $images[0];
         }
