@@ -293,12 +293,14 @@ class ApiAuthController extends Controller
         }
 
         //check if password_confirmation is set
+        $pass_msg = "";
         if ($request->password_confirmation != null) {
             if (strlen($request->password_confirmation) > 2) {
                 if ($request->password != $request->password_confirmation) {
                     return $this->error('Passwords do not match.');
                 }
                 $acc->password = password_hash($request->password, PASSWORD_DEFAULT);
+                $pass_msg = ". Password updated successfully.";
             }
         }
 
@@ -329,7 +331,7 @@ class ApiAuthController extends Controller
         $code = 1;
         try {
             $acc->save();
-            $msg = 'Account ' . $task . 'ed successfully.';
+            $msg = 'Account ' . $task . 'ed successfully.' . $pass_msg;
             return $this->success($acc, $msg, $code);
         } catch (\Throwable $th) {
             $msg = $th->getMessage();
