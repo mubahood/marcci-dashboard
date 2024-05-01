@@ -121,7 +121,7 @@ class ApiAuthController extends Controller
             return $this->error('Password is required.');
         }
 
-        $r->username = trim($r->username);
+        //$r->username = trim($r->username);
 
         $u = User::where('phone_number', $r->username)->first();
         if ($u == null) {
@@ -131,7 +131,7 @@ class ApiAuthController extends Controller
         if ($u == null) {
             $u = User::where('email', $r->username)->first();
         }
-        
+
         if ($u == null) {
             $u = User::where('campus_id', $r->username)->first();
         }
@@ -292,6 +292,15 @@ class ApiAuthController extends Controller
             }
         }
 
+        //check if password_confirmation is set
+        if ($request->password_confirmation != null) {
+            if (strlen($request->password_confirmation) > 2) {
+                if ($request->password != $request->password_confirmation) {
+                    return $this->error('Passwords do not match.');
+                }
+                $acc->password = password_hash($request->password, PASSWORD_DEFAULT);
+            }
+        }
 
         $acc->phone_number = $phone_number;
         $acc->sex = $request->sex;
