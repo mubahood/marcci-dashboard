@@ -7,3 +7,17 @@ php artisan make:migration add_prepared_to_contribution_programs --table=contrib
 php artisan admin:make ContributionProgramRecordController --model=App\\Models\\ContributionProgramRecord 
 
 php artisan make:model ContributionProgramRecord -m
+
+
+Control Panel https://cp1.muni.ac.ug:8083
+Username:mrif02004
+Password: rpnkAML@8
+SSH port: 20002
+Subdomain:mobi-save.muni.ac.ug
+Email:  mobi-save@muni.ac.ug
+Email password: rpnkAML@8
+mrif02004_mobi_save
+
+ssh -p 20002 mrif02004@137.63.168.25 
+
+/home/mrif02004/web/mobi-save.muni.ac.ug/public_html 
