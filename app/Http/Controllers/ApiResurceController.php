@@ -1843,6 +1843,9 @@ class ApiResurceController extends Controller
         }
         $item->amount = abs((int)$r->amount);
         $item->type = $contribution_program->periodic_type;
+        if ($item->type == null || strlen($item->type) < 2) {
+            $item->type = 'Default';
+        }
         $item->description = $r->description;
         $item->details = $r->details;
 
