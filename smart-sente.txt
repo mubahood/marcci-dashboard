@@ -1,0 +1,12 @@
+flutter pub run change_app_package_name:main smartsente.com
+
+ 
+keytool -genkey -v -keystore ~/smartsente.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+Is CN=Muhindo Mubaraka, OU=Developer, O=8tech, L=Kampala, ST=Kampala, C=UG correct?
+
+
+ilovemum999
+
+name: Muhindo Mubaraka
+unit: Developer
+ORGBIZATION: 8tech
