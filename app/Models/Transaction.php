@@ -94,8 +94,8 @@ class Transaction extends Model
         $sender_transactions->user_id = $sender->id;
         $sender_transactions->source_user_id = $sender->id;
         $sender_transactions->sacco_id = $sender->sacco_id;
-        $sender_transactions->type = 'Send';
-        $sender_transactions->source_type = 'Transfer';
+        $sender_transactions->type = 'TRANSFER';
+        $sender_transactions->source_type = 'TRANSFER';
         $sender_transactions->source_mobile_money_number = $sender->phone_number;
         $sender_transactions->source_mobile_money_transaction_id = null;
         $sender_transactions->source_bank_account_number = null;
@@ -103,7 +103,7 @@ class Transaction extends Model
         $sender_transactions->desination_bank_account_number = null;
         $sender_transactions->desination_bank_transaction_id = null;
         $sender_transactions->desination_mobile_money_transaction_id = null;
-        $sender_transactions->desination_type = 'Transfer';
+        $sender_transactions->desination_type = 'TRANSFER';
         $sender_transactions->desination_mobile_money_number = $receiver->phone_number;
         $sender_transactions->amount = (-1 * $amount);
         $sender_transactions->description = "Transfered UGX " . number_format($amount) . " to {$receiver->phone_number} - $receiver->name.";
@@ -117,8 +117,8 @@ class Transaction extends Model
         $receiver_transactions->user_id = $receiver->id;
         $receiver_transactions->source_user_id = $sender->id;
         $receiver_transactions->sacco_id = $receiver->sacco_id;
-        $receiver_transactions->type = 'Receive';
-        $receiver_transactions->source_type = 'Transfer';
+        $receiver_transactions->type = 'TRANSFER';
+        $receiver_transactions->source_type = 'TRANSFER';
         $receiver_transactions->source_mobile_money_number = $sender->phone_number;
         $receiver_transactions->source_mobile_money_transaction_id = null;
         $receiver_transactions->source_bank_account_number = null;
@@ -126,7 +126,7 @@ class Transaction extends Model
         $receiver_transactions->desination_bank_account_number = null;
         $receiver_transactions->desination_bank_transaction_id = null;
         $receiver_transactions->desination_mobile_money_transaction_id = null;
-        $receiver_transactions->desination_type = 'Transfer';
+        $receiver_transactions->desination_type = 'TRANSFER';
         $receiver_transactions->desination_mobile_money_number = $receiver->phone_number;
         $receiver_transactions->amount = $amount;
         $receiver_transactions->description = "Received UGX " . number_format($amount) . " from {$sender->phone_number} - $sender->name.";

@@ -12,6 +12,7 @@ use SplFileObject;
 
 define('TRANSACTION_TYPES', [
     'SAVING' => 'SAVING',
+    'TRANSFER' => 'TRANSFER',
     'SHARE' => 'SHARE',
     'LOAN' => 'LOAN',
     'LOAN_REPAYMENT' => 'LOAN_REPAYMENT',
