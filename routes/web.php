@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 
+Route::get('app', function () {
+    $url  = url('mobisave-v1.apk');
+    return redirect($url);
+});
 Route::get('report-print', function () {
     $report = \App\Models\Report::find($_GET['id']);
     $pdf = App::make('dompdf.wrapper');
