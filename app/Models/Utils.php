@@ -22,6 +22,7 @@ define('TRANSACTION_TYPES', [
     'WITHDRAWAL' => 'WITHDRAWAL',
     'CONTRIBUTION' => 'CONTRIBUTION',
     'CYCLE_PROFIT' => 'CYCLE_PROFIT',
+    'OTHER' => 'OTHER',
 ]);
 
 class Utils extends Model

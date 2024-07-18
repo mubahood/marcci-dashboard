@@ -20,7 +20,10 @@ class Transaction extends Model
             include_once(app_path() . '/Models/Utils.php');
 
             if (!in_array($model->type, TRANSACTION_TYPES)) {
-                throw new Exception("Invalid transaction type.");
+                if ($model->type == null || strlen($model->type) < 2) {
+                    $model->type = 'OTHER';
+                }
+                //throw new Exception("Invalid transaction type.");
             }
             $temp_amount = abs($model->amount);
             if ($temp_amount > 10000000) {
