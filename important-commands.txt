@@ -20,4 +20,4 @@ mrif02004_mobi_save
 
 ssh -p 20002 mrif02004@137.63.168.25 
 
-/home/mrif02004/web/mobi-save.muni.ac.ug/public_html 
+cd /home/mrif02004/web/mobi-save.muni.ac.ug/public_html 
