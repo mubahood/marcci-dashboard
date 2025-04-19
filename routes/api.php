@@ -13,6 +13,7 @@ Route::post('contribution-program', [ApiResurceController::class, 'contribution_
 Route::get('contribution-program-records', [ApiResurceController::class, 'contribution_program_records']);
 Route::post('contribution-program-records', [ApiResurceController::class, 'contribution_program_records_create']);
 Route::post('sacco-members-delete', [ApiResurceController::class, 'sacco_members_delete']);
+Route::post('sacco-members-register', [ApiResurceController::class, 'sacco_members_register']);
 
 
 Route::get("manifest", [ApiResurceController::class, "manifest"]);

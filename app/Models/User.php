@@ -26,10 +26,11 @@ class User extends Authenticatable implements JWTSubject
         //creating
         static::creating(function ($model) {
             $model->name = $model->first_name . ' ' . $model->last_name;
+            $model = self::do_prepare($model);
         });
 
         static::created(function ($model) {
-            try {
+            /* try {
                 Utils::send_sms($model->phone_number, "Your MobiSave account has been created. Download the app from https://play.google.com/store/apps/details?id=ug.digisave");
             } catch (\Throwable $th) {
                 //save error
@@ -44,6 +45,18 @@ class User extends Authenticatable implements JWTSubject
                     'user_agent' => request()->header('User-Agent'),
                     'ip' => request()->ip()
                 ]);
+            } */
+            if ($model->language != 'None') {
+                $active_programs = ContributionProgram::where('sacco_id', $model->sacco_id)
+                    ->where('status', 'Active')
+                    ->get();
+                foreach ($active_programs as $program) {
+                    try {
+                        ContributionProgram::add_member_to_program($program, $model);
+                    } catch (\Throwable $th) {
+                        //throw $th; 
+                    }
+                }
             }
         });
         //updating
@@ -60,13 +73,20 @@ class User extends Authenticatable implements JWTSubject
                     throw new \Exception("Email already exists " . $model->email);
                 }
             }
-            //check if phone number exists
-            $user = User::where('phone_number', $model->phone_number)
-                ->where('id', '!=', $model->id)
-                ->first();
-            if ($user != null) {
-                throw new \Exception("Phone number already exists");
+
+            if (
+                ($model->phone_number != null) &&
+                strlen($model->phone_number) > 5
+            ) {
+                //check if phone number exists
+                $user = User::where('phone_number', $model->phone_number)
+                    ->where('id', '!=', $model->id)
+                    ->first();
+                if ($user != null) {
+                    // throw new \Exception("Phone number already exists");
+                }
             }
+
             $model->name = $model->first_name . ' ' . $model->last_name;
             //check usting username as email
 
@@ -82,9 +102,110 @@ class User extends Authenticatable implements JWTSubject
                     throw new \Exception("Username already exists");
                 }
             }
+
+
+            $model = self::do_prepare($model);
         });
     }
 
+    public static function do_prepare($model)
+    {
+        $model->name = $model->first_name . ' ' . $model->last_name;
+
+        // $model->username should be less than 25 characters
+        if (strlen($model->username) > 25) {
+            throw new \Exception("Username should be less than 25 characters");
+        }
+
+        if ($model->password == null || strlen($model->password) < 4) {
+            $model->password = $model->username;
+        }
+
+        if (strlen($model->password) < 40) {
+            $model->password = password_hash($model->password, PASSWORD_DEFAULT);
+        }
+
+        $username = null;
+        if (
+            ($model->phone_number != null) &&
+            strlen($model->phone_number)  > 5
+        ) {
+            $username = $model->phone_number;
+        }
+
+        if ($username == null) {
+            //try email
+            if (
+                ($model->email != null) &&
+                strlen($model->email) > 5
+            ) {
+                $username = $model->email;
+            }
+        }
+
+        //check $username
+        if ($username == null) {
+            $username = $model->first_name . '' . $model->last_name .
+                rand(1000, 9999);
+        }
+
+        //check if username exists
+        $u = User::where('username', $username)
+            ->where('id', '!=', $model->id)
+            ->first();
+        if ($u != null) {
+            $username = $model->first_name . '' . $model->last_name .
+                rand(1000000, 9999000);
+        }
+        $model->username = $username;
+
+        //None
+
+        if ($model->should_be_validated == 'Yes') {
+
+            if ($model->website != 'Root') {
+            }
+
+            $parent = User::find($model->linkedin);
+
+            if ($parent != null) {
+                if ($parent->website == 'Father') {
+                    if ($parent->sex != 'Male') {
+                        $parent->website = 'Father';
+                        // throw new \Exception("Father must be male but is #".$parent->sex);
+                    }
+                }
+                if ($parent->website == 'Mother') {
+                    if ($parent->sex != 'Female') {
+                        $parent->website = 'Mother';
+                        // throw new \Exception("Mother must be Female"); 
+                    }
+                }
+            } else {
+                $model->reg_number = 'Alive';
+                $model->language = 'Compulsory';
+            }
+
+            if ($model->reg_number != 'Alive') {
+                $model->website = 'None';
+            }
+
+            $logged_in_user = auth()->user();
+            if ($logged_in_user == null) {
+                throw new \Exception("Logged in user not found");
+            }
+            $model->sacco_id = $logged_in_user->sacco_id;
+        }
+
+        $number_of_admins_in_this_sacco = User::where('sacco_id', $model->sacco_id)
+            ->where('is_admin', 'Yes')
+            ->count();
+        if ($number_of_admins_in_this_sacco == 0) {
+            $model->is_admin = 'Yes';
+        }
+
+        return $model;
+    }
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -103,17 +224,17 @@ class User extends Authenticatable implements JWTSubject
 
         //check if is null or empty
         if ($avatar == null || strlen($avatar) < 1) {
-            return Storage::disk(config('admin.upload.disk'))->url($avatar); 
-        } 
+            return Storage::disk(config('admin.upload.disk'))->url($avatar);
+        }
 
         //check if $avatar has word image in it
         if (strpos($avatar, 'image') !== false) {
             //add image to the url
 
-        }else{
-            $avatar = 'images/' . $avatar; 
+        } else {
+            $avatar = 'images/' . $avatar;
         }
-        return url('storage/'. $avatar);
+        return url('storage/' . $avatar);
         $disk = config('admin.upload.disk');
 
         if ($avatar && array_key_exists($disk, config('filesystems.disks'))) {

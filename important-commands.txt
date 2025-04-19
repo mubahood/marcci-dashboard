@@ -2,7 +2,7 @@ php artisan migrate
 
 ssh -p 2211 cpaneluser@10.0.10.10
 
-php artisan make:migration add_prepared_to_contribution_programs --table=contribution_programs 
+php artisan make:migration add_is_sacco_member_to_users --table=users 
  
 php artisan admin:make ContributionProgramRecordController --model=App\\Models\\ContributionProgramRecord 
 

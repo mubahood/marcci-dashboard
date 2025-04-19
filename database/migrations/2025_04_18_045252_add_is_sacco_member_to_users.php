@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddChangeSomeColsInEventDetails extends Migration
+class AddIsSaccoMemberToUsers extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class AddChangeSomeColsInEventDetails extends Migration
      */
     public function up()
     {
-        Schema::table('event_models', function (Blueprint $table) {
-            $table->longText('details')->nullable()->change(); 
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('should_be_validated')->default('No');
+            $table->string('is_admin')->default('No');
         });
     }
 
@@ -25,7 +26,7 @@ class AddChangeSomeColsInEventDetails extends Migration
      */
     public function down()
     {
-        Schema::table('event_models', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             //
         });
     }

@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\MainController;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\RedirectIfAuthenticated;
+use App\Models\ContributionProgram;
 use App\Models\Gen;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\App;
@@ -11,6 +12,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 
+Route::get('do-prepare', function () {
+    $program = ContributionProgram::orderBy('id', 'desc')->first();
+    ContributionProgram::prepare($program);
+    die("here.");
+    return $content;
+    dd($program);
+});
 Route::get('app', function () {
     $url  = url('mobisave-v1.apk');
     return redirect($url);

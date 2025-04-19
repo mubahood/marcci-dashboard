@@ -314,4 +314,10 @@ class Sacco extends Model
         }
         return 'images/logo.png';
     }
+
+    //has many Members
+    public function members()
+    {
+        return $this->hasMany(User::class, 'sacco_id', 'id');
+    }
 }

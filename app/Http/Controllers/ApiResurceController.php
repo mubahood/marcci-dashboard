@@ -1984,9 +1984,124 @@ class ApiResurceController extends Controller
         //image logic
 
 
-
-
         $className = "App\Models\\" . $model;
+        $id = ((int)($r->id));
+        $obj = $className::find($id);
+
+        $isEdit = true;
+        if ($obj == null) {
+            $obj = new $className;
+            $isEdit = false;
+        }
+
+        if ($isEdit) {
+            if (isset($r->my_task)) {
+                if ($r->my_task == 'delete') {
+                    if ($u->is_admin != 'Yes') {
+                        return Utils::error([
+                            'message' => "You are not allowed to delete this item.",
+                        ]);
+                    }
+                    $obj->delete();
+                    return Utils::success(null, "Deleted successfully.");
+                }
+            }
+        }
+
+        $table_name = $obj->getTable();
+        $cols = Schema::getColumnListing($table_name);
+
+
+
+        if (isset($_POST['online_id'])) {
+            unset($_POST['online_id']);
+        }
+
+        $except = [
+            'created_at',
+            'updated_at',
+            'deleted_at',
+            'online_id',
+            'id',
+            'administrator_id',
+            'user_id',
+            'created_by',
+            'updated_by',
+        ];
+
+        foreach ($_POST as $key => $value) {
+            if (in_array($key, $except)) {
+                continue;
+            }
+            if (!in_array($key, $cols)) {
+                continue;
+            }
+            if ($value == null || strlen($value) < 1) {
+                continue;
+            }
+            $obj->$key = $value;
+        }
+
+        if (isset($r->KEY_IMAGE) && $r->KEY_IMAGE != null && !empty($r->KEY_IMAGE)) {
+            $KEY_IMAGE = trim($r->KEY_IMAGE);
+
+            if (in_array($KEY_IMAGE, $cols)) {
+                if (!empty($_FILES)) {
+                    $image = "";
+                    try {
+                        $image = Utils::upload_images_2($_FILES, true);
+                        $image = 'images/' . $image;
+                    } catch (Throwable $t) {
+                        $image = 'no_image.jpg';
+                    }
+                    $obj->$KEY_IMAGE = $image;
+                }
+            }
+        }
+
+
+
+        $success = false;
+        $msg = "";
+        if ($isEdit) {
+            $msg = "Updated successfully.";
+        } else {
+            $msg = "Created successfully.";
+        }
+        try {
+            $obj->save();
+            $success = true;
+        } catch (Exception $e) {
+            $success = false;
+            $msg = $e->getMessage();
+        }
+
+        //get object
+        $obj = $className::find($obj->id);
+
+        if ($success) {
+            return Utils::success($obj, $msg);
+        } else {
+            return Utils::error([
+                'message' => $msg
+            ]);
+        }
+    }
+
+    public function sacco_members_register(Request $r, $model)
+    {
+
+
+
+        $u = auth('api')->user();
+        if ($u == null) {
+            return Utils::error([
+                'message' => "User account not found.",
+            ]);
+        }
+
+
+        $className = User::class;
         $id = ((int)($r->id));
         $obj = $className::find($id);
 
