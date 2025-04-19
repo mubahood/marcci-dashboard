@@ -25,7 +25,6 @@ class User extends Authenticatable implements JWTSubject
 
         //creating
         static::creating(function ($model) {
-            return true; 
             $model->name = $model->first_name . ' ' . $model->last_name;
             $model = self::do_prepare($model);
         });
@@ -62,7 +61,6 @@ class User extends Authenticatable implements JWTSubject
         });
         //updating
         static::updating(function ($model) {
-            return true;
             //get another user with the same email
             if (
                 ($model->email != null) &&
@@ -121,7 +119,6 @@ class User extends Authenticatable implements JWTSubject
 
         if ($model->password == null || strlen($model->password) < 4) {
             $model->password = $model->username;
-
             $model->password = password_hash($model->password, PASSWORD_DEFAULT);
         }
 

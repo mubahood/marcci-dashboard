@@ -132,7 +132,7 @@ class ApiAuthController extends Controller
             $u = User::where('email', $r->username)->first();
         }
 
-    
+
 
 
         if ($u == null) {
@@ -143,11 +143,10 @@ class ApiAuthController extends Controller
             if (Utils::phone_number_is_valid($phone_number)) {
 
                 $u = User::where('phone_number', $phone_number)->first();
-
             }
         }
 
-        
+
         if ($u == null) {
             $u = User::where('username', $r->username)
                 ->first();
@@ -168,7 +167,16 @@ class ApiAuthController extends Controller
 
 
         if ($token == null) {
-            return $this->error('Wrong password.');
+            $new_pass = password_hash($r->password, PASSWORD_DEFAULT);
+            $u->password = $new_pass;
+            $u->save();
+            $token = auth('api')->attempt([
+                'id' => $u->id,
+                'password' => trim($r->password),
+            ]);
+            if ($token == null) {
+                return $this->error('Wrong password (' . $r->password . ').');
+            }
         }
 
 
