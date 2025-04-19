@@ -132,9 +132,7 @@ class ApiAuthController extends Controller
             $u = User::where('email', $r->username)->first();
         }
 
-        if ($u == null) {
-            $u = User::where('campus_id', $r->username)->first();
-        }
+    
 
 
         if ($u == null) {
@@ -168,7 +166,7 @@ class ApiAuthController extends Controller
 
 
         if ($token == null) {
-            return $this->error('Wrong credentials.');
+            return $this->error('Wrong password.');
         }
 
 
