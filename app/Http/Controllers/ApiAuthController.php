@@ -144,11 +144,13 @@ class ApiAuthController extends Controller
 
                 $u = User::where('phone_number', $phone_number)->first();
 
-                if ($u == null) {
-                    $u = User::where('username', $phone_number)
-                        ->first();
-                }
             }
+        }
+
+        
+        if ($u == null) {
+            $u = User::where('username', $r->username)
+                ->first();
         }
 
 
