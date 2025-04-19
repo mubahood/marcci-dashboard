@@ -119,11 +119,11 @@ class User extends Authenticatable implements JWTSubject
 
         if ($model->password == null || strlen($model->password) < 4) {
             $model->password = $model->username;
-        }
 
-        if (strlen($model->password) < 40) {
             $model->password = password_hash($model->password, PASSWORD_DEFAULT);
         }
+
+
 
         $username = null;
         if (
