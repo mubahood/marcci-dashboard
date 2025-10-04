@@ -1,0 +1,623 @@
+{
+  "info": {
+    "name": "SACCO Live API",
+    "description": "Comprehensive API collection for SACCO mobile app integration",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/api/live",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "your_bearer_token_here",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "List All Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/transactions?per_page=20&page=1",
+              "host": ["{{base_url}}"],
+              "path": ["transactions"],
+              "query": [
+                {"key": "per_page", "value": "20"},
+                {"key": "page", "value": "1"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Type",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/transactions?type=DEPOSIT&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["transactions"],
+              "query": [
+                {"key": "type", "value": "DEPOSIT"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/transactions?search=deposit&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["transactions"],
+              "query": [
+                {"key": "search", "value": "deposit"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Date Range Filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/transactions?date_from=2025-01-01&date_to=2025-12-31&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["transactions"],
+              "query": [
+                {"key": "date_from", "value": "2025-01-01"},
+                {"key": "date_to", "value": "2025-12-31"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Amount Range Filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/transactions?amount_min=10000&amount_max=100000&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["transactions"],
+              "query": [
+                {"key": "amount_min", "value": "10000"},
+                {"key": "amount_max", "value": "100000"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Cycle",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/transactions?cycle_id=5&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["transactions"],
+              "query": [
+                {"key": "cycle_id", "value": "5"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Loans",
+      "item": [
+        {
+          "name": "List All Loans",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/loans?per_page=20&page=1",
+              "host": ["{{base_url}}"],
+              "path": ["loans"],
+              "query": [
+                {"key": "per_page", "value": "20"},
+                {"key": "page", "value": "1"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Active Loans",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/loans?status=Active&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["loans"],
+              "query": [
+                {"key": "status", "value": "Active"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Overdue Loans",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/loans?overdue=true&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["loans"],
+              "query": [
+                {"key": "overdue", "value": "true"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Scheme",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/loans?scheme_id=3&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["loans"],
+              "query": [
+                {"key": "scheme_id", "value": "3"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Amount Range Filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/loans?amount_min=100000&amount_max=1000000&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["loans"],
+              "query": [
+                {"key": "amount_min", "value": "100000"},
+                {"key": "amount_max", "value": "1000000"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contribution Programs",
+      "item": [
+        {
+          "name": "List All Programs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/contribution-programs?per_page=20&page=1",
+              "host": ["{{base_url}}"],
+              "path": ["contribution-programs"],
+              "query": [
+                {"key": "per_page", "value": "20"},
+                {"key": "page", "value": "1"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Active Programs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/contribution-programs?status=Active&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["contribution-programs"],
+              "query": [
+                {"key": "status", "value": "Active"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Periodic Programs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/contribution-programs?contribution_type=Periodic&periodic_type=Monthly&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["contribution-programs"],
+              "query": [
+                {"key": "contribution_type", "value": "Periodic"},
+                {"key": "periodic_type", "value": "Monthly"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Programs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/contribution-programs?search=monthly&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["contribution-programs"],
+              "query": [
+                {"key": "search", "value": "monthly"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contribution Records",
+      "item": [
+        {
+          "name": "List All Records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/contribution-records?program_id=8&per_page=20&page=1",
+              "host": ["{{base_url}}"],
+              "path": ["contribution-records"],
+              "query": [
+                {"key": "program_id", "value": "8"},
+                {"key": "per_page", "value": "20"},
+                {"key": "page", "value": "1"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Unpaid Records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/contribution-records?program_id=8&is_paid=No&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["contribution-records"],
+              "query": [
+                {"key": "program_id", "value": "8"},
+                {"key": "is_paid", "value": "No"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Paid Records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/contribution-records?program_id=8&is_paid=Yes&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["contribution-records"],
+              "query": [
+                {"key": "program_id", "value": "8"},
+                {"key": "is_paid", "value": "Yes"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Period",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/contribution-records?program_id=8&period_name=October 2025&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["contribution-records"],
+              "query": [
+                {"key": "program_id", "value": "8"},
+                {"key": "period_name", "value": "October 2025"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Share Records",
+      "item": [
+        {
+          "name": "List All Share Records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/share-records?per_page=20&page=1",
+              "host": ["{{base_url}}"],
+              "path": ["share-records"],
+              "query": [
+                {"key": "per_page", "value": "20"},
+                {"key": "page", "value": "1"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Type",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/share-records?type=Purchase&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["share-records"],
+              "query": [
+                {"key": "type", "value": "Purchase"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Date Range Filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/share-records?date_from=2025-01-01&date_to=2025-12-31&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["share-records"],
+              "query": [
+                {"key": "date_from", "value": "2025-01-01"},
+                {"key": "date_to", "value": "2025-12-31"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Members (Admin)",
+      "item": [
+        {
+          "name": "List All Members",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/members?per_page=20&page=1",
+              "host": ["{{base_url}}"],
+              "path": ["members"],
+              "query": [
+                {"key": "per_page", "value": "20"},
+                {"key": "page", "value": "1"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Members",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/members?search=john&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["members"],
+              "query": [
+                {"key": "search", "value": "john"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by User Type",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/members?user_type=Admin&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["members"],
+              "query": [
+                {"key": "user_type", "value": "Admin"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Active Members",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/members?active_status=1&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["members"],
+              "query": [
+                {"key": "active_status", "value": "1"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cycles",
+      "item": [
+        {
+          "name": "List All Cycles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/cycles?per_page=20&page=1",
+              "host": ["{{base_url}}"],
+              "path": ["cycles"],
+              "query": [
+                {"key": "per_page", "value": "20"},
+                {"key": "page", "value": "1"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Active Cycles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/cycles?status=Active&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["cycles"],
+              "query": [
+                {"key": "status", "value": "Active"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Date Range Filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/cycles?date_from=2025-01-01&date_to=2025-12-31&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["cycles"],
+              "query": [
+                {"key": "date_from", "value": "2025-01-01"},
+                {"key": "date_to", "value": "2025-12-31"},
+                {"key": "per_page", "value": "20"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Statistics",
+      "item": [
+        {
+          "name": "Get Statistics (Default)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/statistics",
+              "host": ["{{base_url}}"],
+              "path": ["statistics"]
+            }
+          }
+        },
+        {
+          "name": "Monthly Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/statistics?period=monthly",
+              "host": ["{{base_url}}"],
+              "path": ["statistics"],
+              "query": [
+                {"key": "period", "value": "monthly"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Daily Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/statistics?period=daily&date_from=2025-01-01",
+              "host": ["{{base_url}}"],
+              "path": ["statistics"],
+              "query": [
+                {"key": "period", "value": "daily"},
+                {"key": "date_from", "value": "2025-01-01"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Custom Date Range",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/statistics?period=monthly&date_from=2025-01-01&date_to=2025-12-31",
+              "host": ["{{base_url}}"],
+              "path": ["statistics"],
+              "query": [
+                {"key": "period", "value": "monthly"},
+                {"key": "date_from", "value": "2025-01-01"},
+                {"key": "date_to", "value": "2025-12-31"}
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
