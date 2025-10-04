@@ -1974,10 +1974,18 @@ class ApiResurceController extends Controller
     public function update(Request $r, $model)
     {
 
+        $headers = getallheaders();
         $u = auth('api')->user();
+
+        if ($u == null) {
+            $administrator_id = Utils::get_user_id($r);
+            $u = Administrator::find($administrator_id);
+        }
+
+
         if ($u == null) {
             return Utils::error([
-                'message' => "User not found.",
+                'message' => "User not found. " . json_encode($headers)
             ]);
         }
 

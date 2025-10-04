@@ -41,6 +41,7 @@ class MembersController extends AdminController
         } else {
         }
         $grid->disableBatchActions();
+        $grid->column('id', __('ID'))->sortable();
         $grid->quickSearch('first_name', 'last_name', 'email', 'phone_number')->placeholder('Search by name, email or phone number');
 
         $grid->column('first_name', __('First name'))->sortable();
