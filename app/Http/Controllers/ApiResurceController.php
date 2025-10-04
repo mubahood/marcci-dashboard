@@ -1629,8 +1629,21 @@ class ApiResurceController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
-        $recs = ContributionProgramRecord::where('sacco_id', $u->sacco_id)->get();
-        return $this->success($recs, 'Success');
+        
+        // Add pagination and eager loading to prevent N+1 queries
+        $perPage = $r->input('per_page', 100);
+        $recs = ContributionProgramRecord::with('member', 'treasurer', 'program')
+            ->where('sacco_id', $u->sacco_id)
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+            
+        return $this->success([
+            'data' => $recs->items(),
+            'current_page' => $recs->currentPage(),
+            'last_page' => $recs->lastPage(),
+            'total' => $recs->total(),
+            'per_page' => $recs->perPage()
+        ], 'Success');
     }
     public function index(Request $r, $model)
     {
@@ -1777,17 +1790,45 @@ class ApiResurceController extends Controller
                 'message' => "User not found.",
             ]);
         }
+        
+        // Comprehensive validation
+        $validator = \Illuminate\Support\Facades\Validator::make($r->all(), [
+            'contribution_program_id' => 'required|integer|exists:contribution_programs,id',
+            'member_id' => 'required|integer|exists:users,id',
+            'amount' => 'required|numeric|min:1|max:999999999',
+            'paid_amount' => 'nullable|numeric|min:0',
+            'is_paid' => 'required|in:Yes,No',
+            'payment_date' => 'nullable|date|before_or_equal:today',
+            'period_range_start' => 'nullable|date',
+            'teasurer_id' => 'nullable|integer|exists:users,id',
+        ]);
+        
+        if ($validator->fails()) {
+            return Utils::error([
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
+            ]);
+        }
+        
         $sacco = Sacco::find($u->sacco_id);
         if ($sacco == null) {
             return Utils::error([
                 'message' => "Sacco not found.",
             ]);
         }
+        
         $contribution_program = ContributionProgram::find($r->contribution_program_id);
         if ($contribution_program == null) {
             return Utils::error([
                 'message' => "Program not found.",
             ]);
+        }
+        
+        // Authorization: Verify program belongs to user's sacco
+        if ($contribution_program->sacco_id != $u->sacco_id) {
+            return Utils::error([
+                'message' => "Unauthorized access to this contribution program.",
+            ], 403);
         }
 
         ContributionProgram::update_pending_programs();
@@ -1797,6 +1838,13 @@ class ApiResurceController extends Controller
         $isNew = false;
         if ($id > 0) {
             $item = ContributionProgramRecord::find($id);
+            
+            // Authorization: Verify record belongs to user's sacco
+            if ($item && $item->sacco_id != $u->sacco_id) {
+                return Utils::error([
+                    'message' => "Unauthorized access to this record.",
+                ], 403);
+            }
         }
         if ($item == null) {
             $item = new ContributionProgramRecord();
@@ -1808,6 +1856,35 @@ class ApiResurceController extends Controller
             return Utils::error([
                 'message' => "Member account not found."
             ]);
+        }
+        
+        // Verify member belongs to same sacco
+        if ($member->sacco_id != $u->sacco_id) {
+            return Utils::error([
+                'message' => "Member does not belong to your SACCO."
+            ]);
+        }
+        
+        // Business logic validation
+        if ($r->is_paid == 'Yes') {
+            if (!isset($r->paid_amount) || $r->paid_amount <= 0) {
+                return Utils::error([
+                    'message' => "Paid amount is required and must be greater than zero when marking as paid."
+                ]);
+            }
+            
+            if ($r->paid_amount > $r->amount) {
+                return Utils::error([
+                    'message' => "Paid amount cannot exceed the expected amount."
+                ]);
+            }
+            
+            // Only admins/treasurers can mark as paid
+            if ($u->is_admin != 'yes') {
+                return Utils::error([
+                    'message' => "Only administrators and treasurers can mark contributions as paid."
+                ], 403);
+            }
         }
 
 

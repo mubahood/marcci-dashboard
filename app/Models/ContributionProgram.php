@@ -11,6 +11,32 @@ class ContributionProgram extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'sacco_id',
+        'name',
+        'contribution_type',
+        'periodic_type',
+        'amount_per_member_type',
+        'amount_per_member_value',
+        'start_date',
+        'end_date',
+        'status',
+        'members',
+        'treasurers',
+        'total_expected',
+        'total_balance',
+        'total_collected',
+        'collected_amount',
+        'members_contributed',
+        'prepared',
+        'details',
+        'new_members_billing_type',
+        'public_type',
+        'membership_type',
+        'target_amount',
+        'amount_to_use',
+        'period_name',
+    ];
 
     public static function boot()
     {
@@ -188,15 +214,20 @@ class ContributionProgram extends Model
 
     public static function add_member_to_program($program, $member)
     {
-        //set unlimited time of execution
-        set_time_limit(0);
-        ini_set('memory_limit', '-1');
+        // Set reasonable limits to prevent infinite loops and memory issues
+        set_time_limit(300); // 5 minutes max
+        ini_set('memory_limit', '512M'); // Reasonable limit
+        
         if ($program->contribution_type !== 'Periodic') {
             return;
         }
 
         $program_start_data = Carbon::parse($program->start_date);
         $program_end_data   = Carbon::parse($program->end_date);
+        
+        // Safeguard: Maximum iterations to prevent infinite loops
+        $maxIterations = 1000;
+        $iterations = 0;
 
         if (! $program_start_data || ! $program_end_data) {
             throw new \Exception("Start date and end date cannot be null.", 1);
@@ -226,7 +257,8 @@ class ContributionProgram extends Model
             $start_of_period_date = $program_start_data->copy()->startOfMonth();
         }
 
-        while ($start_of_period_date->lte($program_end_data)) {
+        while ($start_of_period_date->lte($program_end_data) && $iterations < $maxIterations) {
+            $iterations++;
 
             if ($program->periodic_type === 'Weekly') {
                 $end_of_period_date = $start_of_period_date->copy()->endOfWeek();
@@ -255,47 +287,48 @@ class ContributionProgram extends Model
                 continue;
             }
 
-            // --- no mass assignment here! ---
-            $contribution_program_record = ContributionProgramRecord::where([
-                'member_id'               => $member->id,
-                'contribution_program_id' => $program->id,
-                'period_name'             => $period_name,
-            ])->first();
-
-            $isEdit = true;
-            if (! $contribution_program_record) {
-                $isEdit = false;
-                $contribution_program_record = new ContributionProgramRecord();
-                $contribution_program_record->teasurer_id        = null;
-                $contribution_program_record->is_paid            = 'No';
-                $contribution_program_record->month_name         = $period_name;
-                $contribution_program_record->period_name        = $period_name;
-                $contribution_program_record->payment_date       = null;
-                $contribution_program_record->paid_amount        = 0;
-                $contribution_program_record->type               = $program->periodic_type;
-            }
-
-            // explicit assignment of every field:
-            $contribution_program_record->sacco_id             = $program->sacco_id;
-            $contribution_program_record->member_id            = $member->id;
-            $contribution_program_record->year                 = $start_of_period_date->format('Y');
-            $contribution_program_record->week_number          = $start_of_period_date->format('W');
-            $contribution_program_record->month_number         = $start_of_period_date->format('m');
-            $contribution_program_record->contribution_program_id = $program->id;
-            $contribution_program_record->description          = $program->name
+            // Calculate amount based on program settings
+            $amount = $program->amount_to_use === 'PERSONALIZED_AMOUNT'
+                ? $member->personalized_contribution_amount ?? 0
+                : $program->amount_per_member_value;
+            
+            $description = $program->name
                 . ($program->periodic_type === 'Weekly'
                     ? " - Week: {$period_name}"
                     : " - Month: {$period_name}");
-            $contribution_program_record->period_range_start   = $start_of_period_date->format('Y-m-d');
-            $contribution_program_record->period_range_end     = $end_of_period_date->format('Y-m-d');
-
-            if ($program->amount_to_use === 'PERSONALIZED_AMOUNT') {
-                $contribution_program_record->amount = $member->personalized_contribution_amount;
-            } else {
-                $contribution_program_record->amount = $program->amount_per_member_value;
+            
+            // Use firstOrCreate to prevent duplicate records (atomic operation)
+            $contribution_program_record = ContributionProgramRecord::firstOrCreate(
+                // Unique identifier fields
+                [
+                    'member_id'               => $member->id,
+                    'contribution_program_id' => $program->id,
+                    'period_name'             => $period_name,
+                ],
+                // Default values for new records only
+                [
+                    'sacco_id'             => $program->sacco_id,
+                    'teasurer_id'          => null,
+                    'year'                 => $start_of_period_date->format('Y'),
+                    'week_number'          => $start_of_period_date->format('W'),
+                    'month_number'         => $start_of_period_date->format('m'),
+                    'is_paid'              => 'No',
+                    'month_name'           => $period_name,
+                    'payment_date'         => null,
+                    'paid_amount'          => 0,
+                    'type'                 => $program->periodic_type,
+                    'description'          => $description,
+                    'period_range_start'   => $start_of_period_date->format('Y-m-d'),
+                    'period_range_end'     => $end_of_period_date->format('Y-m-d'),
+                    'amount'               => $amount,
+                ]
+            );
+            
+            // Update amount if it changed (for existing records)
+            if ($contribution_program_record->amount != $amount) {
+                $contribution_program_record->amount = $amount;
+                $contribution_program_record->save();
             }
-
-            $contribution_program_record->save();
 
 
             // move to next period
@@ -303,31 +336,44 @@ class ContributionProgram extends Model
                 ? $start_of_period_date->addWeek()
                 : $start_of_period_date->addMonth();
         }
+        
+        // Check if we hit the iteration limit
+        if ($iterations >= $maxIterations) {
+            throw new \Exception("Program period too long. Maximum $maxIterations periods allowed. Please reduce the date range.");
+        }
     }
 
 
 
     public function update_balances()
     {
-        if (($this->contribution_type == 'Periodic')) {
-            $this->total_expected = DB::table('contribution_program_records')
-                ->where('contribution_program_id', $this->id)
-                ->sum('amount');
-        }
+        // Use database transaction with row locking to prevent race conditions
+        return DB::transaction(function () {
+            // Lock row for update to prevent concurrent modifications
+            $program = self::lockForUpdate()->find($this->id);
+            
+            if (!$program) {
+                return false;
+            }
+            
+            if ($program->contribution_type == 'Periodic') {
+                $program->total_expected = DB::table('contribution_program_records')
+                    ->where('contribution_program_id', $program->id)
+                    ->sum('amount');
+            }
 
-        $this->total_collected = DB::table('contribution_program_records')
-            ->where('contribution_program_id', $this->id)
-            ->sum('paid_amount');
+            $program->total_collected = DB::table('contribution_program_records')
+                ->where('contribution_program_id', $program->id)
+                ->where('is_paid', 'Yes')
+                ->sum('paid_amount');
 
-        $this->total_balance = (int)($this->total_expected) - (int)($this->total_collected);
+            $program->total_balance = (int)($program->total_expected) - (int)($program->total_collected);
 
-        DB::table($this->getTable())
-            ->where('id', $this->id)
-            ->update([
-                'total_expected' => $this->total_expected,
-                'total_collected' => $this->total_collected,
-                'total_balance' => $this->total_balance,
-            ]);
+            // Use Eloquent save() instead of raw query to fire model events
+            $program->save();
+            
+            return $program;
+        });
     }
 
 

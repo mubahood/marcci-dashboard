@@ -10,6 +10,20 @@ class Sacco extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'phone_number',
+        'email',
+        'address',
+        'status',
+        'administrator_id',
+        'about',
+        'logo',
+        'type',
+        'est_date',
+        'registration_number',
+    ];
+
     public static function boot()
     {
         parent::boot();

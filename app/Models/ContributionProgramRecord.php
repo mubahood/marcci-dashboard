@@ -33,6 +33,22 @@ class ContributionProgramRecord extends Model
         'period_name',
         'paid_amount',
     ];
+    
+    // Eloquent relationships to prevent N+1 queries
+    public function member()
+    {
+        return $this->belongsTo(User::class, 'member_id');
+    }
+    
+    public function treasurer()
+    {
+        return $this->belongsTo(User::class, 'teasurer_id');
+    }
+    
+    public function program()
+    {
+        return $this->belongsTo(ContributionProgram::class, 'contribution_program_id');
+    }
 
     public static function boot()
     {
@@ -163,29 +179,20 @@ class ContributionProgramRecord extends Model
 
     protected $appends = ['member_text', 'teasurer_text', 'contribution_program_text'];
 
+    // Optimized accessor using relationships instead of N+1 queries
     public function getMemberTextAttribute()
     {
-        $u = User::find($this->member_id);
-        if ($u == null) {
-            return "N/A";
-        }
-        return $u->name;
+        return $this->member?->name ?? "N/A";
     }
+    
     public function getTeasurerTextAttribute()
     {
-        $u = User::find($this->teasurer_id);
-        if ($u == null) {
-            return "N/A";
-        }
-        return $u->name;
+        return $this->treasurer?->name ?? "N/A";
     }
+    
     public function getContributionProgramTextAttribute()
     {
-        $u = ContributionProgram::find($this->contribution_program_id);
-        if ($u == null) {
-            return "N/A";
-        }
-        return $u->name;
+        return $this->program?->name ?? "N/A";
     }
 }
 /* 
