@@ -142,3 +142,65 @@ Route::get('ajax', function (Request $r) {
         'data' => $data
     ];
 });
+
+/**
+ * ============================================================================
+ * LIVE API ENDPOINTS - Advanced Data Fetching
+ * ============================================================================
+ * 
+ * These are new advanced endpoints with comprehensive filtering, pagination,
+ * and search capabilities. They provide real-time data access for mobile apps.
+ * 
+ * Base Path: /api/live/*
+ * 
+ * All endpoints require authentication via Bearer token
+ * 
+ * Features:
+ * - Advanced filtering by multiple fields
+ * - Full-text search across relevant fields
+ * - Date range filtering
+ * - Amount range filtering
+ * - Sorting by any field (asc/desc)
+ * - Pagination with metadata
+ * - Eager loading of relationships
+ * - Summary statistics
+ * - Performance optimized queries
+ * 
+ * Documentation: See LIVE_API_DOCUMENTATION.md
+ * 
+ * Created: October 4, 2025
+ * ============================================================================
+ */
+
+use App\Http\Controllers\Api\Live\LiveApiController;
+
+// Protected live endpoints (require authentication)
+Route::middleware(['auth:api'])->prefix('live')->group(function () {
+    
+    // Transactions
+    Route::get('transactions', [LiveApiController::class, 'transactions']);
+    
+    // Loans
+    Route::get('loans', [LiveApiController::class, 'loans']);
+    
+    // Contribution Programs
+    Route::get('contribution-programs', [LiveApiController::class, 'contributionPrograms']);
+    
+    // Contribution Records
+    Route::get('contribution-records', [LiveApiController::class, 'contributionRecords']);
+    
+    // Share Records
+    Route::get('share-records', [LiveApiController::class, 'shareRecords']);
+    
+    // Members (SACCO members list)
+    Route::get('members', [LiveApiController::class, 'members']);
+    
+    // Cycles
+    Route::get('cycles', [LiveApiController::class, 'cycles']);
+    
+    // Dashboard (comprehensive summary)
+    Route::get('dashboard', [LiveApiController::class, 'dashboard']);
+    
+    // Statistics & Analytics
+    Route::get('statistics', [LiveApiController::class, 'statistics']);
+});
