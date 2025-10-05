@@ -314,11 +314,6 @@ class LiveApiController extends Controller
             'loan_reference'
         ]);
 
-        // Status filter
-        if ($request->has('status') && $request->status !== 'all') {
-            $query->where('status', $request->status);
-        }
-
         // Amount range
         if ($request->has('amount_min')) {
             $query->where('amount', '>=', $request->amount_min);
@@ -335,8 +330,7 @@ class LiveApiController extends Controller
         // Overdue filter
         if ($request->has('overdue') && $request->overdue == 'true') {
             $query->where('due_date', '<', now())
-                ->where('status', '!=', 'Completed')
-                ->where('status', '!=', 'Rejected');
+                ->where('is_fully_paid', '!=', 'Yes');
         }
 
         // User filter
@@ -356,7 +350,7 @@ class LiveApiController extends Controller
                 ->sum('amount');
             $loan->is_overdue = $loan->due_date && 
                 Carbon::parse($loan->due_date)->isPast() && 
-                $loan->status !== 'Completed';
+                $loan->is_fully_paid !== 'Yes';
         }
 
         // Summary statistics
@@ -366,11 +360,10 @@ class LiveApiController extends Controller
                 ->count(),
             'active_loans' => Loan::where('sacco_id', $user->sacco_id)
                 ->where('user_id', $user->id)
-                ->where('status', 'Active')
+                ->where('is_fully_paid', '!=', 'Yes')
                 ->count(),
             'total_borrowed' => Loan::where('sacco_id', $user->sacco_id)
                 ->where('user_id', $user->id)
-                ->where('status', '!=', 'Rejected')
                 ->sum('amount'),
             'total_balance' => DB::table('loan_transactions')
                 ->join('loans', 'loans.id', '=', 'loan_transactions.loan_id')

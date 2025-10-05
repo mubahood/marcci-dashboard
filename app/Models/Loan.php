@@ -428,8 +428,8 @@ class Loan extends Model
     }
 
 
-    //append for user_text
-    protected $appends = ['user_text'];
+    //append for user_text and status
+    protected $appends = ['user_text', 'status'];
 
     //getter for user_text
     public function getUserTextAttribute()
@@ -439,5 +439,14 @@ class Loan extends Model
             return "Unknown";
         }
         return $user->name;
+    }
+
+    //getter for status (derived from is_fully_paid)
+    public function getStatusAttribute()
+    {
+        if ($this->is_fully_paid === 'Yes') {
+            return 'Completed';
+        }
+        return 'Active';
     }
 }
