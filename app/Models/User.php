@@ -11,6 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements JWTSubject
@@ -35,6 +36,27 @@ class User extends Authenticatable implements JWTSubject
         'language',
         'sacco_join_status',
     ];
+
+    //getter first_name
+    public function getFirstNameAttribute($value)
+    {
+        if (!isset($this->attributes['name'])) {
+            return ucfirst(strtolower($value));
+        }
+        if (!isset($this->attributes['last_name'])) {
+            return ucfirst(strtolower($value));
+        }
+        if (!isset($this->attributes['first_name'])) {
+            return ucfirst(strtolower($value));
+        }
+        $full_name = $this->attributes['first_name'] . ' ' . $this->attributes['last_name'];
+        if ($full_name != $this->attributes['name']) {
+
+            $sql = "UPDATE users SET name = '" . addslashes($full_name) . "' WHERE id = " . $this->id;
+            DB::statement($sql);
+        }
+        return ucfirst(strtolower($value));
+    }
 
     //boot
     protected static function boot()
@@ -107,6 +129,9 @@ class User extends Authenticatable implements JWTSubject
 
             $model->name = $model->first_name . ' ' . $model->last_name;
             //check usting username as email
+
+            //twitter
+
 
 
             if (
@@ -198,6 +223,7 @@ class User extends Authenticatable implements JWTSubject
                         // throw new \Exception("Mother must be Female"); 
                     }
                 }
+                $model->twitter = $parent->first_name . ' ' . $parent->last_name;
             } else {
                 $model->reg_number = 'Alive';
                 $model->language = 'Compulsory';
@@ -283,6 +309,11 @@ class User extends Authenticatable implements JWTSubject
     public function transactions()
     {
         return $this->hasMany(Transaction::class, 'user_id');
+    }
+
+    public function sacco()
+    {
+        return $this->belongsTo(Sacco::class, 'sacco_id');
     }
 
     //getter for name
@@ -499,17 +530,8 @@ class User extends Authenticatable implements JWTSubject
 
     public function isAdmin()
     {
-        $sacco = Sacco::find($this->sacco_id);
-        if ($sacco == null) {
-            throw new \Exception("Sacco for user not found.");
-        }
-        if (
-            $sacco->administrator_id == $this->id
-        ) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return true;
     }
 
     //get dropdowndata

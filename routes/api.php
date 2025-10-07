@@ -4,6 +4,7 @@ use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiResurceController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Middleware\JwtMiddleware;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -72,6 +73,42 @@ Route::get('news-posts', [ApiResurceController::class, 'news_posts']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::get('ajax-users', function (Request $r) {
+    $q = trim($r->get('q'));
+    $sacco_id = $r->get('sacco_id');
+    // $user_type = $r->get('user_type');
+    // $status = $r->get('status');
+    $conditions['sacco_id'] =  $sacco_id;
+
+
+    $c = User::where($conditions)
+        ->where('first_name', 'like', "%$q%")
+        ->orWhere('last_name', 'like', "%$q%")
+        ->orWhere('name', 'like', "%$q%")
+        ->orWhere('phone_number', 'like', "%$q%")
+        ->limit(100)->get();
+
+    $data = [];
+    $surfix = "";
+    foreach ($c as $key => $v) {
+
+        //if not same sacco, continue
+        // if ((($v->sacco_id)) != $sacco_id) {
+        //     continue;
+        // }
+
+        $data[] = [
+            'id' => $v->id . "",
+            'text' => "#{$v->id} - " . $v->first_name . " " . $v->last_name . " ($v->phone_number)" . $surfix
+        ];
+    }
+    return [
+        'data' => $data
+    ];
+});
+
 
 Route::get('ajax', function (Request $r) {
 
@@ -176,31 +213,31 @@ use App\Http\Controllers\Api\Live\LiveApiController;
 
 // Protected live endpoints (require authentication)
 Route::middleware(['auth:api'])->prefix('live')->group(function () {
-    
+
     // Transactions
     Route::get('transactions', [LiveApiController::class, 'transactions']);
-    
+
     // Loans
     Route::get('loans', [LiveApiController::class, 'loans']);
-    
+
     // Contribution Programs
     Route::get('contribution-programs', [LiveApiController::class, 'contributionPrograms']);
-    
+
     // Contribution Records
     Route::get('contribution-records', [LiveApiController::class, 'contributionRecords']);
-    
+
     // Share Records
     Route::get('share-records', [LiveApiController::class, 'shareRecords']);
-    
+
     // Members (SACCO members list)
     Route::get('members', [LiveApiController::class, 'members']);
-    
+
     // Cycles
     Route::get('cycles', [LiveApiController::class, 'cycles']);
-    
+
     // Dashboard (comprehensive summary)
     Route::get('dashboard', [LiveApiController::class, 'dashboard']);
-    
+
     // Statistics & Analytics
     Route::get('statistics', [LiveApiController::class, 'statistics']);
 });

@@ -59,4 +59,30 @@ Route::group([
     $router->resource('product-orders', ProductOrderController::class);
     $router->resource('transactions', TransactionController::class);
     $router->resource('transactions-all', TransactionAllController::class);
+
+    // API routes for AJAX select fields
+    $router->get('api/users', function (\Illuminate\Http\Request $request) {
+        $q = $request->get('q');
+        $sacco_id = $request->get('sacco_id');
+        
+        return \App\Models\User::where('sacco_id', $sacco_id)
+            ->where('sacco_join_status', 'Approved')
+            ->where(function($query) use ($q) {
+                $query->where('name', 'like', "%$q%")
+                      ->orWhere('email', 'like', "%$q%");
+            })
+            ->orderBy('name')
+            ->paginate(null, ['id', 'name as text']);
+    });
+
+    $router->get('api/contribution-programs', function (\Illuminate\Http\Request $request) {
+        $q = $request->get('q');
+        $sacco_id = $request->get('sacco_id');
+        
+        return \App\Models\ContributionProgram::where('sacco_id', $sacco_id)
+            ->where('status', 'Active')
+            ->where('name', 'like', "%$q%")
+            ->orderBy('name')
+            ->paginate(null, ['id', 'name as text']);
+    });
 });

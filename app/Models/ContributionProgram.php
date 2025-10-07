@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -152,6 +153,9 @@ class ContributionProgram extends Model
 
         $logged_in_user = auth()->user();
         if ($logged_in_user == null) {
+            $logged_in_user = Admin::user();
+        }
+        if ($logged_in_user == null) {
             throw new \Exception("User not logged in", 1);
         }
         $model->sacco_id = $logged_in_user->sacco_id;
@@ -267,6 +271,7 @@ class ContributionProgram extends Model
                 $end_of_period_date = $start_of_period_date->copy()->endOfMonth();
                 $period_name        = strtoupper($start_of_period_date->format('F-Y'));
             }
+ 
 
             // skip periods outside program window
             if (
@@ -296,6 +301,7 @@ class ContributionProgram extends Model
                 . ($program->periodic_type === 'Weekly'
                     ? " - Week: {$period_name}"
                     : " - Month: {$period_name}");
+           
             
             // Use firstOrCreate to prevent duplicate records (atomic operation)
             $contribution_program_record = ContributionProgramRecord::firstOrCreate(
@@ -386,5 +392,21 @@ class ContributionProgram extends Model
         ) {
             ContributionProgram::prepare($value);
         }
+    }
+
+    /**
+     * Get all contribution program records for this program
+     */
+    public function records()
+    {
+        return $this->hasMany(ContributionProgramRecord::class, 'contribution_program_id');
+    }
+
+    /**
+     * Get the SACCO that owns this program
+     */
+    public function sacco()
+    {
+        return $this->belongsTo(Sacco::class, 'sacco_id');
     }
 }

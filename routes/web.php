@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\MemberReportController;
+use App\Http\Controllers\ProgramReportController;
+use App\Http\Controllers\SaccoReportController;
+use App\Http\Controllers\FamilyTreeReportController;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Models\ContributionProgram;
@@ -14,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('do-prepare', function () {
     $program = ContributionProgram::orderBy('id', 'desc')->first();
+    $program->prepared = 'No';
     ContributionProgram::prepare($program);
     die("here.");
     return $content;
@@ -35,6 +40,18 @@ Route::get('report-print', function () {
 Route::get('policy', function () {
     return view('policy');
 });
+
+// Member Contribution Report
+Route::get('member-report/{user_id}', [MemberReportController::class, 'show'])->name('member.report');
+
+// Program Contribution Report
+Route::get('program-report/{program_id}', [ProgramReportController::class, 'show'])->name('program.report');
+
+// SACCO/Family Comprehensive Report
+Route::get('sacco-report', [SaccoReportController::class, 'show'])->name('sacco.report');
+
+// Family Tree Visualization Report
+Route::get('family-tree', [FamilyTreeReportController::class, 'show'])->name('family.tree');
 
 Route::get('/gen-form', function () {
     die(Gen::find($_GET['id'])->make_forms());

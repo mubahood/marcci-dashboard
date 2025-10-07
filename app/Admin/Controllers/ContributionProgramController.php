@@ -29,27 +29,139 @@ class ContributionProgramController extends AdminController
         $u = Admin::user();
         $grid = new Grid(new ContributionProgram());
 
-        $grid->column('id', __('Id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
-        $grid->column('sacco_id', __('Sacco id'));
-        $grid->column('total_expected', __('Total expected'));
-        $grid->column('total_collected', __('Total collected'));
-        $grid->column('total_balance', __('Total balance'));
-        $grid->column('amount_per_member_type', __('Amount per member type'));
-        $grid->column('amount_per_member_value', __('Amount per member value'));
-        $grid->column('name', __('Name'));
-        $grid->column('contribution_type', __('Contribution type'));
-        $grid->column('periodic_type', __('Periodic type'));
-        $grid->column('new_members_billing_type', __('New members billing type'));
-        $grid->column('details', __('Details'));
-        $grid->column('status', __('Status'));
-        $grid->column('public_type', __('Public type'));
-        $grid->column('membership_type', __('Membership type'));
-        $grid->column('members', __('Members'));
-        $grid->column('treasurers', __('Treasurers'));
-        $grid->column('start_date', __('Start date'));
-        $grid->column('end_date', __('End date'));
+        // Filter by SACCO
+        if (!$u->isRole('admin')) {
+            $grid->model()->where('sacco_id', $u->sacco_id);
+        }
+
+        $grid->model()->orderBy('id', 'DESC');
+        $grid->disableBatchActions();
+
+        // Core Information
+        $grid->column('id', __('ID'))->sortable();
+        $grid->column('name', __('Program Name'))->sortable();
+        
+        $grid->column('status', __('Status'))
+            ->label([
+                'Active' => 'success',
+                'InActive' => 'default',
+            ])
+            ->sortable()
+            ->filter([
+                'Active' => 'Active',
+                'InActive' => 'Inactive',
+            ]);
+
+        // Contribution Details
+        $grid->column('contribution_type', __('Type'))
+            ->label([
+                'Periodic' => 'info',
+                'Open' => 'warning',
+            ])
+            ->sortable()
+            ->filter([
+                'Periodic' => 'Periodic',
+                'Open' => 'Open',
+            ]);
+
+        $grid->column('periodic_type', __('Period'))
+            ->label([
+                'Weekly' => 'primary',
+                'Monthly' => 'success',
+            ])
+            ->sortable()
+            ->hide();
+
+        // Amount Information
+        $grid->column('amount_per_member_type', __('Amount Type'))
+            ->using([
+                'Specific' => 'Fixed Amount',
+                'Any' => 'Flexible Amount',
+            ])
+            ->sortable();
+
+        $grid->column('amount_per_member_value', __('Amount Per Member'))
+            ->display(function ($amount) {
+                return $amount ? 'UGX ' . number_format($amount) : '-';
+            })
+            ->sortable();
+
+        // Financial Summary
+        $grid->column('total_expected', __('Expected'))
+            ->display(function ($amount) {
+                return 'UGX ' . number_format($amount ?? 0);
+            })
+            ->sortable()->totalRow(function ($amount) {
+                return 'UGX ' . number_format($amount);
+            });
+
+        $grid->column('total_collected', __('Collected'))
+            ->display(function ($amount) {
+                return 'UGX ' . number_format($amount ?? 0);
+            })
+            ->sortable()->totalRow(function ($amount) {
+                return 'UGX ' . number_format($amount);
+            });
+
+        $grid->column('total_balance', __('Balance'))
+            ->display(function ($amount) {
+                $balance = $amount ?? 0;
+                $class = $balance < 0 ? 'text-danger' : ($balance > 0 ? 'text-success' : '');
+                return "<span class='{$class}'>UGX " . number_format($balance) . "</span>";
+            })
+            ->sortable()->totalRow(function ($amount) {
+                return 'UGX ' . number_format($amount);
+            });
+
+        // Dates
+        $grid->column('start_date', __('Start Date'))
+            ->display(function ($date) {
+                return $date ? date('d M Y', strtotime($date)) : '-';
+            })->sortable();
+
+        $grid->column('end_date', __('End Date'))
+            ->display(function ($date) {
+                return $date ? date('d M Y', strtotime($date)) : '-';
+            })->sortable()->hide();
+
+        $grid->column('created_at', __('Created'))
+            ->display(function ($date) {
+                return date('d M Y', strtotime($date));
+            })->sortable()->hide();
+
+        // Filters
+        $grid->filter(function ($filter) {
+            $filter->disableIdFilter();
+            
+            $filter->like('name', 'Program Name');
+            $filter->equal('status', 'Status')->select([
+                'Active' => 'Active',
+                'InActive' => 'Inactive',
+            ]);
+            $filter->equal('contribution_type', 'Type')->select([
+                'Periodic' => 'Periodic',
+                'Open' => 'Open',
+            ]);
+            $filter->between('start_date', 'Start Date')->date();
+            $filter->between('end_date', 'End Date')->date();
+        });
+
+        // Column selector
+        $grid->showColumnSelector();
+
+        // Export
+        $grid->export(function ($export) {
+            $export->filename('Contribution_Programs_' . date('Y-m-d'));
+        });
+
+        // Print Report Button
+        $grid->column('print_report', __('Report'))
+            ->display(function () {
+                $url = url('program-report/' . $this->id);
+                return "<a href='$url' target='_blank' class='btn btn-xs btn-success' title='View Program Report'>
+                    <i class='fa fa-print'></i> Print Report
+                </a>";
+            });
 
         return $grid;
     }
@@ -96,93 +208,152 @@ class ContributionProgramController extends AdminController
      */
     protected function form()
     {
-    /*     $rec = ContributionProgram::find(4);
-        $rec->prepared = 'No';
-        //ContributionProgram::validate($rec);
-        ContributionProgram::prepare($rec);
-        die('done'); */
-
         $form = new Form(new ContributionProgram());
         $u = Admin::user();
-        $users = User::where([
-            'sacco_id' => $u->sacco_id
-        ])->get()
-            ->pluck('name', 'id');
-        $form->hidden('sacco_id', __('Sacco id'))->default($u->sacco_id);
-        /*         $form->number('total_expected', __('Total expected'));
-        $form->number('total_collected', __('Total collectedq'));
-        $form->number('total_balance', __('Total balance')); */
-        $form->text('name', __('Contribution Name'))->rules('required');
-        $form->select('amount_per_member_type', __('Contribution Amount Type'))
-            ->options([
-                'Specific' => 'Specific Amount',
-                'Any' => 'Any Amount',
-            ])->rules('required')
-            ->when('Specific', function ($form) {
-                $form->number('amount_per_member_value', __('Amount per member'))
-                    ->rules('required');
-            })
-            ->when('Any', function ($form) {
-                $form->number('total_expected', __('Target amount'))
-                    ->rules('required');
-            });
 
+        // Hidden: SACCO ID (auto-assigned)
+        $form->hidden('sacco_id')->default($u->sacco_id);
 
-        $form->select('contribution_type', __('Contribution type'))
+        // 1. Contribution Title (REQUIRED)
+        $form->text('name', __('Contribution title'))
+            ->rules('required');
+
+        // 2. Contribution Type (REQUIRED)
+        $form->radio('contribution_type', __('Contribution type'))
             ->options([
-                'Periodic' => 'Periodic',
-                'Open' => 'Open',
-            ])->when('Periodic', function ($form) {
-                $form->select('periodic_type', __('Period type'))
-                    ->rules('required')
+                'Periodic' => 'Repetitive',
+                'One time' => 'One time',
+            ])
+            ->rules('required')
+            ->when('Periodic', function ($form) {
+                
+                // 3. Repeat Type (Cycle) - Only when Periodic
+                $form->radio('periodic_type', __('Repeat type (Cycle)'))
                     ->options([
                         'Weekly' => 'Weekly',
                         'Monthly' => 'Monthly',
-                    ]);
+                    ])
+                    ->rules('required');
 
-                $form->select('new_members_billing_type', __('New members billing type'))
-                    ->rules('required')
+                // 4. Repetitive Amount Type - Per member - Only when Periodic
+                $form->radio('amount_per_member_type', __('Repetitive Amount Type - Per member'))
                     ->options([
-                        'MemberRegisterDate' => 'Member Register Date',
-                        'ContributionStartDate' => 'Contribution Start Date',
-                        'SpecificDate' => 'Specific Date',
-                    ])->rules('required');
-            })->rules('required');
-        $form->text('details', __('Details'));
-        $form->select('status', __('Status'))
+                        'Specific' => 'Specific Amount',
+                        'Any' => 'Any Amount',
+                    ])
+                    ->rules('required')
+                    ->when('Specific', function ($form) {
+                        
+                        // 5. Expected amount from each member - Only when Specific
+                        $form->radio('amount_to_use', __('Expected amount from each member'))
+                            ->options([
+                                'PERSONALIZED_AMOUNT' => 'Personalized Amount (assigned on person)',
+                                'PROGRAM_AMOUNT' => 'Contribution amount (for this program)',
+                            ])
+                            ->rules('required')
+                            ->when('PROGRAM_AMOUNT', function ($form) {
+                                
+                                // 6. Amount per member per cycle - Only when PROGRAM_AMOUNT
+                                $form->currency('amount_per_member_value', __('Amount per member per cycle (UGX)'))
+                                    ->symbol('UGX')
+                                    ->rules('required');
+                            });
+
+                        // 7. Start Date & End Date (Side by side)
+                        $form->date('start_date', __('Contribution Start date'))
+                            ->format('YYYY-MM-DD')
+                            ->rules('required');
+
+                        $form->date('end_date', __('Contribution end date'))
+                            ->format('YYYY-MM-DD')
+                            ->rules('required');
+                    });
+            });
+
+        // 8. Target Amount (ALWAYS VISIBLE - Outside all conditions)
+        $form->currency('target_amount', __('Target Amount (UGX)'))
+            ->symbol('UGX')
+            ->rules('required');
+
+        // 9. Status (REQUIRED)
+        $form->radio('status', __('Status'))
             ->options([
                 'Active' => 'Active',
-                'InActive' => 'Not Active'
+                'InActive' => 'Closed',
             ])
+            ->rules('required')
             ->default('Active');
 
-        $form->radio('membership_type', __('Membership target'))
-            ->options([
-                'All' => 'All members',
-                'Specific' => 'Specific members'
-            ])->rules('required')
-            ->when('Specific', function ($form) {
-                $u = Admin::user();
-                $users = User::where([
-                    'sacco_id' => $u->sacco_id
-                ])->get()
-                    ->pluck('name', 'id');
-                $form->listbox('members', __('Members'))
-                    ->options($users)->rules('required');
-            });
-        $form->select('public_type', __('Contribution Visibility Type'))
-            ->options([
-                'Public' => 'Public',
-                'Private' => 'Private',
-            ])
-            ->rules('required');
+        // Hidden fields
+        $form->hidden('total_expected')->default(0);
+        $form->hidden('total_collected')->default(0);
+        $form->hidden('total_balance')->default(0);
+        $form->hidden('prepared')->default('No');
 
-        $form->listbox('treasurers', __('Treasurers'))
-            ->options($users)->rules('required')
-            ->rules('required');
+        // Form settings
+        $form->disableCreatingCheck();
+        $form->disableEditingCheck();
+        $form->disableViewCheck();
 
-        $form->date('start_date', __('Start date'))->default(date('Y-m-d'))->rules('required');
-        $form->date('end_date', __('End date'))->rules('required');
+        // Saving event - Clean up fields based on conditions
+        $form->saving(function (Form $form) {
+            // Validate dates if both are provided
+            if (!empty($form->start_date) && !empty($form->end_date)) {
+                if (strtotime($form->end_date) < strtotime($form->start_date)) {
+                    admin_error('End date must be after start date');
+                    return redirect()->back()->withInput();
+                }
+            }
+
+            // Clean up fields based on contribution type
+            if ($form->contribution_type !== 'Periodic') {
+                // Clear periodic-related fields
+                $form->periodic_type = null;
+                $form->amount_per_member_type = null;
+                $form->amount_to_use = null;
+                $form->amount_per_member_value = null;
+                $form->start_date = null;
+                $form->end_date = null;
+            } else {
+                // Periodic contribution
+                if ($form->amount_per_member_type !== 'Specific') {
+                    // Clear specific amount fields
+                    $form->amount_to_use = null;
+                    $form->amount_per_member_value = null;
+                    $form->start_date = null;
+                    $form->end_date = null;
+                } else {
+                    // Specific amount
+                    if ($form->amount_to_use !== 'PROGRAM_AMOUNT') {
+                        // Clear program amount field
+                        $form->amount_per_member_value = null;
+                    }
+                }
+            }
+
+            // Initialize financial fields
+            if (!isset($form->total_expected)) {
+                $form->total_expected = 0;
+            }
+            if (!isset($form->total_collected)) {
+                $form->total_collected = 0;
+            }
+            if (!isset($form->total_balance)) {
+                $form->total_balance = 0;
+            }
+            if (!isset($form->prepared)) {
+                $form->prepared = 'No';
+            }
+        });
+
+        // Saved event
+        $form->saved(function (Form $form) {
+            if ($form->isCreating()) {
+                admin_success('Contribution program created successfully!');
+            } else {
+                admin_success('Contribution program updated successfully!');
+            }
+        });
 
         return $form;
     }
