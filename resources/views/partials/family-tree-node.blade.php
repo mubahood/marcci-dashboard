@@ -4,6 +4,7 @@
     $children = $node['children'] ?? [];
     $isDeceased = $member->reg_number == 'Late';
     $hasChildren = count($children) > 0;
+    $childrenCount = count($children);
     
     // Calculate age if DOB exists
     $age = null;
@@ -17,14 +18,15 @@
 @endphp
 
 <div class="node-wrapper">
-    {{-- Toggle button (only if has children) --}}
+    {{-- Toggle button (only if has children) with count --}}
     @if($hasChildren)
-        <span class="toggle-btn">−</span>
+        <span class="toggle-btn">+</span>
+        <span class="children-count">({{ $childrenCount }})</span>
     @endif
     
     {{-- Member Card with color coding --}}
     <div class="member-card {{ $isDeceased ? 'deceased' : 'alive' }}" 
-         title="{{ $member->first_name }} {{ $member->last_name }}{{ $isDeceased ? ' (Deceased)' : ' (Alive)' }}">
+         title="{{ $member->first_name }} {{ $member->last_name }}{{ $isDeceased ? ' (Deceased)' : ' (Alive)' }}{{ $hasChildren ? ' - ' . $childrenCount . ' children' : '' }}">
         
         {{-- Name --}}
         <div class="name">
@@ -43,9 +45,9 @@
     </div>
 </div>
 
-{{-- Render Children if any --}}
+{{-- Render Children if any - DEFAULT COLLAPSED --}}
 @if($hasChildren)
-    <ul class="children-container">
+    <ul class="children-container collapsed">
         @foreach($children as $child_node)
             <li>
                 @include('partials.family-tree-node', ['node' => $child_node])

@@ -214,7 +214,7 @@
             font-size: 10px;
             font-weight: bold;
             cursor: pointer;
-            margin-right: 5px;
+            margin-right: 3px;
             border: 1px solid #333;
             user-select: none;
             vertical-align: middle;
@@ -222,6 +222,15 @@
         
         .toggle-btn:hover {
             background: #555;
+        }
+        
+        .children-count {
+            display: inline-block;
+            font-size: 9px;
+            color: #666;
+            margin-right: 5px;
+            vertical-align: middle;
+            font-weight: bold;
         }
         
         .children-container {
@@ -443,21 +452,26 @@
         <div class="tree-section">
             <h2>🌳 Family Tree Structure</h2>
             
-            <!-- Legend -->
-            <div style="margin-bottom: 10px; padding: 8px; background: #f9f9f9; border: 1px solid #ddd; font-size: 10px;">
-                <strong>Legend:</strong> 
-                <span style="display: inline-block; margin-left: 10px;">
-                    <span style="display: inline-block; width: 12px; height: 12px; background: #f0fff4; border: 1px solid #86efac; vertical-align: middle;"></span>
-                    <span style="margin-left: 3px;">Alive</span>
-                </span>
-                <span style="display: inline-block; margin-left: 10px;">
-                    <span style="display: inline-block; width: 12px; height: 12px; background: #e5e5e5; border: 1px solid #999; vertical-align: middle;"></span>
-                    <span style="margin-left: 3px;">Deceased (†)</span>
-                </span>
-                <span style="display: inline-block; margin-left: 10px;">
-                    <span style="display: inline-block; width: 16px; height: 16px; background: #333; color: #fff; text-align: center; line-height: 14px; font-size: 10px; vertical-align: middle;">−</span>
-                    <span style="margin-left: 3px;">Click to collapse/expand children</span>
-                </span>
+            <!-- Controls and Legend -->
+            <div style="margin-bottom: 10px; padding: 8px; background: #f9f9f9; border: 1px solid #ddd; font-size: 10px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>Legend:</strong> 
+                    <span style="display: inline-block; margin-left: 10px;">
+                        <span style="display: inline-block; width: 12px; height: 12px; background: #f0fff4; border: 1px solid #86efac; vertical-align: middle;"></span>
+                        <span style="margin-left: 3px;">Alive</span>
+                    </span>
+                    <span style="display: inline-block; margin-left: 10px;">
+                        <span style="display: inline-block; width: 12px; height: 12px; background: #e5e5e5; border: 1px solid #999; vertical-align: middle;"></span>
+                        <span style="margin-left: 3px;">Deceased (†)</span>
+                    </span>
+                    <span style="display: inline-block; margin-left: 10px;">
+                        <span style="margin-left: 3px;">(n) = number of children</span>
+                    </span>
+                </div>
+                <div>
+                    <button onclick="expandAll()" style="padding: 4px 10px; background: #333; color: #fff; border: 1px solid #333; cursor: pointer; font-size: 10px; margin-right: 5px;">⊕ Expand All</button>
+                    <button onclick="collapseAll()" style="padding: 4px 10px; background: #333; color: #fff; border: 1px solid #333; cursor: pointer; font-size: 10px;">⊖ Collapse All</button>
+                </div>
             </div>
             
             @if(count($tree_data) > 0)
@@ -477,8 +491,6 @@
 
         <!-- Actions -->
         <div class="actions">
-            <button class="btn" onclick="expandAll()">⊕ Expand All</button>
-            <button class="btn" onclick="collapseAll()">⊖ Collapse All</button>
             <button class="btn" onclick="window.print()">🖨️ Print</button>
             <button class="btn" onclick="copyReport()">📋 Copy</button>
             <a href="javascript:history.back()" class="btn secondary">← Back</a>
@@ -501,7 +513,9 @@
             document.querySelectorAll('.toggle-btn').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    const li = this.closest('li');
+                    // Find the parent node-wrapper, then go up to li, then find children-container
+                    const nodeWrapper = this.closest('.node-wrapper');
+                    const li = nodeWrapper.closest('li');
                     const childrenContainer = li.querySelector(':scope > .children-container');
                     if (childrenContainer) {
                         childrenContainer.classList.toggle('collapsed');
